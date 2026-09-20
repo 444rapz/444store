@@ -1,296 +1,544 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Zap, 
-  ShieldCheck, 
-  Clock, 
   Search, 
   ChevronRight, 
   Star, 
-  HelpCircle, 
   CheckCircle2, 
   Flame, 
-  Gamepad2, 
-  ArrowUpRight,
-  Sparkles,
   CreditCard,
   QrCode,
   Wallet,
   Menu,
-  X
+  X,
+  ChevronLeft,
+  ShieldCheck,
+  Headphones,
+  ShoppingBag,
+  Bell,
+  AlertCircle
 } from 'lucide-react';
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<'home' | 'order' | 'track' | 'reviews'>('order');
+  const [activeTab, setActiveTab] = useState<'all' | 'robux' | 'gamepass' | 'voucher'>('all');
+  const [searchQuery, setSearchQuery] = useState('');
+  
+  // Carousel State
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  // Modal Detail Top Up State
+  const [selectedProduct, setSelectedProduct] = useState<any | null>(null);
   const [orderType, setOrderType] = useState<'username' | 'login'>('username');
-  const [robuxAmount, setRobuxAmount] = useState<number>(100);
-  const [username, setUsername] = useState<string>('');
-  const [whatsapp, setWhatsapp] = useState<string>('');
-  const [paymentMethod, setPaymentMethod] = useState<string>('qris');
-  const [searchGame, setSearchGame] = useState<string>('');
-  const [invoiceSearch, setInvoiceSearch] = useState<string>('');
-  const [trackResult, setTrackResult] = useState<any>(null);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<any | null>(null);
+  const [username, setUsername] = useState('');
+  const [whatsapp, setWhatsapp] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState('qris');
 
-  // Perhitungan Kurs 1 Robux = 160 (atau rate dinamis)
-  const RATE_PER_ROBUX = orderType === 'username' ? 165 : 155;
-  const totalPrice = robuxAmount * RATE_PER_ROBUX;
+  // Modal Konfirmasi Pembelian State
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [createdInvoice, setCreatedInvoice] = useState<any | null>(null);
 
-  const quickNominals = [50, 100, 200, 400, 800, 1000, 1700, 2000, 4500, 10000];
+  // Banner Carousel Data
+  const banners = [
+    {
+      id: 1,
+      title: "PROMO ROBUX SPESIAL SEPTEMBER",
+      subtitle: "Rate Termurah Rp 155/R$ • Otomatis Masuk < 1 Menit!",
+      tag: "FLASH SALE",
+      bg: "from-[#0a1626] via-[#0d233a] to-[#08101a]",
+      accent: "#85effe",
+      image: "https://images.unsplash.com/photo-1612287233207-61b698501f6d?w=1200&q=80"
+    },
+    {
+      id: 2,
+      title: "GAMEPASS BLOX FRUITS & FRUITS",
+      subtitle: "Stok Selalu Ready • Pengiriman Instan Langsung ke Akun",
+      tag: "BEST SELLER",
+      bg: "from-[#111927] via-[#102a3a] to-[#0a121d]",
+      accent: "#85effe",
+      image: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1200&q=80"
+    },
+    {
+      id: 3,
+      title: "TOP UP 24 JAM NONSTOP LEGAL 100%",
+      subtitle: "Didukung Pembayaran QRIS Realtime & Semua Bank",
+      tag: "100% LEGAL",
+      bg: "from-[#071520] via-[#0b2438] to-[#050e18]",
+      accent: "#85effe",
+      image: "https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=1200&q=80"
+    }
+  ];
 
-  const gameItems = [
-    { id: 1, name: "Blox Fruits", category: "Gamepass & Fruit", hot: true, variants: "32 Item", image: "https://images.unsplash.com/photo-1579373903781-fd5c0c30c4cd?w=400&q=80" },
-    { id: 2, name: "Fish It", category: "Rod & Coin", hot: true, variants: "18 Item", image: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=400&q=80" },
-    { id: 3, name: "CDID (Car Driving ID)", category: "Mobil & Gamepass", hot: true, variants: "14 Item", image: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=400&q=80" },
-    { id: 4, name: "Evade", category: "Cosmetic & Pass", hot: false, variants: "12 Item", image: "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=400&q=80" },
-    { id: 5, name: "Grow A Garden 2", category: "Item & Tools", hot: false, variants: "10 Item", image: "https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?w=400&q=80" },
-    { id: 6, name: "Sawah Indo", category: "Sawah & Traktor", hot: true, variants: "8 Item", image: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=400&q=80" },
+  // Auto-play Slider (Ganti slide sendiri tiap 4 detik)
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % banners.length);
+    }, 4000);
+    return () => clearInterval(timer);
+  }, [banners.length]);
+
+  // Game Products Catalog (Khas Takapedia Game Cards)
+  const products = [
+    {
+      id: 'robux',
+      name: 'Roblox (Robux Instant)',
+      publisher: 'Roblox Corporation',
+      category: 'robux',
+      badge: 'TERPOPULER',
+      rating: '4.9',
+      sold: '15.4k+',
+      image: 'https://images.unsplash.com/photo-1563089145-599997674d42?w=500&q=80',
+      items: [
+        { id: 1, name: '50 Robux', price: 8250, robux: 50 },
+        { id: 2, name: '100 Robux', price: 16500, robux: 100 },
+        { id: 3, name: '200 Robux', price: 33000, robux: 200 },
+        { id: 4, name: '400 Robux', price: 66000, robux: 400 },
+        { id: 5, name: '800 Robux', price: 132000, robux: 800 },
+        { id: 6, name: '1.000 Robux', price: 165000, robux: 1000 },
+        { id: 7, name: '1.700 Robux', price: 280500, robux: 1700 },
+        { id: 8, name: '2.000 Robux', price: 330000, robux: 2000 },
+        { id: 9, name: '4.500 Robux', price: 742500, robux: 4500 },
+        { id: 10, name: '10.000 Robux', price: 1650000, robux: 10000 },
+      ]
+    },
+    {
+      id: 'bloxfruits',
+      name: 'Blox Fruits',
+      publisher: 'Gamer Robot Inc',
+      category: 'gamepass',
+      badge: 'HOT',
+      rating: '4.9',
+      sold: '8.2k+',
+      image: 'https://images.unsplash.com/photo-1579373903781-fd5c0c30c4cd?w=500&q=80',
+      items: [
+        { id: 101, name: '2x Money Pass', price: 65000 },
+        { id: 102, name: '2x Mastery Pass', price: 65000 },
+        { id: 103, name: 'Fast Boats Pass', price: 45000 },
+        { id: 104, name: 'Dark Blade (Yoru)', price: 175000 },
+        { id: 105, name: 'Fruit Notifier', price: 350000 },
+        { id: 106, name: 'Permanent Leopard', price: 420000 },
+      ]
+    },
+    {
+      id: 'fishit',
+      name: 'Fish It Roblox',
+      publisher: 'Fish Simulator Studio',
+      category: 'gamepass',
+      badge: 'UPDATE',
+      rating: '4.8',
+      sold: '4.1k+',
+      image: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=500&q=80',
+      items: [
+        { id: 201, name: 'Mythic Rod Pass', price: 35000 },
+        { id: 202, name: 'VIP Boat Pass', price: 50000 },
+        { id: 203, name: '1.000.000 Coins', price: 25000 },
+        { id: 204, name: 'Auto Reel Pass', price: 45000 },
+      ]
+    },
+    {
+      id: 'cdid',
+      name: 'Car Driving Indonesia (CDID)',
+      publisher: 'Pengemudi Indonesia',
+      category: 'gamepass',
+      badge: 'TERLARIS',
+      rating: '4.9',
+      sold: '6.7k+',
+      image: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=500&q=80',
+      items: [
+        { id: 301, name: 'Custom Plate Pass', price: 30000 },
+        { id: 302, name: 'VIP Gamepass', price: 60000 },
+        { id: 303, name: 'Uang 100 Juta CDID', price: 45000 },
+        { id: 304, name: 'Supercar Garage Pass', price: 85000 },
+      ]
+    },
+    {
+      id: 'evade',
+      name: 'Evade Roblox',
+      publisher: 'Hexagon Development',
+      category: 'gamepass',
+      badge: 'EVENT',
+      rating: '4.7',
+      sold: '2.9k+',
+      image: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=500&q=80',
+      items: [
+        { id: 401, name: 'VIP Pass', price: 40000 },
+        { id: 402, name: 'Custom Boombox', price: 35000 },
+        { id: 403, name: '50.000 Tokens', price: 45000 },
+      ]
+    },
+    {
+      id: 'sawahoindo',
+      name: 'Sawah Indo Simulator',
+      publisher: 'Indo Developer',
+      category: 'gamepass',
+      badge: 'LOKAL',
+      rating: '4.8',
+      sold: '3.4k+',
+      image: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=500&q=80',
+      items: [
+        { id: 501, name: 'Traktor Turbo Pass', price: 20000 },
+        { id: 502, name: 'Lahan Sultan 10 Hektar', price: 50000 },
+        { id: 503, name: 'Pupuk Ajaib Instan', price: 15000 },
+      ]
+    }
   ];
 
   const paymentOptions = [
-    { id: 'qris', name: 'QRIS Realtime (Semua E-Wallet & Bank)', fee: 'Rp 0', badge: 'Instan', icon: QrCode },
-    { id: 'dana', name: 'DANA / GoPay / OVO / ShopeePay', fee: 'Rp 250', badge: 'Populer', icon: Wallet },
-    { id: 'va', name: 'Virtual Account (BCA, Mandiri, BRI, BNI)', fee: 'Rp 1.000', badge: 'Otomatis', icon: CreditCard },
+    { id: 'qris', name: 'QRIS Realtime (BCA, Mandiri, DANA, GoPay, OVO)', fee: 0, icon: QrCode, badge: 'Instan Otomatis' },
+    { id: 'dana', name: 'DANA / GoPay / ShopeePay Langsung', fee: 500, icon: Wallet, badge: 'Favorit' },
+    { id: 'va', name: 'Virtual Account Bank Transfer (BCA, BNI, BRI)', fee: 1000, icon: CreditCard, badge: 'Dicek Otomatis' },
   ];
 
-  const handleCheckout = (e: React.FormEvent) => {
+  // Buka Pop Up Detail
+  const handleOpenProduct = (product: any) => {
+    setSelectedProduct(product);
+    setSelectedItem(product.items[0]);
+    setUsername('');
+    setWhatsapp('');
+    setPaymentMethod('qris');
+  };
+
+  // Submit Order -> Munculkan Pop Up Konfirmasi
+  const handleOrderSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!username) {
-      alert('Silakan masukkan Username Roblox kamu!');
+      alert('Silakan masukkan Username / Data Akun kamu!');
       return;
     }
     if (!whatsapp) {
-      alert('Silakan masukkan nomor WhatsApp untuk konfirmasi pesanan!');
+      alert('Silakan masukkan Nomor WhatsApp yang aktif!');
       return;
     }
-    const invoiceId = '444-' + Math.floor(100000 + Math.random() * 900000);
-    alert(`Pesanan Berhasil Dibuat!\nInvoice: ${invoiceId}\nNominal: ${robuxAmount} Robux\nTotal: Rp ${totalPrice.toLocaleString('id-ID')}\nMetode: ${paymentMethod.toUpperCase()}\n\nHubungi Admin dengan Nomor Invoice untuk menyelesaikan!`);
-  };
+    const invCode = '444-' + Math.floor(100000 + Math.random() * 900000);
+    const selectedPay = paymentOptions.find(p => p.id === paymentMethod);
+    const total = (selectedItem?.price || 0) + (selectedPay?.fee || 0);
 
-  const handleTrackInvoice = () => {
-    if (!invoiceSearch) return;
-    setTrackResult({
-      invoice: invoiceSearch,
-      status: 'SUCCESS',
-      item: 'Robux Via Username (400 Robux)',
-      target: '444rapz',
-      date: 'Baru saja',
-      total: 'Rp 66.000'
+    setCreatedInvoice({
+      code: invCode,
+      product: selectedProduct.name,
+      variant: selectedItem.name,
+      username: username,
+      whatsapp: whatsapp,
+      method: selectedPay?.name,
+      fee: selectedPay?.fee,
+      total: total,
+      time: new Date().toLocaleTimeString('id-ID')
     });
+    setShowConfirmModal(true);
   };
 
   return (
-    <div className="min-h-screen bg-[#07090e] text-slate-100 selection:bg-[#85effe] selection:text-black">
-      {/* Top Banner Flash Info */}
-      <div className="bg-gradient-to-r from-[#0d1527] via-[#091829] to-[#0d1527] border-b border-[#85effe]/20 text-xs py-2 px-4 text-center flex items-center justify-center gap-2">
-        <span className="flex h-2 w-2 rounded-full bg-[#85effe] animate-ping" />
-        <span className="text-[#85effe] font-semibold">FLASH SALE:</span> 
-        <span className="text-slate-300">Rate Robux termurah mulai Rp 155/R$! Pengiriman otomatis di bawah 1 menit.</span>
-      </div>
-
-      {/* Modern Takapedia-Inspired Navbar */}
-      <header className="sticky top-0 z-50 bg-[#07090e]/85 backdrop-blur-md border-b border-slate-800/80 px-4 lg:px-8 py-3.5">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-3 cursor-pointer" onClick={() => setActiveTab('order')}>
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#85effe] to-[#0ea5e9] p-0.5 flex items-center justify-center shadow-neon">
-              <div className="w-full h-full bg-[#080c14] rounded-[10px] flex items-center justify-center">
-                <span className="text-lg font-black tracking-tighter text-[#85effe]">444</span>
+    <div className="min-h-screen bg-[#06080d] text-slate-100 font-['Plus_Jakarta_Sans',sans-serif] selection:bg-[#85effe] selection:text-black">
+      
+      {/* 1. Header Navigation Bar (Takapedia Style) */}
+      <header className="sticky top-0 z-40 bg-[#070b13]/95 backdrop-blur-md border-b border-slate-800/80 px-4 lg:px-8 py-3.5">
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
+          
+          {/* Logo Toko */}
+          <div className="flex items-center gap-3 cursor-pointer" onClick={() => setSelectedProduct(null)}>
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#85effe] to-[#0ea5e9] p-[1.5px] shadow-[0_0_20px_rgba(133,239,254,0.35)]">
+              <div className="w-full h-full bg-[#070b13] rounded-[10px] flex items-center justify-center">
+                <span className="text-xl font-black text-[#85effe] tracking-tighter">444</span>
               </div>
             </div>
             <div>
-              <span className="text-xl font-extrabold tracking-tight text-white flex items-center gap-1">
-                444<span className="text-[#85effe]">STORE</span>
-              </span>
-              <p className="text-[10px] text-slate-400 font-medium tracking-wider">ROBLOX & GAME SERVICES</p>
+              <div className="text-xl font-black tracking-tight text-white flex items-center">
+                444<span className="text-[#85effe] ml-0.5">STORE</span>
+              </div>
+              <span className="text-[10px] text-slate-400 font-medium tracking-wider block -mt-1">TAKAPEDIA OFFICIAL STYLE</span>
             </div>
           </div>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-1 bg-[#0f1422] p-1.5 rounded-full border border-slate-800">
-            <button 
-              onClick={() => setActiveTab('order')}
-              className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all ${
-                activeTab === 'order' 
-                  ? 'bg-[#85effe] text-black shadow-neon' 
-                  : 'text-slate-300 hover:text-white'
-              }`}
-            >
-              Order Robux
-            </button>
-            <button 
-              onClick={() => setActiveTab('home')}
-              className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all ${
-                activeTab === 'home' 
-                  ? 'bg-[#85effe] text-black shadow-neon' 
-                  : 'text-slate-300 hover:text-white'
-              }`}
-            >
-              Katalog Game
-            </button>
-            <button 
-              onClick={() => setActiveTab('track')}
-              className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all ${
-                activeTab === 'track' 
-                  ? 'bg-[#85effe] text-black shadow-neon' 
-                  : 'text-slate-300 hover:text-white'
-              }`}
-            >
-              Lacak Pesanan
-            </button>
-            <button 
-              onClick={() => setActiveTab('reviews')}
-              className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all ${
-                activeTab === 'reviews' 
-                  ? 'bg-[#85effe] text-black shadow-neon' 
-                  : 'text-slate-300 hover:text-white'
-              }`}
-            >
-              Testimoni
-            </button>
-          </nav>
+          {/* Search Bar Tengah (Takapedia Style) */}
+          <div className="hidden md:flex flex-1 max-w-md relative">
+            <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+            <input 
+              type="text" 
+              placeholder="Cari game favorit (Roblox, Blox Fruits, CDID...)"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full bg-[#0c1322] border border-slate-800 rounded-full pl-10 pr-4 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-[#85effe] transition shadow-inner"
+            />
+          </div>
 
-          {/* Action buttons */}
-          <div className="hidden sm:flex items-center gap-3">
+          {/* Navigasi Kanan */}
+          <div className="flex items-center gap-2.5">
+            <button 
+              onClick={() => handleOpenProduct(products[0])}
+              className="text-xs font-bold px-4 py-2 rounded-xl bg-[#85effe] hover:bg-[#a5f4ff] text-black shadow-[0_0_15px_rgba(133,239,254,0.35)] transition flex items-center gap-1.5"
+            >
+              <Zap className="w-3.5 h-3.5 fill-black" />
+              Top Up Robux
+            </button>
             <a 
               href="https://wa.me/6281234567890" 
               target="_blank" 
               rel="noreferrer"
-              className="text-xs font-bold px-4 py-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-200 border border-slate-700/60 transition"
+              className="text-xs font-semibold px-3 py-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700 flex items-center gap-1.5 transition"
             >
-              Bantuan CS
+              <Headphones className="w-3.5 h-3.5 text-[#85effe]" />
+              <span className="hidden sm:inline">CS 24 Jam</span>
             </a>
-            <button 
-              onClick={() => setActiveTab('order')}
-              className="text-xs font-bold px-4 py-2 rounded-xl bg-[#85effe] hover:bg-[#a5f4ff] text-black shadow-neon transition flex items-center gap-1.5"
-            >
-              <Zap className="w-3.5 h-3.5 fill-black" />
-              Top Up Sekarang
-            </button>
           </div>
 
-          {/* Mobile menu button */}
-          <button 
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="md:hidden p-2 rounded-lg bg-slate-800 text-slate-200"
-          >
-            {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-          </button>
         </div>
-
-        {/* Mobile Dropdown */}
-        {isMenuOpen && (
-          <div className="md:hidden mt-3 pt-3 border-t border-slate-800 flex flex-col gap-2">
-            <button 
-              onClick={() => { setActiveTab('order'); setIsMenuOpen(false); }}
-              className="text-left px-3 py-2 text-sm font-semibold rounded-lg bg-slate-800/50 text-[#85effe]"
-            >
-              Order Robux
-            </button>
-            <button 
-              onClick={() => { setActiveTab('home'); setIsMenuOpen(false); }}
-              className="text-left px-3 py-2 text-sm font-semibold rounded-lg text-slate-300"
-            >
-              Katalog Game & Gamepass
-            </button>
-            <button 
-              onClick={() => { setActiveTab('track'); setIsMenuOpen(false); }}
-              className="text-left px-3 py-2 text-sm font-semibold rounded-lg text-slate-300"
-            >
-              Lacak Pesanan
-            </button>
-            <button 
-              onClick={() => { setActiveTab('reviews'); setIsMenuOpen(false); }}
-              className="text-left px-3 py-2 text-sm font-semibold rounded-lg text-slate-300"
-            >
-              Testimoni
-            </button>
-          </div>
-        )}
       </header>
 
-      {/* Main Content Area */}
-      <main className="max-w-7xl mx-auto px-4 lg:px-8 py-8">
+      {/* Main Container */}
+      <main className="max-w-7xl mx-auto px-4 lg:px-8 py-6 space-y-8">
         
-        {/* TAB 1: ORDER ROBUX (TAKAPEDIA LAYOUT STYLE) */}
-        {activeTab === 'order' && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            
-            {/* Left Column: Flow Pengisian (8 Cols) */}
-            <div className="lg:col-span-8 space-y-6">
-              
-              {/* Product Header Card */}
-              <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#0c1220] to-[#0f172a] p-6 border border-slate-800 shadow-xl">
-                <div className="absolute -top-12 -right-12 w-48 h-48 bg-[#85effe]/10 rounded-full blur-3xl pointer-events-none" />
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                  <div className="flex items-center gap-4">
-                    <div className="w-16 h-16 rounded-2xl bg-[#141d30] border border-[#85effe]/40 flex items-center justify-center p-2 shadow-neon">
-                      <div className="text-2xl font-black text-[#85effe]">R$</div>
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#85effe]/15 text-[#85effe] border border-[#85effe]/30">
-                          PROSES KILAT 24 JAM
-                        </span>
-                        <span className="text-xs text-slate-400 flex items-center gap-1">
-                          <Star className="w-3 h-3 fill-amber-400 text-amber-400" /> 4.9 (1.8k+ Ulasan)
-                        </span>
-                      </div>
-                      <h1 className="text-2xl font-extrabold text-white mt-1">Robux Instant Transfer</h1>
-                      <p className="text-xs text-slate-400">Jaminan legal, aman tanpa resiko banned. Sistem transfer resmi.</p>
-                    </div>
-                  </div>
+        {/* 2. AUTO-PLAY CAROUSEL SLIDER (Gambar Slide Sendiri Takapedia Style) */}
+        <section className="relative overflow-hidden rounded-3xl border border-slate-800 shadow-2xl">
+          <div 
+            className="flex transition-transform duration-700 ease-out"
+            style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+          >
+            {banners.map((slide) => (
+              <div 
+                key={slide.id}
+                className="w-full flex-shrink-0 relative aspect-[21/9] sm:aspect-[24/8] min-h-[220px] sm:min-h-[280px] flex items-center overflow-hidden"
+              >
+                {/* Background Image with Dark Vignette */}
+                <img 
+                  src={slide.image} 
+                  alt={slide.title}
+                  className="absolute inset-0 w-full h-full object-cover opacity-35 scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-r from-[#070b13] via-[#070b13]/85 to-transparent" />
 
-                  {/* Switch Mode: Username vs Login */}
-                  <div className="flex p-1 bg-[#090d16] rounded-xl border border-slate-800">
-                    <button
-                      onClick={() => setOrderType('username')}
-                      className={`px-3 py-1.5 text-xs font-bold rounded-lg transition ${
-                        orderType === 'username' 
-                          ? 'bg-[#85effe] text-black shadow-neon' 
-                          : 'text-slate-400 hover:text-white'
-                      }`}
+                {/* Banner Content */}
+                <div className="relative z-10 px-6 sm:px-12 max-w-2xl space-y-3">
+                  <span className="inline-block px-3 py-1 rounded-full text-[10px] sm:text-xs font-black tracking-wider bg-[#85effe] text-black shadow-[0_0_12px_rgba(133,239,254,0.4)]">
+                    {slide.tag}
+                  </span>
+                  <h2 className="text-xl sm:text-3xl lg:text-4xl font-extrabold text-white leading-tight">
+                    {slide.title}
+                  </h2>
+                  <p className="text-xs sm:text-sm text-slate-300 font-medium">
+                    {slide.subtitle}
+                  </p>
+                  <div className="pt-2">
+                    <button 
+                      onClick={() => handleOpenProduct(products[0])}
+                      className="px-5 py-2.5 rounded-xl bg-[#85effe] hover:bg-[#a5f4ff] text-black text-xs font-extrabold shadow-[0_0_20px_rgba(133,239,254,0.4)] transition flex items-center gap-1.5"
                     >
-                      Via Username
-                    </button>
-                    <button
-                      onClick={() => setOrderType('login')}
-                      className={`px-3 py-1.5 text-xs font-bold rounded-lg transition ${
-                        orderType === 'login' 
-                          ? 'bg-[#85effe] text-black shadow-neon' 
-                          : 'text-slate-400 hover:text-white'
-                      }`}
-                    >
-                      Via Login (Lebih Murah)
+                      Beli Sekarang <ChevronRight className="w-4 h-4" />
                     </button>
                   </div>
                 </div>
               </div>
+            ))}
+          </div>
 
-              {/* STEP 1: Masukkan Data Akun */}
-              <div className="rounded-2xl bg-[#0c1220] p-6 border border-slate-800/80 shadow-lg">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-7 h-7 rounded-lg bg-[#85effe]/20 text-[#85effe] font-bold flex items-center justify-center text-sm">
-                    1
+          {/* Slider Controls (Prev / Next Buttons) */}
+          <button 
+            onClick={() => setCurrentSlide((prev) => (prev === 0 ? banners.length - 1 : prev - 1))}
+            className="absolute left-4 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/60 hover:bg-black/90 text-white flex items-center justify-center border border-slate-700/80 transition backdrop-blur-sm"
+          >
+            <ChevronLeft className="w-5 h-5" />
+          </button>
+          <button 
+            onClick={() => setCurrentSlide((prev) => (prev + 1) % banners.length)}
+            className="absolute right-4 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/60 hover:bg-black/90 text-white flex items-center justify-center border border-slate-700/80 transition backdrop-blur-sm"
+          >
+            <ChevronRight className="w-5 h-5" />
+          </button>
+
+          {/* Dots Indicator */}
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2">
+            {banners.map((_, i) => (
+              <button 
+                key={i} 
+                onClick={() => setCurrentSlide(i)}
+                className={`h-1.5 rounded-full transition-all ${
+                  currentSlide === i ? 'w-6 bg-[#85effe] shadow-[0_0_8px_#85effe]' : 'w-2 bg-slate-600'
+                }`}
+              />
+            ))}
+          </div>
+        </section>
+
+        {/* 3. TABS KATEGORI (Takapedia Style) */}
+        <section className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-4">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setActiveTab('all')}
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
+                activeTab === 'all' 
+                  ? 'bg-[#85effe] text-black shadow-[0_0_15px_rgba(133,239,254,0.35)]' 
+                  : 'bg-[#0e1422] text-slate-300 hover:text-white border border-slate-800'
+              }`}
+            >
+              <ShoppingBag className="w-3.5 h-3.5" /> Semua Game
+            </button>
+            <button
+              onClick={() => setActiveTab('robux')}
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
+                activeTab === 'robux' 
+                  ? 'bg-[#85effe] text-black shadow-[0_0_15px_rgba(133,239,254,0.35)]' 
+                  : 'bg-[#0e1422] text-slate-300 hover:text-white border border-slate-800'
+              }`}
+            >
+              <Zap className="w-3.5 h-3.5" /> Robux Instan
+            </button>
+            <button
+              onClick={() => setActiveTab('gamepass')}
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
+                activeTab === 'gamepass' 
+                  ? 'bg-[#85effe] text-black shadow-[0_0_15px_rgba(133,239,254,0.35)]' 
+                  : 'bg-[#0e1422] text-slate-300 hover:text-white border border-slate-800'
+              }`}
+            >
+              <Flame className="w-3.5 h-3.5" /> Item & Gamepass
+            </button>
+          </div>
+
+          <div className="text-xs text-slate-400 flex items-center gap-1 font-medium">
+            <ShieldCheck className="w-4 h-4 text-[#85effe]" />
+            Garansi 100% Legal & Terpercaya
+          </div>
+        </section>
+
+        {/* 4. GRID PRODUK GAME (Mirip Takapedia: Kartu Berfoto Jelas & Label Rapi) */}
+        <section className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-bold text-white flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#85effe] animate-pulse" />
+              Pilih Layanan Top Up
+            </h3>
+            <span className="text-xs text-slate-400">{products.length} Game Tersedia</span>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+            {products
+              .filter(p => activeTab === 'all' || p.category === activeTab)
+              .filter(p => p.name.toLowerCase().includes(searchQuery.toLowerCase()))
+              .map((product) => (
+                <div 
+                  key={product.id}
+                  onClick={() => handleOpenProduct(product)}
+                  className="group relative rounded-2xl bg-[#0c1322] border border-slate-800/80 hover:border-[#85effe] transition-all duration-300 p-2.5 flex flex-col justify-between cursor-pointer hover:-translate-y-1.5 hover:shadow-[0_8px_25px_rgba(133,239,254,0.15)]"
+                >
+                  {/* Card Thumbnail */}
+                  <div className="relative aspect-[4/5] w-full rounded-xl overflow-hidden mb-2.5 bg-slate-900">
+                    <img 
+                      src={product.image} 
+                      alt={product.name}
+                      className="w-full h-full object-cover group-hover:scale-105 transition duration-500" 
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20" />
+                    
+                    {/* Badge Pojok Kiri */}
+                    <span className="absolute top-2 left-2 px-2 py-0.5 rounded-md bg-[#85effe] text-black font-black text-[9px] shadow">
+                      {product.badge}
+                    </span>
+
+                    {/* Rating Bawah */}
+                    <div className="absolute bottom-2 left-2 flex items-center gap-1 text-[10px] text-white font-semibold">
+                      <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
+                      <span>{product.rating}</span>
+                      <span className="text-slate-400 text-[9px]">({product.sold})</span>
+                    </div>
                   </div>
-                  <h2 className="text-base font-bold text-white">Masukkan Informasi Akun</h2>
+
+                  {/* Title & Info */}
+                  <div className="space-y-1 px-1">
+                    <h4 className="font-bold text-xs text-white group-hover:text-[#85effe] transition line-clamp-1">
+                      {product.name}
+                    </h4>
+                    <p className="text-[10px] text-slate-400 line-clamp-1">{product.publisher}</p>
+                    
+                    <div className="pt-2 border-t border-slate-800/80 flex items-center justify-between text-[11px]">
+                      <span className="text-[#85effe] font-bold">Mulai Rp 8.250</span>
+                      <ChevronRight className="w-3.5 h-3.5 text-slate-500 group-hover:text-[#85effe] group-hover:translate-x-0.5 transition" />
+                    </div>
+                  </div>
                 </div>
+              ))}
+          </div>
+        </section>
+
+      </main>
+
+      {/* 5. MODAL POP-UP DETAIL PEMBELIAN (Takapedia Style Stepper Form) */}
+      {selectedProduct && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
+          <div className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-3xl bg-[#090e1a] border border-slate-800 shadow-2xl p-6 lg:p-8 space-y-6">
+            
+            {/* Modal Header */}
+            <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+              <div className="flex items-center gap-3">
+                <img 
+                  src={selectedProduct.image} 
+                  alt={selectedProduct.name} 
+                  className="w-12 h-12 rounded-xl object-cover border border-[#85effe]/40 shadow-[0_0_10px_rgba(133,239,254,0.25)]"
+                />
+                <div>
+                  <h3 className="text-lg font-black text-white">{selectedProduct.name}</h3>
+                  <p className="text-xs text-slate-400">Pilih nominal & selesaikan pembayaran dengan proses instan.</p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setSelectedProduct(null)}
+                className="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center transition"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Stepper Form */}
+            <form onSubmit={handleOrderSubmit} className="space-y-6">
+              
+              {/* STEP 1: Masukkan Data Akun */}
+              <div className="p-4 sm:p-5 rounded-2xl bg-[#0d1424] border border-slate-800/80 space-y-3">
+                <div className="flex items-center gap-2 text-sm font-bold text-white">
+                  <span className="w-6 h-6 rounded-lg bg-[#85effe] text-black flex items-center justify-center text-xs font-black">1</span>
+                  Masukkan Data Akun
+                </div>
+
+                {selectedProduct.id === 'robux' && (
+                  <div className="flex gap-2 pb-2">
+                    <button
+                      type="button"
+                      onClick={() => setOrderType('username')}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${
+                        orderType === 'username' 
+                          ? 'bg-[#85effe] text-black shadow-[0_0_10px_rgba(133,239,254,0.3)]' 
+                          : 'bg-[#080c14] text-slate-400 hover:text-white border border-slate-800'
+                      }`}
+                    >
+                      Via Username (Tanpa Password)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setOrderType('login')}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${
+                        orderType === 'login' 
+                          ? 'bg-[#85effe] text-black shadow-[0_0_10px_rgba(133,239,254,0.3)]' 
+                          : 'bg-[#080c14] text-slate-400 hover:text-white border border-slate-800'
+                      }`}
+                    >
+                      Via Login (Super Murah)
+                    </button>
+                  </div>
+                )}
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                    <label className="block text-xs font-semibold text-slate-300 mb-1">
                       Username Roblox <span className="text-[#85effe]">*</span>
                     </label>
                     <input 
                       type="text" 
-                      placeholder="Contoh: 444rapz (Bukan Display Name)"
+                      placeholder="Contoh: 444rapz"
                       value={username}
                       onChange={(e) => setUsername(e.target.value)}
-                      className="w-full bg-[#07090e] border border-slate-700/80 rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#85effe] transition"
+                      className="w-full bg-[#070b13] border border-slate-700/80 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-[#85effe]"
+                      required
                     />
-                    <p className="text-[10px] text-slate-500 mt-1">Pastikan username sudah terdaftar dan bukan akun private.</p>
                   </div>
-
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                    <label className="block text-xs font-semibold text-slate-300 mb-1">
                       Nomor WhatsApp <span className="text-[#85effe]">*</span>
                     </label>
                     <input 
@@ -298,411 +546,184 @@ export default function App() {
                       placeholder="Contoh: 081234567890"
                       value={whatsapp}
                       onChange={(e) => setWhatsapp(e.target.value)}
-                      className="w-full bg-[#07090e] border border-slate-700/80 rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#85effe] transition"
+                      className="w-full bg-[#070b13] border border-slate-700/80 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-[#85effe]"
+                      required
                     />
-                    <p className="text-[10px] text-slate-500 mt-1">Bukti transfer & notifikasi sukses akan dikirim via WA.</p>
                   </div>
                 </div>
               </div>
 
-              {/* STEP 2: Pilih Nominal Robux (Interactive Grid + Custom Input) */}
-              <div className="rounded-2xl bg-[#0c1220] p-6 border border-slate-800/80 shadow-lg">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-7 h-7 rounded-lg bg-[#85effe]/20 text-[#85effe] font-bold flex items-center justify-center text-sm">
-                      2
-                    </div>
-                    <h2 className="text-base font-bold text-white">Pilih Nominal Robux</h2>
-                  </div>
-                  <span className="text-xs text-[#85effe] font-semibold bg-[#85effe]/10 px-2.5 py-1 rounded-md border border-[#85effe]/20">
-                    Rate: Rp {RATE_PER_ROBUX}/R$
-                  </span>
+              {/* STEP 2: Pilih Nominal Produk */}
+              <div className="p-4 sm:p-5 rounded-2xl bg-[#0d1424] border border-slate-800/80 space-y-3">
+                <div className="flex items-center gap-2 text-sm font-bold text-white">
+                  <span className="w-6 h-6 rounded-lg bg-[#85effe] text-black flex items-center justify-center text-xs font-black">2</span>
+                  Pilih Layanan / Nominal
                 </div>
 
-                {/* Quick Selection Buttons */}
-                <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-6">
-                  {quickNominals.map((nom) => (
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+                  {selectedProduct.items.map((item: any) => (
                     <button
-                      key={nom}
+                      key={item.id}
                       type="button"
-                      onClick={() => setRobuxAmount(nom)}
-                      className={`p-3 rounded-xl border text-left transition relative overflow-hidden group ${
-                        robuxAmount === nom 
-                          ? 'border-[#85effe] bg-[#85effe]/10 shadow-neon' 
-                          : 'border-slate-800 bg-[#07090e] hover:border-slate-700'
+                      onClick={() => setSelectedItem(item)}
+                      className={`p-3 rounded-xl border text-left transition relative ${
+                        selectedItem?.id === item.id 
+                          ? 'border-[#85effe] bg-[#85effe]/15 shadow-[0_0_15px_rgba(133,239,254,0.3)]' 
+                          : 'border-slate-800 bg-[#070b13] hover:border-slate-700'
                       }`}
                     >
-                      <div className="text-xs text-slate-400 font-medium">Robux</div>
-                      <div className="text-lg font-black text-white group-hover:text-[#85effe] transition">
-                        {nom.toLocaleString('id-ID')} R$
+                      <div className="text-xs font-bold text-white line-clamp-1">{item.name}</div>
+                      <div className="text-xs font-extrabold text-[#85effe] mt-1.5">
+                        Rp {item.price.toLocaleString('id-ID')}
                       </div>
-                      <div className="text-xs font-semibold text-[#85effe] mt-1">
-                        Rp {(nom * RATE_PER_ROBUX).toLocaleString('id-ID')}
-                      </div>
+                      {selectedItem?.id === item.id && (
+                        <div className="absolute top-2 right-2 w-2 h-2 rounded-full bg-[#85effe] shadow-[0_0_6px_#85effe]" />
+                      )}
                     </button>
                   ))}
-                </div>
-
-                {/* Custom Amount Slider */}
-                <div className="p-4 rounded-xl bg-[#07090e] border border-slate-800">
-                  <div className="flex items-center justify-between text-xs mb-2">
-                    <span className="text-slate-300 font-semibold">Atau Masukkan Jumlah Custom:</span>
-                    <span className="font-bold text-[#85effe] text-sm">{robuxAmount} Robux</span>
-                  </div>
-                  <input 
-                    type="range" 
-                    min={20} 
-                    max={5000} 
-                    step={10}
-                    value={robuxAmount}
-                    onChange={(e) => setRobuxAmount(Number(e.target.value))}
-                    className="w-full accent-[#85effe] h-2 bg-slate-800 rounded-lg cursor-pointer"
-                  />
-                  <div className="flex justify-between text-[10px] text-slate-500 mt-1">
-                    <span>Min: 20 R$</span>
-                    <span>Max: 5.000 R$</span>
-                  </div>
                 </div>
               </div>
 
               {/* STEP 3: Pilih Metode Pembayaran */}
-              <div className="rounded-2xl bg-[#0c1220] p-6 border border-slate-800/80 shadow-lg">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-7 h-7 rounded-lg bg-[#85effe]/20 text-[#85effe] font-bold flex items-center justify-center text-sm">
-                    3
-                  </div>
-                  <h2 className="text-base font-bold text-white">Pilih Metode Pembayaran</h2>
+              <div className="p-4 sm:p-5 rounded-2xl bg-[#0d1424] border border-slate-800/80 space-y-3">
+                <div className="flex items-center gap-2 text-sm font-bold text-white">
+                  <span className="w-6 h-6 rounded-lg bg-[#85effe] text-black flex items-center justify-center text-xs font-black">3</span>
+                  Pilih Metode Pembayaran
                 </div>
 
-                <div className="space-y-3">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   {paymentOptions.map((opt) => {
-                    const IconComponent = opt.icon;
+                    const IconComp = opt.icon;
                     return (
-                      <label 
+                      <div 
                         key={opt.id}
                         onClick={() => setPaymentMethod(opt.id)}
-                        className={`flex items-center justify-between p-4 rounded-xl border cursor-pointer transition ${
+                        className={`p-3.5 rounded-xl border cursor-pointer transition flex items-center justify-between ${
                           paymentMethod === opt.id 
-                            ? 'border-[#85effe] bg-[#85effe]/10 shadow-neon' 
-                            : 'border-slate-800 bg-[#07090e] hover:border-slate-700'
+                            ? 'border-[#85effe] bg-[#85effe]/15 shadow-[0_0_15px_rgba(133,239,254,0.3)]' 
+                            : 'border-slate-800 bg-[#070b13] hover:border-slate-700'
                         }`}
                       >
-                        <div className="flex items-center gap-3.5">
-                          <div className={`p-2.5 rounded-lg ${paymentMethod === opt.id ? 'bg-[#85effe] text-black' : 'bg-slate-800 text-slate-300'}`}>
-                            <IconComponent className="w-5 h-5" />
-                          </div>
+                        <div className="flex items-center gap-3">
+                          <IconComp className={`w-5 h-5 ${paymentMethod === opt.id ? 'text-[#85effe]' : 'text-slate-400'}`} />
                           <div>
-                            <div className="text-sm font-bold text-white flex items-center gap-2">
-                              {opt.name}
-                              <span className="text-[10px] font-semibold px-2 py-0.5 rounded bg-slate-800 text-[#85effe] border border-slate-700">
-                                {opt.badge}
-                              </span>
-                            </div>
-                            <div className="text-xs text-slate-400">Biaya Admin: {opt.fee}</div>
+                            <div className="text-xs font-bold text-white">{opt.name.split('(')[0]}</div>
+                            <div className="text-[10px] text-slate-400">Biaya: Rp {opt.fee.toLocaleString('id-ID')}</div>
                           </div>
                         </div>
-
-                        <div className="text-right">
-                          <div className="text-sm font-extrabold text-white">
-                            Rp {totalPrice.toLocaleString('id-ID')}
-                          </div>
-                          <div className="text-[10px] text-emerald-400 flex items-center gap-1 justify-end">
-                            <CheckCircle2 className="w-3 h-3" /> Verifikasi Otomatis
-                          </div>
-                        </div>
-                      </label>
+                      </div>
                     );
                   })}
                 </div>
               </div>
 
-            </div>
-
-            {/* Right Column: Sticky Summary Box (4 Cols) */}
-            <div className="lg:col-span-4">
-              <div className="sticky top-24 rounded-2xl bg-gradient-to-b from-[#0e1526] to-[#0a0f1d] p-6 border border-[#85effe]/30 shadow-2xl space-y-5">
-                <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-                  <h3 className="font-bold text-base text-white">Ringkasan Pesanan</h3>
-                  <span className="text-xs px-2 py-0.5 rounded bg-[#85effe]/20 text-[#85effe] font-semibold">
-                    Invoice Draft
+              {/* Sticky Bottom Actions */}
+              <div className="pt-4 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div>
+                  <span className="text-xs text-slate-400 block">Total Pembayaran:</span>
+                  <span className="text-2xl font-black text-[#85effe]">
+                    Rp {((selectedItem?.price || 0) + (paymentOptions.find(p => p.id === paymentMethod)?.fee || 0)).toLocaleString('id-ID')}
                   </span>
                 </div>
 
-                <div className="space-y-3 text-xs">
-                  <div className="flex justify-between text-slate-400">
-                    <span>Layanan:</span>
-                    <span className="font-semibold text-white">Robux {orderType === 'username' ? 'Via Username' : 'Via Login'}</span>
-                  </div>
-                  <div className="flex justify-between text-slate-400">
-                    <span>Target Akun:</span>
-                    <span className="font-semibold text-[#85effe]">{username || '-'}</span>
-                  </div>
-                  <div className="flex justify-between text-slate-400">
-                    <span>Jumlah Robux:</span>
-                    <span className="font-bold text-white text-sm">{robuxAmount.toLocaleString('id-ID')} R$</span>
-                  </div>
-                  <div className="flex justify-between text-slate-400">
-                    <span>Metode Bayar:</span>
-                    <span className="font-semibold text-white uppercase">{paymentMethod}</span>
-                  </div>
-                  
-                  <div className="pt-3 border-t border-slate-800/80 flex justify-between items-baseline">
-                    <span className="text-sm font-bold text-slate-300">Total Tagihan:</span>
-                    <span className="text-2xl font-black text-[#85effe]">
-                      Rp {totalPrice.toLocaleString('id-ID')}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Checkout Trigger */}
-                <button
-                  type="button"
-                  onClick={handleCheckout}
-                  className="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#85effe] to-[#38d2e8] hover:from-[#a5f4ff] hover:to-[#5de0f2] text-black font-extrabold text-sm tracking-wide shadow-neon-strong transition flex items-center justify-center gap-2 group"
-                >
-                  <span>Beli Sekarang</span>
-                  <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition" />
-                </button>
-
-                {/* Trust Badges */}
-                <div className="pt-2 grid grid-cols-2 gap-2 text-[10px] text-slate-400">
-                  <div className="flex items-center gap-1.5 p-2 rounded-lg bg-[#07090e] border border-slate-800/80">
-                    <ShieldCheck className="w-3.5 h-3.5 text-[#85effe]" />
-                    <span>Garansi 100% Aman</span>
-                  </div>
-                  <div className="flex items-center gap-1.5 p-2 rounded-lg bg-[#07090e] border border-slate-800/80">
-                    <Clock className="w-3.5 h-3.5 text-[#85effe]" />
-                    <span>Proses &lt; 1 Menit</span>
-                  </div>
-                </div>
-
-              </div>
-            </div>
-
-          </div>
-        )}
-
-        {/* TAB 2: KATALOG GAME & GAMEPASS (GRID TAKAPEDIA STYLE) */}
-        {activeTab === 'home' && (
-          <div className="space-y-8">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-              <div>
-                <h1 className="text-2xl font-black text-white flex items-center gap-2">
-                  Katalog Item & Gamepass Roblox <Flame className="w-6 h-6 text-orange-400 fill-orange-400" />
-                </h1>
-                <p className="text-xs text-slate-400 mt-1">Pilih game favoritmu dan dapatkan gamepass eksklusif dengan proses kilat.</p>
-              </div>
-
-              {/* Search Bar */}
-              <div className="relative w-full md:w-72">
-                <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
-                <input 
-                  type="text" 
-                  placeholder="Cari nama game..."
-                  value={searchGame}
-                  onChange={(e) => setSearchGame(e.target.value)}
-                  className="w-full bg-[#0f1422] border border-slate-800 rounded-xl pl-10 pr-4 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-[#85effe] transition"
-                />
-              </div>
-            </div>
-
-            {/* Games Grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-              {gameItems
-                .filter(g => g.name.toLowerCase().includes(searchGame.toLowerCase()))
-                .map((game) => (
-                  <div 
-                    key={game.id}
-                    onClick={() => setActiveTab('order')}
-                    className="group relative rounded-2xl bg-[#0c1220] border border-slate-800/80 hover:border-[#85effe]/60 transition-all duration-300 p-3 flex flex-col justify-between cursor-pointer hover:-translate-y-1 shadow-lg"
+                <div className="flex gap-2 w-full sm:w-auto">
+                  <button
+                    type="button"
+                    onClick={() => setSelectedProduct(null)}
+                    className="px-5 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold transition"
                   >
-                    <div className="relative aspect-square w-full rounded-xl overflow-hidden mb-3 bg-slate-900">
-                      <img 
-                        src={game.image} 
-                        alt={game.name} 
-                        className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
-                      />
-                      {game.hot && (
-                        <span className="absolute top-2 left-2 bg-gradient-to-r from-red-600 to-orange-500 text-white font-black text-[9px] px-2 py-0.5 rounded-full shadow">
-                          HOT
-                        </span>
-                      )}
-                    </div>
-
-                    <div>
-                      <span className="text-[10px] text-slate-500 font-medium block">{game.category}</span>
-                      <h3 className="font-bold text-sm text-white group-hover:text-[#85effe] transition truncate">
-                        {game.name}
-                      </h3>
-                      <div className="mt-2 pt-2 border-t border-slate-800 flex items-center justify-between text-[11px]">
-                        <span className="text-[#85effe] font-semibold">{game.variants}</span>
-                        <ChevronRight className="w-3.5 h-3.5 text-slate-500 group-hover:translate-x-1 group-hover:text-[#85effe] transition" />
-                      </div>
-                    </div>
-                  </div>
-                ))}
-            </div>
-          </div>
-        )}
-
-        {/* TAB 3: LACAK PESANAN (TRACK INVOICE) */}
-        {activeTab === 'track' && (
-          <div className="max-w-2xl mx-auto py-10 space-y-6">
-            <div className="text-center space-y-2">
-              <h1 className="text-2xl font-extrabold text-white">Lacak Status Pesanan</h1>
-              <p className="text-xs text-slate-400">Masukkan kode Invoice transaksi kamu untuk memantau status pengiriman.</p>
-            </div>
-
-            <div className="rounded-2xl bg-[#0c1220] p-6 border border-slate-800 shadow-xl">
-              <div className="flex gap-2">
-                <input 
-                  type="text" 
-                  placeholder="Masukkan nomor invoice (contoh: 444-123456)"
-                  value={invoiceSearch}
-                  onChange={(e) => setInvoiceSearch(e.target.value)}
-                  className="flex-1 bg-[#07090e] border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#85effe]"
-                />
-                <button
-                  type="button"
-                  onClick={handleTrackInvoice}
-                  className="px-6 py-3 rounded-xl bg-[#85effe] text-black font-bold text-sm shadow-neon hover:bg-[#a5f4ff] transition"
-                >
-                  Lacak
-                </button>
-              </div>
-
-              {trackResult && (
-                <div className="mt-6 p-4 rounded-xl bg-[#07090e] border border-[#85effe]/30 space-y-3">
-                  <div className="flex justify-between items-center border-b border-slate-800 pb-2">
-                    <span className="text-xs text-slate-400 font-medium">Invoice: {trackResult.invoice}</span>
-                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-                      SELESAI (SUKSES)
-                    </span>
-                  </div>
-                  <div className="grid grid-cols-2 gap-2 text-xs">
-                    <div>
-                      <span className="text-slate-500 block">Item:</span>
-                      <span className="font-semibold text-white">{trackResult.item}</span>
-                    </div>
-                    <div>
-                      <span className="text-slate-500 block">Username:</span>
-                      <span className="font-semibold text-[#85effe]">{trackResult.target}</span>
-                    </div>
-                    <div>
-                      <span className="text-slate-500 block">Total:</span>
-                      <span className="font-semibold text-white">{trackResult.total}</span>
-                    </div>
-                    <div>
-                      <span className="text-slate-500 block">Waktu:</span>
-                      <span className="font-semibold text-slate-300">{trackResult.date}</span>
-                    </div>
-                  </div>
+                    Batal
+                  </button>
+                  <button
+                    type="submit"
+                    className="flex-1 sm:flex-none px-8 py-3 rounded-xl bg-[#85effe] hover:bg-[#a5f4ff] text-black text-xs font-extrabold shadow-[0_0_20px_rgba(133,239,254,0.4)] transition flex items-center justify-center gap-1.5"
+                  >
+                    <Zap className="w-4 h-4 fill-black" />
+                    Lanjutkan Pembayaran
+                  </button>
                 </div>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* TAB 4: TESTIMONI & ULASAN PELANGGAN */}
-        {activeTab === 'reviews' && (
-          <div className="space-y-6">
-            <div className="text-center max-w-xl mx-auto space-y-2">
-              <h1 className="text-2xl font-black text-white">Apa Kata Pelanggan 444Store?</h1>
-              <p className="text-xs text-slate-400">Transparansi ulasan asli dari ribuan pemain Roblox di seluruh Indonesia.</p>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {[
-                { user: 'raf***44', item: '400 Robux', text: 'Gokil ga nyampe 30 detik beneran masuk! Trusted parah bos.', star: 5 },
-                { user: 'dim***99', item: '1000 Robux', text: 'Harga paling murah se-Indonesia, adminnya fast respon di WA.', star: 5 },
-                { user: 'kei***01', item: 'Gamepass Blox Fruits', text: 'Langsung aktif di akun tanpa kendala. Bakal langganan disini.', star: 5 },
-                { user: 'ald***23', item: '800 Robux', text: 'Mantap banget via username gak perlu share password aman pol.', star: 5 },
-                { user: 'zan***12', item: '200 Robux', text: 'Proses kilat QRIS langsung otomatis kedetect.', star: 5 },
-                { user: 'ven***88', item: '1700 Robux', text: 'Recommended seller buat top up Robux legal tanpa takut banned.', star: 5 },
-              ].map((rev, idx) => (
-                <div key={idx} className="p-4 rounded-xl bg-[#0c1220] border border-slate-800/80 space-y-2 shadow">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-[#85effe]">{rev.user}</span>
-                    <div className="flex text-amber-400">
-                      {[...Array(rev.star)].map((_, i) => (
-                        <Star key={i} className="w-3 h-3 fill-amber-400" />
-                      ))}
-                    </div>
-                  </div>
-                  <span className="text-[10px] text-slate-500 block">{rev.item}</span>
-                  <p className="text-xs text-slate-300 italic">"{rev.text}"</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* FAQ Section */}
-        <section className="mt-16 border-t border-slate-800/80 pt-10">
-          <div className="max-w-3xl mx-auto space-y-4">
-            <h2 className="text-xl font-bold text-center text-white flex items-center justify-center gap-2">
-              <HelpCircle className="w-5 h-5 text-[#85effe]" /> Pertanyaan yang Sering Diajukan (FAQ)
-            </h2>
-            
-            <div className="space-y-3 pt-4">
-              <div className="p-4 rounded-xl bg-[#0c1220] border border-slate-800">
-                <h4 className="text-xs font-bold text-white mb-1">Berapa lama proses pengiriman Robux?</h4>
-                <p className="text-xs text-slate-400">Untuk pesanan via Username, pengiriman otomatis masuk ke akun dalam waktu 30 detik hingga 1 menit setelah pembayaran terverifikasi.</p>
               </div>
-              <div className="p-4 rounded-xl bg-[#0c1220] border border-slate-800">
-                <h4 className="text-xs font-bold text-white mb-1">Apakah perlu memberikan password akun Roblox?</h4>
-                <p className="text-xs text-slate-400">Tidak perlu! Jika memilih opsi "Via Username", kamu hanya perlu mengetikkan username kamu saja. Sangat aman dan tanpa resiko akun diretas.</p>
-              </div>
-              <div className="p-4 rounded-xl bg-[#0c1220] border border-slate-800">
-                <h4 className="text-xs font-bold text-white mb-1">Bagaimana jika pesanan belum masuk setelah 5 menit?</h4>
-                <p className="text-xs text-slate-400">Silakan hubungi Customer Service kami via WhatsApp dengan menyertakan Nomor Invoice kamu. Tim kami standby 24 jam untuk membantu.</p>
-              </div>
-            </div>
-          </div>
-        </section>
 
-      </main>
-
-      {/* Modern Footer */}
-      <footer className="border-t border-slate-800/80 bg-[#05070a] mt-20 py-10 px-4 lg:px-8 text-xs text-slate-400">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-          <div className="space-y-3 md:col-span-2">
-            <div className="flex items-center gap-2">
-              <span className="text-lg font-black text-white tracking-tight">444<span className="text-[#85effe]">STORE</span></span>
-            </div>
-            <p className="text-slate-400 text-xs max-w-sm">
-              Platform top up Robux dan game item terpercaya di Indonesia. Transaksi 100% legal, aman, harga bersaing, dan didukung sistem otomatis 24 jam nonstop.
-            </p>
-          </div>
-          <div>
-            <h4 className="font-bold text-white mb-3">Layanan</h4>
-            <ul className="space-y-2">
-              <li><button onClick={() => setActiveTab('order')} className="hover:text-[#85effe] transition">Robux Via Username</button></li>
-              <li><button onClick={() => setActiveTab('order')} className="hover:text-[#85effe] transition">Robux Via Login</button></li>
-              <li><button onClick={() => setActiveTab('home')} className="hover:text-[#85effe] transition">Gamepass & Items</button></li>
-              <li><button onClick={() => setActiveTab('track')} className="hover:text-[#85effe] transition">Lacak Pesanan</button></li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="font-bold text-white mb-3">Bantuan & Legal</h4>
-            <ul className="space-y-2">
-              <li><a href="#" className="hover:text-[#85effe] transition">Syarat & Ketentuan</a></li>
-              <li><a href="#" className="hover:text-[#85effe] transition">Kebijakan Privasi</a></li>
-              <li><a href="https://wa.me/6281234567890" target="_blank" rel="noreferrer" className="hover:text-[#85effe] transition">Hubungi WhatsApp</a></li>
-              <li><a href="#" className="hover:text-[#85effe] transition">Discord Community</a></li>
-            </ul>
+            </form>
           </div>
         </div>
+      )}
 
-        <div className="max-w-7xl mx-auto pt-6 border-t border-slate-800/60 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-slate-500">
-          <p>© 2026 444Store (by 444rapz). All rights reserved.</p>
-          <div className="flex items-center gap-4">
-            <span className="text-slate-400">Design Inspired by Takapedia & Kingblox</span>
-            <span className="w-1.5 h-1.5 rounded-full bg-[#85effe]" />
-            <span className="text-[#85effe]">v1.0.0 Production</span>
+      {/* 6. POP-UP MODAL KONFIRMASI INVOICE (Success / Payment Confirmation) */}
+      {showConfirmModal && createdInvoice && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-in zoom-in-95">
+          <div className="w-full max-w-md rounded-3xl bg-[#090e1a] border border-[#85effe]/50 shadow-[0_0_40px_rgba(133,239,254,0.25)] p-6 space-y-5 text-center">
+            
+            <div className="w-16 h-16 rounded-full bg-[#85effe]/20 border border-[#85effe] text-[#85effe] flex items-center justify-center mx-auto shadow-[0_0_20px_rgba(133,239,254,0.4)]">
+              <CheckCircle2 className="w-9 h-9" />
+            </div>
+
+            <div>
+              <span className="text-[10px] font-bold px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                INVOICE BERHASIL DIBUAT
+              </span>
+              <h3 className="text-xl font-extrabold text-white mt-2">Menunggu Pembayaran</h3>
+              <p className="text-xs text-slate-400 mt-1">Invoice ID: <span className="text-[#85effe] font-mono font-bold">{createdInvoice.code}</span></p>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-[#070b13] border border-slate-800 text-left space-y-2 text-xs">
+              <div className="flex justify-between text-slate-400">
+                <span>Produk:</span>
+                <span className="font-bold text-white">{createdInvoice.product}</span>
+              </div>
+              <div className="flex justify-between text-slate-400">
+                <span>Varian:</span>
+                <span className="font-bold text-[#85effe]">{createdInvoice.variant}</span>
+              </div>
+              <div className="flex justify-between text-slate-400">
+                <span>Target Akun:</span>
+                <span className="font-bold text-white">{createdInvoice.username}</span>
+              </div>
+              <div className="flex justify-between text-slate-400">
+                <span>Metode Bayar:</span>
+                <span className="font-bold text-white">{createdInvoice.method}</span>
+              </div>
+              <div className="pt-2 border-t border-slate-800 flex justify-between items-baseline">
+                <span className="font-bold text-slate-300">Total Tagihan:</span>
+                <span className="text-lg font-black text-[#85effe]">
+                  Rp {createdInvoice.total.toLocaleString('id-ID')}
+                </span>
+              </div>
+            </div>
+
+            <div className="flex gap-2">
+              <button 
+                onClick={() => setShowConfirmModal(false)}
+                className="flex-1 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold transition"
+              >
+                Tutup
+              </button>
+              <a 
+                href={`https://wa.me/6281234567890?text=Halo%20Admin%20444Store,%20saya%20mau%20bayar%20pesanan%20dengan%20Invoice%20${createdInvoice.code}%20total%20Rp%20${createdInvoice.total}`}
+                target="_blank" 
+                rel="noreferrer"
+                className="flex-1 py-3 rounded-xl bg-[#85effe] hover:bg-[#a5f4ff] text-black text-xs font-extrabold shadow-[0_0_15px_rgba(133,239,254,0.35)] transition flex items-center justify-center gap-1.5"
+              >
+                Konfirmasi WA
+              </a>
+            </div>
+
           </div>
+        </div>
+      )}
+
+      {/* 7. Footer */}
+      <footer className="border-t border-slate-800/80 bg-[#05070c] mt-20 py-10 px-4 lg:px-8 text-xs text-slate-400">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-2">
+            <span className="text-base font-black text-white">444<span className="text-[#85effe]">STORE</span></span>
+            <span className="text-slate-500">|</span>
+            <span className="text-slate-400">Top Up Game Termurah & Tercepat</span>
+          </div>
+          <p className="text-slate-500 text-[11px]">© 2026 444Store. All rights reserved.</p>
         </div>
       </footer>
+
     </div>
   );
 }
