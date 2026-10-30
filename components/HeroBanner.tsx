@@ -3,6 +3,7 @@ import Link from "next/link";
 import type { CSSProperties } from "react";
 import { ArrowRight, QrCode, Search, ShieldCheck, Zap } from "lucide-react";
 import { Tilt } from "./Tilt";
+import { RobuxIcon } from "./RobuxIcon";
 import { number, rupiah } from "@/lib/store";
 
 const SPARK = "M12 0c.6 6.4 5.6 11.4 12 12-6.4.6-11.4 5.6-12 12-.6-6.4-5.6-11.4-12-12C6.4 11.4 11.4 6.4 12 0z";
@@ -67,14 +68,13 @@ export function HeroBanner({ rate, stock }: { rate: number; stock: number }) {
           <div className="ticket-stub flex items-center justify-between gap-4 px-6 py-5 md:flex-col md:items-stretch md:px-8 md:py-9">
             <div>
               <p className="text-sm font-medium text-[#2b3a55]">Harga hari ini</p>
-              <p className="mt-1 flex items-center gap-2 text-4xl font-extrabold tracking-[-0.035em] tabular md:text-5xl">
-                <Image src="/brand/robux-hex.png" alt="" width={74} height={80} className="icon-img h-8 w-auto md:h-10" />
-                {rate > 0 ? rupiah(rate) : "-"}
+              <p className="mt-1 text-4xl font-extrabold tracking-[-0.035em] tabular md:text-5xl">{rate > 0 ? rupiah(rate) : "-"}</p>
+              <p className="mt-1 flex items-center gap-1 text-sm text-[#2b3a55] tabular">
+                per <RobuxIcon className="h-3.5 w-3.5" /> 1
               </p>
-              <p className="mt-1 text-sm text-[#2b3a55]">per Robux</p>
-              <p className="mt-2 flex items-center gap-2 text-sm font-medium tabular md:mt-4">
-                <span className="live-dot h-2 w-2 rounded-full bg-[#16a34a]" aria-hidden />
-                Stok {number(stock)} Robux
+              <p className="mt-2 flex items-center gap-1.5 text-sm font-semibold tabular md:mt-4">
+                <span className="live-dot mr-0.5 h-2 w-2 rounded-full bg-[#16a34a]" aria-hidden />
+                Stok <RobuxIcon className="h-4 w-4" /> {number(stock)}
               </p>
             </div>
             <div className="w-28 shrink-0 md:w-full">

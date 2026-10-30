@@ -280,3 +280,99 @@
   .tilt { transform: none; transition: none; }
   .ticket-sheen { animation: none; }
 }
+
+/* Kartu tiket: badan, garis sobek dengan lubang di kedua sisi, lalu potongan bawah */
+.tix {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--radius-card);
+  border: 1px solid var(--color-line);
+  background-color: var(--color-surface);
+  transition: border-color 250ms, translate 450ms var(--ease-out-expo);
+}
+a.tix:hover { border-color: rgb(188 214 255 / 0.45); translate: 0 -4px; }
+.tix-body { flex: 1; padding: 16px 16px 6px; }
+.tix-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 4px 16px 14px;
+  font-size: 14px;
+  font-weight: 600;
+}
+.perf { position: relative; display: block; height: 22px; flex: none; }
+.perf::before {
+  content: "";
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  top: 50%;
+  border-top: 2px dashed var(--color-line-strong);
+}
+.perf::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -12px;
+  right: -12px;
+  background:
+    radial-gradient(circle at 11px 50%, var(--color-ground) 10px, transparent 10.5px),
+    radial-gradient(circle at calc(100% - 11px) 50%, var(--color-ground) 10px, transparent 10.5px);
+}
+.sticker { transition: translate 450ms var(--ease-out-expo), rotate 450ms var(--ease-out-expo); }
+.tix:hover .sticker { translate: 0 -6px; rotate: 7deg; }
+.metal {
+  background: linear-gradient(118deg, #f1f2f5 0%, #c9cdd5 20%, #f7f8fa 36%, #b4bac5 54%, #e4e7ec 70%, #c6cbd4 86%, #eef0f3 100%);
+  color: #0b0b0c;
+}
+
+/* Penghitung Robux terkirim: ubin chrome yang berputar */
+.counter {
+  --h: 1.18em;
+  display: flex;
+  align-items: flex-end;
+  gap: 0.08em;
+  font-size: clamp(2.5rem, 12vw, 6.25rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+.counter-tile {
+  position: relative;
+  display: block;
+  height: var(--h);
+  width: 0.78em;
+  overflow: hidden;
+  border-radius: 0.14em;
+  color: #0b0b0c;
+  text-align: center;
+  background: linear-gradient(180deg, #ffffff 0%, #e4e7ee 44%, #b3b9c4 50%, #eef0f4 100%);
+  box-shadow: inset 0 1px 0 #fff, inset 0 -2px 0 rgb(0 0 0 / 0.22), 0 14px 24px -14px rgb(0 0 0 / 0.8);
+}
+.counter-tile::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  background: rgb(0 0 0 / 0.16);
+}
+.counter-icon {
+  display: grid;
+  place-items: center;
+  color: #0d1626;
+  background: linear-gradient(180deg, #eef4ff 0%, #bcd6ff 50%, #a3c0ec 51%, #dfe9ff 100%);
+}
+.counter-icon::after { display: none; }
+.counter-strip { display: flex; flex-direction: column; transition: transform 1.8s var(--ease-out-expo); }
+.counter-strip > span { display: block; height: var(--h); line-height: var(--h); }
+.counter-sep { width: 0.2em; padding-bottom: 0.06em; text-align: center; color: var(--color-silver); }
+@media (prefers-reduced-motion: reduce) {
+  .counter-strip { transition: none; }
+  .sticker { transition: none; }
+}

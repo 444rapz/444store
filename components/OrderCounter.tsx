@@ -6,6 +6,7 @@ import { ArrowLeft, ArrowRight, MessageCircle, Phone, TriangleAlert } from "luci
 import { Odometer } from "./Odometer";
 import { CopyButton } from "./CopyButton";
 import { PayLogos } from "./PayLogos";
+import { RobuxIcon } from "./RobuxIcon";
 import { API_URL, CONTACT, PACKAGES, PAYMENT, number, rupiah, waLink } from "@/lib/store";
 
 type Mode = "robux" | "budget";
@@ -66,19 +67,22 @@ export function OrderCounter({ initialRate, initialStock }: { initialRate: numbe
           <ArrowLeft size={16} aria-hidden /> Ubah pesanan
         </button>
 
-        <div className="mt-4 flex items-baseline justify-between gap-4 border-b border-line pb-4">
+        <div className="mt-4 flex items-baseline justify-between gap-4">
           <div>
             <p className="text-sm text-ink-muted">Kamu bayar</p>
             <p className="text-3xl font-semibold tracking-tight tabular">{rupiah(total)}</p>
           </div>
           <p className="text-right text-sm text-ink-muted">
-            {number(robux)} Robux
+            <span className="inline-flex items-center gap-1 tabular">
+              <RobuxIcon className="h-3.5 w-3.5" /> {number(robux)}
+            </span>
             <br />
             ke <span className="text-ink">{username.trim()}</span>
           </p>
         </div>
+        <span className="perf -mx-5 mt-3 sm:-mx-6" aria-hidden />
 
-        <ol className="mt-5 space-y-6">
+        <ol className="mt-3 space-y-6">
           <li>
             <p className="font-medium">1. Scan QRIS ini pakai aplikasi apa aja</p>
             <div className="mt-3 overflow-hidden rounded-xl bg-white p-3 sm:max-w-[260px]">
@@ -143,7 +147,7 @@ export function OrderCounter({ initialRate, initialStock }: { initialRate: numbe
         <h2 className="text-lg font-semibold">Robux via Username</h2>
         <span className="inline-flex items-center gap-2 rounded-full border border-line px-3 py-1 text-xs text-ink-muted tabular">
           <span className="live-dot h-2 w-2 rounded-full bg-live" aria-hidden />
-          Stok {number(stock)}
+          Stok <RobuxIcon className="h-3.5 w-3.5" /> {number(stock)}
         </span>
       </div>
 
@@ -183,7 +187,10 @@ export function OrderCounter({ initialRate, initialStock }: { initialRate: numbe
                   <span className={`block h-4 text-[10px] font-medium leading-4 ${selected ? "text-ice" : "text-ink-faint"}`}>
                     {p.tag ?? ""}
                   </span>
-                  <span className="block text-base font-semibold tabular">{number(p.amount)}</span>
+                  <span className="flex items-center gap-1.5 text-base font-semibold tabular">
+                    <RobuxIcon className={`h-3.5 w-3.5 ${selected ? "text-ice" : "text-ink-muted"}`} />
+                    {number(p.amount)}
+                  </span>
                   <span className="block text-xs text-ink-muted tabular">{priceReady ? rupiah(p.amount * rate) : "-"}</span>
                 </button>
               );
@@ -211,7 +218,10 @@ export function OrderCounter({ initialRate, initialStock }: { initialRate: numbe
             className="mt-1.5 w-full rounded-xl border border-line bg-ground px-4 py-3 text-base tabular placeholder:text-ink-faint focus:border-ice focus:outline-none"
           />
           <span className="mt-1.5 block text-sm text-ink-muted">
-            Dapat <span className="tabular text-ink">{number(robux)} Robux</span>
+            Dapat{" "}
+            <span className="inline-flex items-center gap-1 align-middle tabular text-ink">
+              <RobuxIcon className="h-3.5 w-3.5" /> {number(robux)} Robux
+            </span>
           </span>
         </label>
       )}
@@ -245,7 +255,8 @@ export function OrderCounter({ initialRate, initialStock }: { initialRate: numbe
         </p>
       )}
 
-      <div className="mt-5 flex items-end justify-between gap-4 border-t border-line pt-4">
+      <span className="perf -mx-5 mt-4 sm:-mx-6" aria-hidden />
+      <div className="flex items-end justify-between gap-4 pt-1">
         <div>
           <p className="text-sm text-ink-muted">Total bayar</p>
           <Odometer value={rupiah(total)} className="text-3xl font-semibold tracking-tight" />

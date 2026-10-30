@@ -12,7 +12,7 @@ const STAGES = ["Menunggu pembayaran", "Menunggu verifikasi", "Diproses", "Seles
 export default function CekPesananPage() {
   return (
     <div className="mx-auto max-w-2xl px-4 pb-10 pt-8 sm:px-6 md:pt-14">
-      <h1 className="text-3xl font-semibold sm:text-5xl">Cek Pesanan</h1>
+      <h1 className="text-3xl font-extrabold tracking-[-0.03em] sm:text-5xl">Cek Pesanan</h1>
       <p className="mt-4 text-ink-muted sm:text-lg">
         Pesanan yang dibuat dari website nanti bisa dilacak di sini pakai kode invoice, dari dibayar sampai selesai.
       </p>

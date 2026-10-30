@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 export default function ItemPage() {
   return (
     <div className="mx-auto max-w-3xl px-4 pb-10 pt-8 sm:px-6 md:pt-14">
-      <h1 className="text-3xl font-semibold sm:text-5xl">Gift In Game</h1>
+      <h1 className="text-3xl font-extrabold tracking-[-0.03em] sm:text-5xl">Gift In Game</h1>
       <p className="mt-4 max-w-[52ch] text-ink-muted sm:text-lg">
         Item dan gamepass di dalam game. Admin masuk ke server kamu, lalu mengirim itemnya langsung ke karaktermu.
       </p>

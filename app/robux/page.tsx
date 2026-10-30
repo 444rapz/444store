@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { OrderCounter } from "@/components/OrderCounter";
+import { RobuxIcon } from "@/components/RobuxIcon";
 import { getSummary, number, rupiah } from "@/lib/store";
 
 export const revalidate = 30;
@@ -13,18 +14,18 @@ export default async function RobuxPage() {
   return (
     <div className="mx-auto grid max-w-6xl gap-10 px-4 pb-10 pt-8 sm:px-6 md:pt-14 lg:grid-cols-[1fr_minmax(0,460px)] lg:gap-14">
       <div>
-        <h1 className="text-3xl font-semibold sm:text-5xl">Robux via Username</h1>
+        <h1 className="text-3xl font-extrabold tracking-[-0.03em] sm:text-5xl">Robux via Username</h1>
         <p className="mt-4 max-w-[48ch] text-ink-muted sm:text-lg">
           Kamu cukup kasih username Roblox. Admin mengirim Robux ke akunmu tanpa minta password.
         </p>
         <dl className="mt-8 grid max-w-md grid-cols-2 gap-px overflow-hidden rounded-[var(--radius-card)] border border-line bg-line">
           <div className="bg-surface p-4">
             <dt className="text-sm text-ink-muted">Harga</dt>
-            <dd className="mt-1 text-xl font-semibold tabular">{s.rate ? rupiah(s.rate) : "-"}<span className="text-sm font-normal text-ink-muted"> / Robux</span></dd>
+            <dd className="mt-1 text-xl font-semibold tabular">{s.rate ? rupiah(s.rate) : "-"}<span className="text-sm font-normal text-ink-muted"> / 1 Robux</span></dd>
           </div>
           <div className="bg-surface p-4">
             <dt className="text-sm text-ink-muted">Stok sekarang</dt>
-            <dd className="mt-1 text-xl font-semibold tabular">{number(s.stock)}</dd>
+            <dd className="mt-1 flex items-center gap-1.5 text-xl font-semibold tabular"><RobuxIcon className="h-5 w-5 text-ice" /> {number(s.stock)}</dd>
           </div>
         </dl>
         <h2 className="mt-10 text-lg font-semibold">Sebelum order</h2>
