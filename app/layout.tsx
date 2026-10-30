@@ -1,12 +1,9 @@
 import type { Metadata, Viewport } from "next";
 import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
-import { Fredoka } from "next/font/google";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import "./globals.css";
-
-const display = Fredoka({ subsets: ["latin"], weight: ["500", "600", "700"], variable: "--font-display-face", display: "swap" });
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://444s.store"),
@@ -27,7 +24,7 @@ export const viewport: Viewport = { themeColor: "#0b0b0c", width: "device-width"
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="id" className={`${GeistSans.variable} ${GeistMono.variable} ${display.variable}`}>
+    <html lang="id" className={`${GeistSans.variable} ${GeistMono.variable}`}>
       <body className="min-h-dvh">
         <a href="#isi" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-full focus:bg-ink focus:px-4 focus:py-2 focus:text-ground">
           Langsung ke isi

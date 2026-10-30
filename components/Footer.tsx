@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Brand } from "./Brand";
+import { PayLogos } from "./PayLogos";
 import { CONTACT, waLink } from "@/lib/store";
 
 export function Footer() {
@@ -11,6 +12,7 @@ export function Footer() {
           <p className="mt-4 text-sm leading-relaxed text-ink-muted">
             Top up Robux murah dan proses kilat, dikerjakan langsung oleh admin 444s. Pesanan dicek manual satu per satu.
           </p>
+          <PayLogos className="mt-5" />
         </div>
         <div>
           <h2 className="text-sm font-semibold">Belanja</h2>

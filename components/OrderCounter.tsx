@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { ArrowLeft, ArrowRight, MessageCircle, Phone, TriangleAlert } from "lucide-react";
 import { Odometer } from "./Odometer";
 import { CopyButton } from "./CopyButton";
+import { PayLogos } from "./PayLogos";
 import { API_URL, CONTACT, PACKAGES, PAYMENT, number, rupiah, waLink } from "@/lib/store";
 
 type Mode = "robux" | "budget";
@@ -83,6 +84,7 @@ export function OrderCounter({ initialRate, initialStock }: { initialRate: numbe
             <div className="mt-3 overflow-hidden rounded-xl bg-white p-3 sm:max-w-[260px]">
               <Image src="/qris.png" alt="Kode QRIS 444 Store" width={520} height={520} className="h-auto w-full" priority />
             </div>
+            <PayLogos className="mt-3" />
             <div className="mt-3 flex flex-wrap items-center gap-2 text-sm text-ink-muted">
               <span>
                 Atau transfer {PAYMENT.ewalletNames}: <span className="tabular text-ink">{PAYMENT.ewallet}</span> a.n. {PAYMENT.holder}
@@ -175,10 +177,10 @@ export function OrderCounter({ initialRate, initialStock }: { initialRate: numbe
                     setCustom("");
                   }}
                   className={`rounded-xl border px-3 pb-3 pt-2 text-left transition-[border-color,background-color,transform] duration-200 active:scale-[0.97] ${
-                    selected ? "border-violet bg-violet/12" : "border-line bg-raised/50 hover:border-line-strong"
+                    selected ? "border-ice bg-ice/10" : "border-line bg-raised/50 hover:border-line-strong"
                   }`}
                 >
-                  <span className={`block h-4 text-[10px] font-medium leading-4 ${selected ? "text-violet-soft" : "text-ink-faint"}`}>
+                  <span className={`block h-4 text-[10px] font-medium leading-4 ${selected ? "text-ice" : "text-ink-faint"}`}>
                     {p.tag ?? ""}
                   </span>
                   <span className="block text-base font-semibold tabular">{number(p.amount)}</span>
@@ -194,7 +196,7 @@ export function OrderCounter({ initialRate, initialStock }: { initialRate: numbe
               placeholder="Contoh: 750"
               value={custom}
               onChange={(e) => setCustom(e.target.value.replace(/\D/g, "").slice(0, 6))}
-              className="mt-1.5 w-full rounded-xl border border-line bg-ground px-4 py-3 text-base tabular placeholder:text-ink-faint focus:border-violet focus:outline-none"
+              className="mt-1.5 w-full rounded-xl border border-line bg-ground px-4 py-3 text-base tabular placeholder:text-ink-faint focus:border-ice focus:outline-none"
             />
           </label>
         </>
@@ -206,7 +208,7 @@ export function OrderCounter({ initialRate, initialStock }: { initialRate: numbe
             placeholder="Contoh: 50000"
             value={budget}
             onChange={(e) => setBudget(e.target.value.replace(/\D/g, "").slice(0, 9))}
-            className="mt-1.5 w-full rounded-xl border border-line bg-ground px-4 py-3 text-base tabular placeholder:text-ink-faint focus:border-violet focus:outline-none"
+            className="mt-1.5 w-full rounded-xl border border-line bg-ground px-4 py-3 text-base tabular placeholder:text-ink-faint focus:border-ice focus:outline-none"
           />
           <span className="mt-1.5 block text-sm text-ink-muted">
             Dapat <span className="tabular text-ink">{number(robux)} Robux</span>
@@ -224,7 +226,7 @@ export function OrderCounter({ initialRate, initialStock }: { initialRate: numbe
           value={username}
           onChange={(e) => setUsername(e.target.value.slice(0, 20))}
           aria-invalid={touched && !usernameOk}
-          className="mt-1.5 w-full rounded-xl border border-line bg-ground px-4 py-3 text-base placeholder:text-ink-faint focus:border-violet focus:outline-none aria-[invalid=true]:border-warn"
+          className="mt-1.5 w-full rounded-xl border border-line bg-ground px-4 py-3 text-base placeholder:text-ink-faint focus:border-ice focus:outline-none aria-[invalid=true]:border-warn"
         />
         {touched && !usernameOk && (
           <span className="mt-1.5 block text-sm text-warn">Isi username Roblox (3 sampai 20 huruf, angka, atau garis bawah).</span>
@@ -254,7 +256,7 @@ export function OrderCounter({ initialRate, initialStock }: { initialRate: numbe
       <button
         type="submit"
         disabled={!priceReady || robux <= 0 || overStock}
-        className="mt-4 flex w-full items-center justify-center gap-2 rounded-full bg-pink px-5 py-3.5 text-base font-semibold text-white transition-[transform,opacity] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40"
+        className="chrome-btn mt-4 flex w-full items-center justify-center gap-2 rounded-full px-5 py-3.5 text-base font-semibold disabled:cursor-not-allowed disabled:opacity-40"
       >
         Lanjut bayar <ArrowRight size={18} aria-hidden />
       </button>
