@@ -17,6 +17,7 @@ export const metadata: Metadata = {
     siteName: "444 Store",
     locale: "id_ID",
     type: "website",
+    images: [{ url: "/brand/banner.jpg", width: 1400, height: 700, alt: "444 Store" }],
   },
 };
 
