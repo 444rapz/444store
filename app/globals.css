@@ -12,12 +12,19 @@
   --color-violet: #8b5cf6;
   --color-violet-deep: #6d3fe0;
   --color-violet-soft: #c9b8ff;
+  --color-pink: #ff5c8d;
+  --color-pink-soft: #ff9cbb;
+  --color-gold: #ffc23d;
+  --color-gold-soft: #ffe08a;
+  --color-silver: #c8ccd6;
+  --color-bronze: #e0915a;
   --color-live: #22c55e;
   --color-warn: #fbbf24;
   --color-discord: #5865f2;
   --color-whatsapp: #25d366;
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --font-display: var(--font-display-face), var(--font-geist-sans), sans-serif;
   --radius-card: 14px;
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -140,4 +147,22 @@
   .sparkle, .marquee-track, .live-dot { animation: none; }
   .odo-strip { transition: none; }
   html { scroll-behavior: auto; }
+}
+
+/* Koin melayang di banner */
+.float-a { animation: floaty 6s ease-in-out infinite; }
+.float-b { animation: floaty 7s ease-in-out -2s infinite; }
+.float-c { animation: floaty 5s ease-in-out -1s infinite; }
+@keyframes floaty {
+  0%, 100% { transform: translateY(0) rotate(var(--r, 0deg)); }
+  50% { transform: translateY(-12px) rotate(var(--r, 0deg)); }
+}
+.glow-card {
+  background:
+    radial-gradient(120% 90% at 100% 0%, rgb(255 92 141 / 0.22), transparent 55%),
+    radial-gradient(90% 80% at 0% 100%, rgb(139 92 246 / 0.28), transparent 60%),
+    var(--color-surface);
+}
+@media (prefers-reduced-motion: reduce) {
+  .float-a, .float-b, .float-c { animation: none; }
 }

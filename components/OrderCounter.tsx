@@ -254,7 +254,7 @@ export function OrderCounter({ initialRate, initialStock }: { initialRate: numbe
       <button
         type="submit"
         disabled={!priceReady || robux <= 0 || overStock}
-        className="mt-4 flex w-full items-center justify-center gap-2 rounded-full bg-ink px-5 py-3.5 text-base font-semibold text-ground transition-[transform,opacity] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40"
+        className="mt-4 flex w-full items-center justify-center gap-2 rounded-full bg-pink px-5 py-3.5 text-base font-semibold text-white transition-[transform,opacity] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40"
       >
         Lanjut bayar <ArrowRight size={18} aria-hidden />
       </button>

@@ -8,3 +8,5 @@ next-env.d.ts
 .vercel
 .impeccable/review/
 .impeccable/live/
+
+.vercel

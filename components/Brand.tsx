@@ -8,7 +8,7 @@ export function Brand({ compact = false }: { compact?: boolean }) {
       </span>
       {!compact && (
         <span className="leading-tight">
-          <span className="block text-[15px] font-semibold tracking-tight">444 Store</span>
+          <span className="block font-display text-[17px] font-bold tracking-tight">444 Store</span>
           <span className="block text-[11px] text-ink-faint">Robux & item Roblox</span>
         </span>
       )}
