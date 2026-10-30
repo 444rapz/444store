@@ -33,3 +33,13 @@ Owner: "creative lagi dong buat banner simpel estetik keren dan jangan terlalu s
 - FIRST VIEWPORT: one wide ticket. Silver chrome body holds the h1, subcopy, a dark pill "Beli Robux sekarang" and an outline "Cek Pesanan"; a perforated tear line with punched notches; an icy-blue chrome stub printing the live price per Robux, live stock and a barcode captioned 444s.store. Mobile: body on top, stub under a horizontal tear line. The owner's chrome icons are die-cut stickers stuck across edges and the tear line.
 - SIGNATURE: on desktop the ticket tilts toward the pointer, stickers lift in parallax and a specular sheen follows the cursor; on touch a slow sheen sweep; nothing moves under reduced motion.
 - Material: chrome gradients and crisp geometry only (four-point sparkles from the banner, barcode bars). No raster texture, no noise grain.
+
+## Revision 4 (owner feedback: sections looked alike, pinned)
+Owner: "untuk style beda-bedain gitu jangan pake yang sama ... lebih creative lagi". Each section now owns one format inside the same palette and type:
+- Pilih layanan: pastel chrome bento tiles (ice, blush, silver, violet), Robux tile 2x2 with live price and stock, owner icons as cropped stickers.
+- Robux terkirim: full-bleed dark aurora band, centered chrome flip counter that rolls on first view.
+- Beli: timeline steps on a hairline with chrome numerals beside the perforated order form.
+- Leaderboard: podium blocks (silver 1, ice 2, violet 3) plus a slowly rotating rating seal.
+- Ulasan: two full-bleed rows of chat bubbles (off-white, ice, blush) moving in opposite directions.
+- FAQ: sticky oversized title left, hairline accordion with chrome plus chips right.
+- Close: full-bleed silver band with oversized headline and scattered stickers.

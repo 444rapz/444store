@@ -1,4 +1,4 @@
-import { ChevronDown } from "lucide-react";
+import { Plus } from "lucide-react";
 
 const ITEMS = [
   {
@@ -29,14 +29,16 @@ const ITEMS = [
 
 export function Faq() {
   return (
-    <div className="divide-y divide-line border-y border-line">
+    <div className="border-t border-line-strong">
       {ITEMS.map((it) => (
-        <details key={it.q} className="group py-1">
-          <summary className="flex cursor-pointer list-none items-center justify-between gap-4 py-4 text-left font-medium [&::-webkit-details-marker]:hidden">
+        <details key={it.q} className="group border-b border-line-strong">
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-5 py-5 text-left text-lg font-semibold tracking-tight transition-colors group-open:text-ice sm:text-xl [&::-webkit-details-marker]:hidden">
             {it.q}
-            <ChevronDown size={18} className="shrink-0 text-ink-faint transition-transform duration-300 group-open:rotate-180" aria-hidden />
+            <span className="chrome-chip grid h-9 w-9 shrink-0 place-items-center rounded-full transition-transform duration-500 group-open:rotate-45">
+              <Plus size={17} aria-hidden />
+            </span>
           </summary>
-          <p className="max-w-[65ch] pb-5 text-ink-muted">{it.a}</p>
+          <p className="max-w-[60ch] pb-6 pr-12 text-ink-muted">{it.a}</p>
         </details>
       ))}
     </div>

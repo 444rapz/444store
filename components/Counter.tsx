@@ -6,7 +6,7 @@ import { RobuxIcon } from "./RobuxIcon";
 const DIGITS = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
 
 /** Angka besar di ubin chrome; berputar dari nol saat pertama kali terlihat di layar. */
-export function Counter({ value, label }: { value: number; label: string }) {
+export function Counter({ value, label, className = "" }: { value: number; label: string; className?: string }) {
   const text = Math.round(value).toLocaleString("id-ID");
   const ref = useRef<HTMLDivElement>(null);
   const [rolled, setRolled] = useState(true);
@@ -32,7 +32,7 @@ export function Counter({ value, label }: { value: number; label: string }) {
 
   const chars = text.split("");
   return (
-    <div ref={ref} className="counter" role="img" aria-label={label}>
+    <div ref={ref} className={"counter " + className} role="img" aria-label={label}>
       <span className="counter-tile counter-icon">
         <RobuxIcon className="h-[0.62em] w-[0.62em]" />
       </span>

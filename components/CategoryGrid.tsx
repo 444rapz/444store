@@ -3,7 +3,7 @@ import Link from "next/link";
 import type { CSSProperties } from "react";
 import { ArrowRight } from "lucide-react";
 import { RobuxIcon } from "./RobuxIcon";
-import { CONTACT, rupiah } from "@/lib/store";
+import { CONTACT, number, rupiah } from "@/lib/store";
 
 type Cat = {
   href: string;
@@ -15,23 +15,26 @@ type Cat = {
   img: string;
   imgClass: string;
   r: string;
-  span?: string;
-  featured?: boolean;
+  tint: string;
+  area?: string;
+  big?: boolean;
 };
 
-export function CategoryGrid({ rate }: { rate: number }) {
+// Ubin chrome pastel ala ikon Y2K; layanan utama dibuat paling besar
+export function CategoryGrid({ rate, stock }: { rate: number; stock: number }) {
   const cats: Cat[] = [
     {
       href: "/robux",
       badge: "Terlaris",
       title: "Robux via Username",
-      sub: "Cukup username Roblox, tanpa password. Harga dan stok selalu live.",
+      sub: "Cukup username Roblox, tanpa password. Harga dan stok selalu live dari bot.",
       foot: rate ? "Mulai " + rupiah(100 * rate) : "Lihat harga",
       img: "/brand/robux-hex.png",
-      imgClass: "-right-3 -top-10 w-[96px] sm:w-[116px]",
-      r: "10deg",
-      span: "col-span-2",
-      featured: true,
+      imgClass: "-bottom-10 -right-8 w-44 sm:-bottom-14 sm:-right-10 sm:w-64",
+      r: "14deg",
+      tint: "tile-ice",
+      area: "col-span-2 md:row-span-2",
+      big: true,
     },
     {
       href: "/item",
@@ -40,8 +43,9 @@ export function CategoryGrid({ rate }: { rate: number }) {
       sub: "Item dan gamepass dikirim di dalam game.",
       foot: "Tanya harga",
       img: "/brand/chrome-heart.png",
-      imgClass: "-right-2 -top-8 w-[78px]",
-      r: "-9deg",
+      imgClass: "-right-2 -top-2 w-16 sm:-bottom-5 sm:-right-5 sm:top-auto sm:w-28",
+      r: "-10deg",
+      tint: "tile-blush",
     },
     {
       href: "/cek-pesanan",
@@ -50,20 +54,22 @@ export function CategoryGrid({ rate }: { rate: number }) {
       sub: "Pantau status pesananmu.",
       foot: "Pakai kode invoice",
       img: "/brand/chrome-infinity.png",
-      imgClass: "-right-3 -top-6 w-[86px]",
+      imgClass: "-right-3 -top-1 w-20 sm:-bottom-4 sm:-right-6 sm:top-auto sm:w-32",
       r: "8deg",
+      tint: "tile-silver",
     },
     {
       href: CONTACT.discord,
       external: true,
       badge: "Komunitas",
       title: "Discord 444s",
-      sub: "Info restock, giveaway, dan tanya admin.",
+      sub: "Info restock, giveaway, dan tanya admin langsung.",
       foot: "Gabung gratis",
       img: "/brand/tribal-violet.png",
-      imgClass: "-right-2 -top-8 w-[80px]",
+      imgClass: "-bottom-6 right-2 w-28 sm:right-6 sm:w-32",
       r: "12deg",
-      span: "col-span-2 md:col-span-1",
+      tint: "tile-violet",
+      area: "col-span-2",
     },
   ];
 
@@ -73,38 +79,53 @@ export function CategoryGrid({ rate }: { rate: number }) {
         Pilih layanan
       </h2>
       <p className="mt-2 text-ink-muted">Mau Robux atau item in game? Semua diproses langsung sama admin 444s.</p>
-      <div className="mt-12 grid grid-cols-2 gap-x-3 gap-y-10 md:grid-cols-5">
+      <div className="mt-8 grid grid-cols-2 gap-3 md:grid-cols-4">
         {cats.map((c) => {
           const inner = (
             <>
               <Image
                 src={c.img}
                 alt=""
-                width={280}
-                height={280}
+                width={360}
+                height={360}
                 className={"sticker " + c.imgClass}
                 style={{ "--r": c.r, "--z": "0px" } as CSSProperties}
               />
-              <div className="tix-body">
-                <span className="chrome-chip inline-block rounded-full px-2.5 py-1 text-[11px] font-semibold">{c.badge}</span>
-                <span className={"mt-5 block font-bold leading-tight tracking-tight " + (c.featured ? "text-2xl sm:text-3xl" : "text-lg")}>
-                  {c.title}
-                </span>
-                <span className={"mt-1.5 block text-ink-muted " + (c.featured ? "max-w-[34ch] text-sm" : "text-xs")}>{c.sub}</span>
-                {c.featured && rate > 0 && (
-                  <span className="mt-4 inline-flex items-center gap-1.5 text-sm text-ink-muted tabular">
-                    <RobuxIcon className="h-4 w-4 text-ice" /> 100 = <span className="font-semibold text-ink">{rupiah(100 * rate)}</span>
-                  </span>
-                )}
-              </div>
-              <span className="perf" aria-hidden />
-              <span className="tix-foot">
-                <span className="tabular">{c.foot}</span>
-                <ArrowRight size={16} className="transition-transform duration-300 group-hover:translate-x-1" aria-hidden />
+              <span className="relative z-10 w-fit rounded-full bg-[#0b0b0c] px-2.5 py-1 text-[11px] font-semibold text-ink">{c.badge}</span>
+              <span
+                className={
+                  "relative z-10 mt-4 block font-extrabold leading-[1.02] tracking-[-0.03em] " +
+                  (c.big ? "max-w-[9ch] text-4xl sm:text-6xl" : "max-w-[11ch] text-xl sm:text-2xl")
+                }
+              >
+                {c.title}
               </span>
+              <span className={"relative z-10 mt-2 block text-[#2f3540] " + (c.big ? "max-w-[30ch] sm:text-lg" : "max-w-[24ch] text-sm")}>
+                {c.sub}
+              </span>
+              {c.big && rate > 0 && (
+                <span className="relative z-10 mt-5 flex flex-wrap gap-2 text-sm font-semibold tabular">
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-white/70 px-3 py-1.5">
+                    <RobuxIcon className="h-4 w-4" /> 100 = {rupiah(100 * rate)}
+                  </span>
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-white/70 px-3 py-1.5">
+                    Stok <RobuxIcon className="h-4 w-4" /> {number(stock)}
+                  </span>
+                </span>
+              )}
+              {c.big ? (
+                <span className="relative z-10 mt-auto inline-flex w-fit items-center gap-2 rounded-full bg-[#0b0b0c] px-5 py-3 text-sm font-semibold text-ink">
+                  {c.foot} <ArrowRight size={16} className="transition-transform duration-300 group-hover:translate-x-1" aria-hidden />
+                </span>
+              ) : (
+                <span className="relative z-10 mt-auto inline-flex items-center gap-1.5 pt-5 text-sm font-bold">
+                  {c.foot} <ArrowRight size={15} className="transition-transform duration-300 group-hover:translate-x-1" aria-hidden />
+                </span>
+              )}
             </>
           );
-          const cls = "tix group " + (c.featured ? "glow-card " : "") + (c.span ?? "");
+          const cls =
+            "tile group " + c.tint + " " + (c.area ?? "") + (c.big ? " min-h-[340px] p-6 sm:min-h-[440px] sm:p-8" : " min-h-[210px] p-5");
           return c.external ? (
             <a key={c.title} href={c.href} target="_blank" rel="noopener noreferrer" className={cls}>
               {inner}
