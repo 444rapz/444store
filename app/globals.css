@@ -116,23 +116,6 @@
   line-height: 1;
 }
 
-/* Ulasan berjalan */
-.marquee {
-  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
-}
-.marquee-track {
-  display: flex;
-  gap: 12px;
-  width: max-content;
-  animation: marquee 60s linear infinite;
-}
-.marquee:hover .marquee-track {
-  animation-play-state: paused;
-}
-@keyframes marquee {
-  to { transform: translateX(-50%); }
-}
-
 .live-dot {
   box-shadow: 0 0 0 0 rgb(34 197 94 / 0.6);
   animation: pulse 2.4s var(--ease-out-expo) infinite;
@@ -143,7 +126,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .sparkle, .marquee-track, .live-dot { animation: none; }
+  .sparkle, .live-dot { animation: none; }
   .odo-strip { transition: none; }
   html { scroll-behavior: auto; }
 }
@@ -395,24 +378,6 @@
 }
 .counter-xl { font-size: clamp(2.6rem, 12.5vw, 8.5rem); }
 
-/* Gelembung chat ulasan */
-.bubble {
-  width: 272px;
-  flex: none;
-  padding: 14px 16px 16px;
-  border-radius: 22px 22px 22px 6px;
-  color: #0b0b0c;
-  box-shadow: 0 16px 26px -18px rgb(0 0 0 / 0.9);
-}
-.bubble-ink { background: #f6f3ef; }
-.bubble-ice { background: #d6e5ff; }
-.bubble-blush { background: #f9dcea; }
-.marquee-track.reverse { animation-direction: reverse; }
-
-/* Segel rating yang berputar pelan */
-.seal-ring { animation: spin 28s linear infinite; }
-@keyframes spin { to { transform: rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) {
-  .seal-ring { animation: none; }
   .tile { transition: none; }
 }

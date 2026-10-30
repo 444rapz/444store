@@ -1,17 +1,16 @@
 import Image from "next/image";
 import type { CSSProperties } from "react";
-import { ArrowRight, MessageCircle, Phone } from "lucide-react";
+import { ArrowRight, MessageCircle, Phone, Star } from "lucide-react";
 import { HeroBanner } from "@/components/HeroBanner";
 import { CategoryGrid } from "@/components/CategoryGrid";
 import { StatsRow } from "@/components/StatsRow";
 import { OrderCounter } from "@/components/OrderCounter";
 import { Reviews } from "@/components/Reviews";
 import { TopBuyers } from "@/components/TopBuyers";
-import { RatingSeal } from "@/components/RatingSeal";
 import { Faq } from "@/components/Faq";
 import { PayLogos } from "@/components/PayLogos";
 import { RobuxIcon } from "@/components/RobuxIcon";
-import { CONTACT, getSummary, number, waLink } from "@/lib/store";
+import { CONTACT, getSummary, number, rupiah, waLink } from "@/lib/store";
 
 export const revalidate = 30;
 
@@ -23,7 +22,6 @@ const STEPS = [
 
 const H2 = "text-3xl font-extrabold tracking-[-0.03em] sm:text-4xl";
 const SPARK = "M12 0c.6 6.4 5.6 11.4 12 12-6.4.6-11.4 5.6-12 12-.6-6.4-5.6-11.4-12-12C6.4 11.4 11.4 6.4 12 0z";
-const sticker = (r: string) => ({ "--r": r, "--z": "0px" }) as CSSProperties;
 
 export default async function Home() {
   const s = await getSummary();
@@ -65,7 +63,7 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Leaderboard: panggung juara dan segel rating */}
+      {/* Leaderboard: panggung juara dan daftar peringkat */}
       <section className="relative mx-auto mt-28 max-w-6xl px-4 sm:px-6" aria-labelledby="komunitas">
         <Image
           src="/brand/web-heart.png"
@@ -74,38 +72,51 @@ export default async function Home() {
           height={517}
           className="pointer-events-none absolute -top-16 right-0 -z-10 w-72 opacity-[0.07]"
         />
-        <h2 id="komunitas" className={H2}>
-          Leaderboard <span className="text-ice">komunitas</span>
-        </h2>
-        <p className="mt-2 text-ink-muted">Peringkat dihitung otomatis dari pesanan yang sudah selesai. Nama disamarkan.</p>
-        <div className="mt-12 grid gap-14 lg:grid-cols-[1.5fr_1fr] lg:items-center">
-          <TopBuyers buyers={s.top_buyers} />
-          <div className="flex flex-col items-center text-center">
-            <RatingSeal rating={stats.rating_avg} />
-            <p className="mt-5 max-w-[28ch] text-ink-muted">
-              Dari {number(stats.review_count)} ulasan asli yang ditulis pembeli setelah pesanannya selesai.
-            </p>
-            <a
-              href={CONTACT.discord}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-5 inline-flex items-center gap-2 rounded-full bg-discord px-5 py-3 text-sm font-semibold text-white"
-            >
-              <MessageCircle size={17} aria-hidden /> Gabung Discord 444s
-            </a>
+        <div className="flex flex-wrap items-end justify-between gap-5">
+          <div>
+            <h2 id="komunitas" className={H2}>
+              Leaderboard <span className="text-ice">komunitas</span>
+            </h2>
+            <p className="mt-2 text-ink-muted">Peringkat dihitung otomatis dari pesanan yang sudah selesai. Nama disamarkan.</p>
           </div>
+          <a
+            href={CONTACT.discord}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 rounded-full bg-discord px-5 py-3 text-sm font-semibold text-white"
+          >
+            <MessageCircle size={17} aria-hidden /> Gabung Discord 444s
+          </a>
+        </div>
+        <div className="mt-12">
+          <TopBuyers buyers={s.top_buyers} />
         </div>
       </section>
 
-      {/* Ulasan: dua baris gelembung chat berjalan berlawanan arah */}
-      <section className="mt-28" aria-labelledby="ulasan">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <h2 id="ulasan" className={H2}>
-            Kata yang <span className="text-ice">udah beli</span>
-          </h2>
-          <p className="mt-2 text-ink-muted">Ulasan asli dari tiket yang sudah selesai.</p>
+      {/* Ulasan: satu ulasan besar dan daftar ringkas, rating di judul */}
+      <section className="mx-auto mt-28 max-w-6xl px-4 sm:px-6" aria-labelledby="ulasan">
+        <div className="flex flex-wrap items-end justify-between gap-6">
+          <div>
+            <h2 id="ulasan" className={H2}>
+              Kata yang <span className="text-ice">udah beli</span>
+            </h2>
+            <p className="mt-2 text-ink-muted">Ulasan asli dari tiket yang sudah selesai.</p>
+          </div>
+          {stats.review_count > 0 && (
+            <div className="flex items-center gap-4">
+              <p className="text-5xl font-extrabold leading-none tracking-[-0.04em] tabular">{stats.rating_avg.toFixed(1)}</p>
+              <div>
+                <span className="flex gap-0.5 text-ice" aria-label={"Rata-rata " + stats.rating_avg + " dari 5"}>
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <Star key={i} size={16} fill={i < Math.round(stats.rating_avg) ? "currentColor" : "none"} aria-hidden />
+                  ))}
+                </span>
+                <p className="mt-1 text-sm text-ink-muted">dari {number(stats.review_count)} ulasan</p>
+              </div>
+            </div>
+          )}
         </div>
-        <div className="mt-6">
+        <div className="mt-10">
           <Reviews reviews={s.reviews} />
         </div>
       </section>
@@ -151,84 +162,53 @@ export default async function Home() {
         <Faq />
       </section>
 
-      {/* Penutup: pita silver selebar layar dengan stiker */}
-      <section className="metal relative mt-32 overflow-hidden" aria-labelledby="ajak">
-        <svg viewBox="0 0 24 24" aria-hidden className="pointer-events-none absolute left-[46%] top-10 h-10 w-10 text-[#25282e]/50">
-          <path d={SPARK} fill="currentColor" />
-        </svg>
-        <svg viewBox="0 0 24 24" aria-hidden className="pointer-events-none absolute bottom-12 left-[4%] h-6 w-6 text-[#25282e]/45">
-          <path d={SPARK} fill="currentColor" />
-        </svg>
-        <div className="relative z-10 mx-auto max-w-6xl px-4 pb-48 pt-16 sm:px-6 sm:pb-24 sm:pt-24">
-          <h2
-            id="ajak"
-            className="max-w-[12ch] text-[clamp(2.6rem,7.5vw,6rem)] font-extrabold leading-[0.95] tracking-[-0.04em] text-[#0b0b0c]"
-          >
-            {s.stock > 0 ? (
+      {/* Penutup: ajakan singkat di tengah dengan satu ikon chrome */}
+      <section className="mx-auto mt-32 max-w-6xl px-4 sm:px-6" aria-labelledby="ajak">
+        <div className="glow-card relative overflow-hidden rounded-[28px] border border-line-strong px-6 py-14 text-center sm:px-12 sm:py-20">
+          <svg viewBox="0 0 24 24" aria-hidden className="sparkle left-[12%] top-[22%] h-4 w-4">
+            <path d={SPARK} fill="currentColor" />
+          </svg>
+          <svg viewBox="0 0 24 24" aria-hidden className="sparkle bottom-[18%] right-[10%] h-6 w-6" style={{ animationDelay: "1.4s" }}>
+            <path d={SPARK} fill="currentColor" />
+          </svg>
+          <Image
+            src="/brand/chrome-infinity.png"
+            alt=""
+            width={360}
+            height={270}
+            className="icon-img float-a mx-auto w-32 sm:w-40"
+          />
+          <h2 id="ajak" className="mx-auto mt-6 max-w-[14ch] text-4xl font-extrabold leading-[1.02] tracking-[-0.035em] sm:text-6xl">
+            Siap top up Robux?
+          </h2>
+          <p className="mx-auto mt-4 max-w-[44ch] text-ink-muted sm:text-lg">
+            {s.stock > 0 && s.rate > 0 ? (
               <>
-                Stok lagi ada{" "}
-                <span className="inline-flex items-baseline gap-2 whitespace-nowrap tabular">
-                  <RobuxIcon className="h-[0.75em] w-[0.75em] translate-y-[0.06em]" />
-                  {number(s.stock)}.
-                </span>{" "}
-                Gas sekarang?
+                Stok sekarang{" "}
+                <span className="inline-flex items-center gap-1 whitespace-nowrap font-semibold text-ink tabular">
+                  <RobuxIcon className="h-4 w-4" /> {number(s.stock)}
+                </span>
+                , harga <span className="font-semibold text-ink tabular">{rupiah(s.rate)}</span> per Robux. Bayar pakai QRIS, admin
+                444s yang kirim ke username kamu.
               </>
             ) : (
               "Stok lagi habis. Tanya admin kapan restock, ya."
             )}
-          </h2>
-          <p className="mt-5 max-w-[40ch] text-lg text-[#33373f]">
-            Tinggal pilih jumlah, isi username, bayar pakai QRIS. Sisanya admin 444s yang urus.
           </p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <a
-              href="#beli"
-              className="inline-flex items-center gap-2 rounded-full bg-[#0b0b0c] px-6 py-3.5 font-semibold text-ink shadow-[0_12px_22px_-10px_rgb(0_0_0/0.6)] transition-transform duration-300 hover:-translate-y-0.5"
-            >
+          <div className="mt-8 flex flex-wrap justify-center gap-3">
+            <a href="#beli" className="chrome-btn inline-flex items-center gap-2 rounded-full px-6 py-3.5 font-semibold">
               Beli Robux sekarang <ArrowRight size={18} aria-hidden />
             </a>
             <a
               href={CONTACT.discord}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-full border border-black/25 px-5 py-3.5 font-medium text-[#0b0b0c] transition-colors hover:bg-black/5"
+              className="inline-flex items-center gap-2 rounded-full border border-line-strong px-5 py-3.5 font-medium hover:bg-raised"
             >
               <MessageCircle size={18} aria-hidden /> Tanya admin
             </a>
           </div>
         </div>
-        <Image
-          src="/brand/robux-hex.png"
-          alt=""
-          width={400}
-          height={433}
-          className="sticker bottom-6 right-[38%] w-28 sm:bottom-auto sm:right-[16%] sm:top-12 sm:w-52"
-          style={sticker("12deg")}
-        />
-        <Image
-          src="/brand/chrome-infinity.png"
-          alt=""
-          width={400}
-          height={300}
-          className="sticker bottom-10 right-4 w-32 sm:bottom-12 sm:right-[4%] sm:w-56"
-          style={sticker("-10deg")}
-        />
-        <Image
-          src="/brand/tribal-violet.png"
-          alt=""
-          width={300}
-          height={300}
-          className="sticker bottom-20 left-4 w-24 sm:bottom-auto sm:left-auto sm:right-[34%] sm:top-1/2 sm:w-32"
-          style={sticker("14deg")}
-        />
-        <Image
-          src="/brand/chrome-heart.png"
-          alt=""
-          width={300}
-          height={300}
-          className="sticker -bottom-8 right-[22%] hidden w-40 lg:block"
-          style={sticker("-6deg")}
-        />
       </section>
     </>
   );

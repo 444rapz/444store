@@ -34,7 +34,7 @@ export function TopBuyers({ buyers }: { buyers: TopBuyer[] }) {
   const list = podium ? buyers.slice(3) : buyers;
   const offset = podium ? 3 : 0;
   return (
-    <div>
+    <div className="grid gap-10 lg:grid-cols-[1.1fr_1fr] lg:items-end lg:gap-14">
       {podium && (
         <ol className="grid grid-cols-3 items-end gap-2 border-b-2 border-line-strong sm:gap-4" aria-label="Tiga besar pembeli">
           {PODIUM.map((i) => (
@@ -42,7 +42,7 @@ export function TopBuyers({ buyers }: { buyers: TopBuyer[] }) {
           ))}
         </ol>
       )}
-      <ol className="mt-6 grid gap-x-6 sm:grid-cols-2" start={offset + 1}>
+      <ol start={offset + 1}>
         {list.map((b, i) => (
           <li key={offset + i} className="flex items-center gap-3 border-b border-line py-3">
             <span className="w-6 shrink-0 text-sm font-bold text-ink-faint tabular">{offset + i + 1}</span>

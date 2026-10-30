@@ -3,57 +3,63 @@ import { RobuxIcon } from "./RobuxIcon";
 import type { Review } from "@/lib/store";
 import { number } from "@/lib/store";
 
-const TINT = ["bubble-ink", "bubble-ice", "bubble-blush"];
-
-// Ulasan sebagai gelembung chat, seperti pesan pembeli di tiket Discord
-function Bubble({ r, i }: { r: Review; i: number }) {
+function Stars({ rating, size }: { rating: number; size: number }) {
   return (
-    <figure className={"bubble " + TINT[i % TINT.length]}>
-      <figcaption className="flex items-center gap-2 text-xs">
-        <span className="grid h-7 w-7 place-items-center rounded-full bg-black/10 text-[13px] font-bold" aria-hidden>
-          {r.name.charAt(0).toUpperCase()}
-        </span>
-        <span className="font-semibold tabular">{r.name}</span>
-        <span className="ml-auto flex" aria-label={`${r.rating} dari 5 bintang`}>
-          {Array.from({ length: 5 }).map((_, k) => (
-            <Star key={k} size={12} fill={k < r.rating ? "currentColor" : "none"} strokeWidth={1.6} aria-hidden />
-          ))}
-        </span>
-      </figcaption>
-      <blockquote className="mt-2.5 text-[15px] font-medium leading-snug">{r.text}</blockquote>
-      {r.robux > 0 && (
-        <p className="mt-2.5 inline-flex items-center gap-1 text-xs font-semibold text-black/60 tabular">
-          <RobuxIcon className="h-3.5 w-3.5" /> {number(r.robux)} Robux
-        </p>
-      )}
-    </figure>
+    <span className="flex gap-0.5 text-ice" aria-label={`${rating} dari 5 bintang`}>
+      {Array.from({ length: 5 }).map((_, i) => (
+        <Star key={i} size={size} fill={i < rating ? "currentColor" : "none"} strokeWidth={1.5} aria-hidden />
+      ))}
+    </span>
   );
 }
 
-function Row({ items, reverse, start }: { items: Review[]; reverse?: boolean; start: number }) {
-  const loop = [...items, ...items];
+function Amount({ robux }: { robux: number }) {
+  if (robux <= 0) return null;
   return (
-    <div className="marquee overflow-hidden py-3">
-      <div className={"marquee-track items-start " + (reverse ? "reverse" : "")}>
-        {loop.map((r, i) => (
-          <Bubble key={i} r={r} i={start + (i % items.length)} />
-        ))}
-      </div>
-    </div>
+    <span className="inline-flex items-center gap-1 tabular">
+      <RobuxIcon className="h-3.5 w-3.5" /> {number(robux)} Robux
+    </span>
   );
 }
 
+// Satu ulasan paling lengkap ditampilkan besar, sisanya daftar ringkas di sebelahnya
 export function Reviews({ reviews }: { reviews: Review[] }) {
   if (!reviews.length) {
-    return <p className="px-4 text-ink-muted sm:px-6">Ulasan pembeli akan muncul di sini.</p>;
+    return <p className="text-ink-muted">Ulasan pembeli akan muncul di sini.</p>;
   }
-  if (reviews.length < 6) return <Row items={reviews} start={0} />;
-  const a = reviews.filter((_, i) => i % 2 === 0);
-  const b = reviews.filter((_, i) => i % 2 === 1);
+  const [top, ...rest] = [...reviews].sort((a, b) => b.text.length - a.text.length);
+  const list = rest.slice(0, 4);
+
   return (
-    <div>
-      <Row items={a} start={0} />
-      <Row items={b} start={1} reverse />
+    <div className="grid gap-10 border-t border-line-strong pt-10 lg:grid-cols-[1.15fr_1fr] lg:gap-16">
+      <figure>
+        <Stars rating={top.rating} size={18} />
+        <blockquote className="mt-5 text-2xl font-semibold leading-snug tracking-tight sm:text-[2rem]">
+          &ldquo;{top.text}&rdquo;
+        </blockquote>
+        <figcaption className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-ink-muted">
+          <span className="grid h-8 w-8 place-items-center rounded-full bg-raised font-bold text-ink" aria-hidden>
+            {top.name.charAt(0).toUpperCase()}
+          </span>
+          <span className="font-semibold text-ink tabular">{top.name}</span>
+          <Amount robux={top.robux} />
+        </figcaption>
+      </figure>
+
+      {list.length > 0 && (
+        <ul className="divide-y divide-line border-y border-line lg:border-t-0">
+          {list.map((r, i) => (
+            <li key={i} className="py-5 first:pt-0 max-lg:first:pt-5">
+              <div className="flex items-center justify-between gap-3 text-xs text-ink-faint">
+                <Stars rating={r.rating} size={13} />
+                <Amount robux={r.robux} />
+              </div>
+              <p className="mt-2 text-[15px] leading-snug">{r.text}</p>
+              <p className="mt-1.5 text-xs text-ink-faint tabular">{r.name}</p>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }
