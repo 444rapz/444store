@@ -1,0 +1,143 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ground: #0b0b0c;
+  --color-surface: #131315;
+  --color-raised: #1a1a1e;
+  --color-line: rgb(246 243 239 / 0.09);
+  --color-line-strong: rgb(246 243 239 / 0.16);
+  --color-ink: #f6f3ef;
+  --color-ink-muted: rgb(246 243 239 / 0.66);
+  --color-ink-faint: rgb(246 243 239 / 0.5);
+  --color-violet: #8b5cf6;
+  --color-violet-deep: #6d3fe0;
+  --color-violet-soft: #c9b8ff;
+  --color-live: #22c55e;
+  --color-warn: #fbbf24;
+  --color-discord: #5865f2;
+  --color-whatsapp: #25d366;
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --radius-card: 14px;
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@layer base {
+  html {
+    color-scheme: dark;
+    -webkit-tap-highlight-color: transparent;
+    scroll-behavior: smooth;
+  }
+  body {
+    background: var(--color-ground);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-feature-settings: "ss01", "cv11";
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+  ::selection {
+    background: rgb(139 92 246 / 0.45);
+    color: #fff;
+  }
+  input,
+  textarea {
+    caret-color: var(--color-violet-soft);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-violet-soft);
+    outline-offset: 3px;
+    border-radius: 10px;
+  }
+  a {
+    text-underline-offset: 3px;
+  }
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(246 243 239 / 0.18) transparent;
+  }
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgb(246 243 239 / 0.16);
+    border-radius: 999px;
+    border: 3px solid var(--color-ground);
+  }
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+    letter-spacing: -0.025em;
+  }
+  p {
+    text-wrap: pretty;
+  }
+}
+
+@utility tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Bintang empat sudut khas rapz444.site, versi lebih tenang */
+.sparkle {
+  position: absolute;
+  color: rgb(246 243 239 / 0.55);
+  pointer-events: none;
+  animation: twinkle 5s ease-in-out infinite;
+}
+@keyframes twinkle {
+  0%, 100% { opacity: 0.25; transform: scale(0.85); }
+  50% { opacity: 0.8; transform: scale(1); }
+}
+
+/* Odometer total bayar */
+.odo-col {
+  display: inline-block;
+  height: 1em;
+  overflow: hidden;
+  line-height: 1;
+  vertical-align: top;
+}
+.odo-strip {
+  display: flex;
+  flex-direction: column;
+  transition: transform 700ms var(--ease-out-expo);
+}
+.odo-strip > span {
+  height: 1em;
+  line-height: 1;
+}
+
+/* Ulasan berjalan */
+.marquee {
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+.marquee-track {
+  display: flex;
+  gap: 12px;
+  width: max-content;
+  animation: marquee 60s linear infinite;
+}
+.marquee:hover .marquee-track {
+  animation-play-state: paused;
+}
+@keyframes marquee {
+  to { transform: translateX(-50%); }
+}
+
+.live-dot {
+  box-shadow: 0 0 0 0 rgb(34 197 94 / 0.6);
+  animation: pulse 2.4s var(--ease-out-expo) infinite;
+}
+@keyframes pulse {
+  70% { box-shadow: 0 0 0 7px rgb(34 197 94 / 0); }
+  100% { box-shadow: 0 0 0 0 rgb(34 197 94 / 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sparkle, .marquee-track, .live-dot { animation: none; }
+  .odo-strip { transition: none; }
+  html { scroll-behavior: auto; }
+}
