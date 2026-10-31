@@ -9,6 +9,7 @@ import { ProfilePreview, RobloxAvatar } from "./RobloxProfile";
 import { useRobloxLookup } from "@/lib/roblox";
 import { useWebUser, webApi, type Order } from "@/lib/web";
 import { API_URL, PAY_METHODS, number, rupiah, type GigItem, type PayMethod } from "@/lib/store";
+import { gigPrice } from "@/lib/pricing";
 
 type Game = { universeId: number; placeId: number; name: string; players: number; icon: string };
 type Pass = { id: number; name: string; robux: number; icon: string };
@@ -19,6 +20,8 @@ type Line = Product & { username: string; display: string; avatar: string; serve
 
 const SERVER_LINK = /^https:\/\/(www\.)?roblox\.com\/\S*(share\?code=|privateServerLinkCode=)\S+$/i;
 const FIRST = 12;
+const MAX_LINES = 10;
+const keyOf = (p: Product) => (p.source === "pass" ? `p${p.passId}` : `i${p.itemId}`);
 
 function Icon({ src, size }: { src: string; size: string }) {
   return (
@@ -91,7 +94,7 @@ export function GigOrderForm({ rate, ready, items }: { rate: number; ready: bool
   const [passes, setPasses] = useState<Pass[] | null>(null);
   const [passQuery, setPassQuery] = useState("");
   const [showAll, setShowAll] = useState(false);
-  const [product, setProduct] = useState<Product | null>(null);
+  const [picked, setPicked] = useState<Product[]>([]);
   const [username, setUsername] = useState("");
   const [server, setServer] = useState<"link" | "admin">("admin");
   const [serverLink, setServerLink] = useState("");
@@ -129,7 +132,6 @@ export function GigOrderForm({ rate, ready, items }: { rate: number; ready: bool
   async function pickGame(g: Game) {
     setGame(g);
     setPasses(null);
-    setProduct(null);
     setPassQuery("");
     setShowAll(false);
     try {
@@ -148,24 +150,27 @@ export function GigOrderForm({ rate, ready, items }: { rate: number; ready: bool
   const shown = showAll || pq ? matched : matched.slice(0, FIRST);
   const linkOk = server === "admin" || SERVER_LINK.test(serverLink.trim());
   const recipientOk = valid && (status === "found" || status === "error");
-  const canAdd = !!product && recipientOk && linkOk && cart.length < 10;
-  const total = cart.reduce((n, l) => n + l.robux * rate, 0);
+  const roomLeft = MAX_LINES - cart.length;
+  const canAdd = picked.length > 0 && picked.length <= roomLeft && recipientOk && linkOk;
+  const total = cart.reduce((n, l) => n + gigPrice(l.robux, rate), 0);
+  const isPicked = (key: string) => picked.some((p) => keyOf(p) === key);
+
+  function toggle(p: Product) {
+    setPicked((cur) => (cur.some((x) => keyOf(x) === keyOf(p)) ? cur.filter((x) => keyOf(x) !== keyOf(p)) : [...cur, p]));
+  }
 
   function addLine() {
-    if (!canAdd || !product) return;
-    setCart((c) => [
-      ...c,
-      {
-        ...product,
-        username: profile?.name ?? uname,
-        display: profile?.displayName ?? uname,
-        avatar: profile?.avatar ?? "",
-        server,
-        serverLink: server === "link" ? serverLink.trim() : "",
-      },
-    ]);
+    if (!canAdd) return;
+    const who = {
+      username: profile?.name ?? uname,
+      display: profile?.displayName ?? uname,
+      avatar: profile?.avatar ?? "",
+      server,
+      serverLink: server === "link" ? serverLink.trim() : "",
+    };
+    setCart((c) => [...c, ...picked.map((p) => ({ ...p, ...who }))]);
     setUsername("");
-    setProduct(null);
+    setPicked([]);
   }
 
   async function submit() {
@@ -199,7 +204,7 @@ export function GigOrderForm({ rate, ready, items }: { rate: number; ready: bool
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_380px] lg:items-start">
       <div className="grid grid-cols-1 gap-5">
-        <Box n={1} title="Pilih gamepass" sub="Khusus game yang punya fitur gift. Ketik nama game atau tempel link-nya.">
+        <Box n={1} title="Pilih gamepass" sub="Khusus game yang punya fitur gift. Bisa pilih lebih dari satu gamepass.">
           <label className="relative block">
             <span className="sr-only">Cari game</span>
             <Search size={18} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-ink-faint" aria-hidden />
@@ -249,7 +254,6 @@ export function GigOrderForm({ rate, ready, items }: { rate: number; ready: bool
                   onClick={() => {
                     setGame(null);
                     setPasses(null);
-                    setProduct(null);
                   }}
                   className="rounded-full border border-line-strong px-3 py-1.5 text-xs font-semibold hover:bg-raised"
                 >
@@ -283,10 +287,10 @@ export function GigOrderForm({ rate, ready, items }: { rate: number; ready: bool
                           icon={p.icon}
                           name={p.name}
                           robux={p.robux}
-                          price={p.robux * rate}
-                          selected={product?.source === "pass" && product.passId === p.id}
+                          price={gigPrice(p.robux, rate)}
+                          selected={isPicked(`p${p.id}`)}
                           onPick={() =>
-                            setProduct({ source: "pass", universeId: game.universeId, game: game.name, passId: p.id, name: p.name, robux: p.robux, icon: p.icon })
+                            toggle({ source: "pass", universeId: game.universeId, game: game.name, passId: p.id, name: p.name, robux: p.robux, icon: p.icon })
                           }
                         />
                       </li>
@@ -321,8 +325,8 @@ export function GigOrderForm({ rate, ready, items }: { rate: number; ready: bool
                         sub={it.game}
                         robux={it.robux}
                         price={it.price}
-                        selected={product?.source === "item" && product.itemId === it.id}
-                        onPick={() => setProduct({ source: "item", itemId: it.id, game: it.game, name: it.name, robux: it.robux, icon })}
+                        selected={isPicked(`i${it.id}`)}
+                        onPick={() => toggle({ source: "item", itemId: it.id, game: it.game, name: it.name, robux: it.robux, icon })}
                       />
                     </li>
                   );
@@ -333,17 +337,29 @@ export function GigOrderForm({ rate, ready, items }: { rate: number; ready: bool
         </Box>
 
         <Box n={2} title="Penerima dan server" sub="Akun yang mau dikirimi item dan server tempat admin mengirim.">
-          {product ? (
-            <p className="flex items-center gap-3 rounded-xl border border-line bg-raised/50 p-2.5 text-sm">
-              <Icon src={product.icon} size="h-10 w-10 rounded-lg" />
-              <span className="min-w-0 flex-1">
-                <span className="block truncate font-semibold">{product.name}</span>
-                <span className="block truncate text-xs text-ink-faint">{product.game}</span>
-              </span>
-              <span className="font-bold tabular">{rupiah(product.robux * rate)}</span>
-            </p>
+          {picked.length > 0 ? (
+            <ul className="grid grid-cols-1 gap-1.5" aria-label="Gamepass yang dipilih">
+              {picked.map((p) => (
+                <li key={keyOf(p)} className="flex items-center gap-3 rounded-xl border border-line bg-raised/50 p-2 text-sm">
+                  {p.icon && <Icon src={p.icon} size="h-9 w-9 rounded-lg" />}
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate font-semibold">{p.name}</span>
+                    <span className="block truncate text-xs text-ink-faint">{p.game}</span>
+                  </span>
+                  <span className="font-bold tabular">{rupiah(gigPrice(p.robux, rate))}</span>
+                  <button
+                    type="button"
+                    onClick={() => toggle(p)}
+                    aria-label={`Batal pilih ${p.name}`}
+                    className="grid h-7 w-7 shrink-0 place-items-center rounded-full text-ink-faint hover:bg-white/5 hover:text-ink"
+                  >
+                    <X size={15} aria-hidden />
+                  </button>
+                </li>
+              ))}
+            </ul>
           ) : (
-            <p className="rounded-xl border border-dashed border-line-strong px-3.5 py-3 text-sm text-ink-muted">Pilih gamepass atau item dulu di langkah 1.</p>
+            <p className="rounded-xl border border-dashed border-line-strong px-3.5 py-3 text-sm text-ink-muted">Pilih satu atau beberapa gamepass dulu di langkah 1.</p>
           )}
 
           <label className="mt-4 block">
@@ -404,9 +420,13 @@ export function GigOrderForm({ rate, ready, items }: { rate: number; ready: bool
             disabled={!canAdd}
             className="chrome-btn mt-5 inline-flex items-center gap-2 rounded-full px-5 py-3 font-semibold disabled:cursor-not-allowed disabled:opacity-40"
           >
-            <Plus size={18} aria-hidden /> Tambah ke pesanan
+            <Plus size={18} aria-hidden /> {picked.length > 1 ? `Tambah ${picked.length} item ke pesanan` : "Tambah ke pesanan"}
           </button>
-          <p className="mt-2 text-xs text-ink-faint">Bisa ditambah lagi untuk teman, game lain, atau gamepass lain.</p>
+          <p className="mt-2 text-xs text-ink-faint">
+            {picked.length > roomLeft
+              ? `Satu pesanan maksimal ${MAX_LINES} item. Kurangi pilihanmu dulu, ya.`
+              : "Bisa ditambah lagi untuk teman, game lain, atau gamepass lain."}
+          </p>
         </Box>
       </div>
 
@@ -434,7 +454,7 @@ export function GigOrderForm({ rate, ready, items }: { rate: number; ready: bool
                   </p>
                 </div>
                 <div className="flex flex-col items-end gap-1">
-                  <span className="text-sm font-bold tabular">{rupiah(l.robux * rate)}</span>
+                  <span className="text-sm font-bold tabular">{rupiah(gigPrice(l.robux, rate))}</span>
                   <button
                     type="button"
                     onClick={() => setCart((c) => c.filter((_, j) => j !== i))}

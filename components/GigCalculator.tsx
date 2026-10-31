@@ -4,6 +4,7 @@ import { useState } from "react";
 import { ArrowRight } from "lucide-react";
 import { RobuxIcon } from "./RobuxIcon";
 import { rupiah } from "@/lib/store";
+import { gigPrice } from "@/lib/pricing";
 
 /** Cek harga Gift In Game: ketik harga item dalam Robux, harga Rupiah-nya langsung keluar. */
 export function GigCalculator({ rate }: { rate: number }) {
@@ -26,7 +27,7 @@ export function GigCalculator({ rate }: { rate: number }) {
         </label>
         <ArrowRight size={18} className="text-ink-faint" aria-hidden />
         <p className="rounded-xl bg-ice/15 px-4 py-2.5 text-lg font-extrabold text-ice tabular" aria-live="polite">
-          {rupiah(n * rate)}
+          {rupiah(gigPrice(n, rate))}
         </p>
       </div>
     </section>

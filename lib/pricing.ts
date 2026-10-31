@@ -15,3 +15,8 @@ export function budgetToRobux(rupiah: number, rate: number) {
   const rem = raw % 5;
   return rem === 4 ? raw + 1 : raw - rem;
 }
+
+/** Harga Gift In Game: harga item (Robux) x rate, dibulatkan ke atas per Rp 1.000 seperti kalkulator bot. */
+export function gigPrice(robux: number, rate: number) {
+  return Math.ceil((robux * rate) / 1000) * 1000;
+}

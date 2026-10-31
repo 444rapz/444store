@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { DiscordIcon } from "./BrandIcons";
 import { LogoOrb } from "./Brand";
@@ -15,6 +15,36 @@ const ERRORS: Record<string, string> = {
   google_gagal: "Login Google gagal. Coba lagi sebentar.",
   sesi_login: "Sesi login sudah habis. Coba masuk lagi.",
 };
+
+type Turnstile = {
+  render(el: HTMLElement, opts: Record<string, unknown>): string;
+  reset(id?: string): void;
+  remove(id: string): void;
+};
+
+declare global {
+  interface Window {
+    turnstile?: Turnstile;
+  }
+}
+
+let turnstileScript: Promise<void> | null = null;
+
+/** Muat script Cloudflare Turnstile sekali saja, hanya kalau toko sudah mengaktifkannya. */
+function loadTurnstile() {
+  turnstileScript ??= new Promise<void>((resolve, reject) => {
+    const el = document.createElement("script");
+    el.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
+    el.async = true;
+    el.onload = () => resolve();
+    el.onerror = () => {
+      turnstileScript = null;
+      reject(new Error("turnstile"));
+    };
+    document.head.appendChild(el);
+  });
+  return turnstileScript;
+}
 
 function GoogleMark() {
   return (
@@ -37,24 +67,60 @@ export function AuthForm({ next, error, startMode }: { next: string; error: stri
   const [show, setShow] = useState(false);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState(ERRORS[error] || "");
-  const [providers, setProviders] = useState({ discord: true, google: false });
+  const [providers, setProviders] = useState({ discord: true, google: false, turnstile: "" });
+  const [captcha, setCaptcha] = useState("");
+  const captchaBox = useRef<HTMLDivElement>(null);
+  const widget = useRef<string | null>(null);
 
   useEffect(() => {
-    webApi<{ discord: boolean; google: boolean }>("auth/providers").then((r) => {
-      if (r.ok) setProviders({ discord: r.data.discord, google: r.data.google });
+    webApi<{ discord: boolean; google: boolean; turnstile?: string }>("auth/providers").then((r) => {
+      if (r.ok) setProviders({ discord: r.data.discord, google: r.data.google, turnstile: r.data.turnstile || "" });
     });
   }, []);
 
+  // Centang "Saya bukan robot" dari Cloudflare, aktif kalau admin sudah memasang kuncinya lewat /setturnstile
+  useEffect(() => {
+    const sitekey = providers.turnstile;
+    if (!sitekey) return;
+    let cancelled = false;
+    loadTurnstile()
+      .then(() => {
+        const el = captchaBox.current;
+        if (cancelled || !el || !window.turnstile) return;
+        widget.current = window.turnstile.render(el, {
+          sitekey,
+          theme: "dark",
+          language: "id",
+          size: el.offsetWidth < 300 ? "compact" : "flexible",
+          callback: (token: string) => setCaptcha(token),
+          "expired-callback": () => setCaptcha(""),
+          "error-callback": () => setCaptcha(""),
+        });
+      })
+      .catch(() => setMessage("Verifikasi Cloudflare gagal dimuat. Muat ulang halaman ini."));
+    return () => {
+      cancelled = true;
+      if (widget.current && window.turnstile) window.turnstile.remove(widget.current);
+      widget.current = null;
+    };
+  }, [providers.turnstile]);
+
   async function submit(e: React.FormEvent) {
     e.preventDefault();
+    if (providers.turnstile && !captcha) return setMessage("Tunggu kotak verifikasi Cloudflare selesai dulu, ya.");
     setBusy(true);
     setMessage("");
     const r = await webApi<{ user: WebUser }>(mode === "login" ? "auth/login" : "auth/register", {
       method: "POST",
-      body: JSON.stringify({ identifier, password, name }),
+      body: JSON.stringify({ identifier, password, name, turnstile: captcha }),
     });
     setBusy(false);
-    if (!r.ok) return setMessage(r.data.error || "Gagal masuk. Coba lagi.");
+    if (!r.ok) {
+      // Token Cloudflare cuma bisa dipakai sekali, jadi minta yang baru
+      if (widget.current && window.turnstile) window.turnstile.reset(widget.current);
+      setCaptcha("");
+      return setMessage(r.data.error || "Gagal masuk. Coba lagi.");
+    }
     router.replace(next);
     router.refresh();
   }
@@ -172,6 +238,8 @@ export function AuthForm({ next, error, startMode }: { next: string; error: stri
             </button>
           </span>
         </label>
+
+        {providers.turnstile && <div ref={captchaBox} className="min-h-[65px]" />}
 
         {message && (
           <p className="rounded-xl border border-warn/30 bg-warn/10 px-3.5 py-3 text-sm text-warn" role="alert">
