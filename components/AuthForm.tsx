@@ -209,7 +209,7 @@ export function AuthForm({ next, error, startMode }: { next: string; error: stri
           <input
             value={identifier}
             onChange={(e) => setIdentifier(e.target.value.slice(0, 120))}
-            placeholder="nama@email.com atau 0812..."
+            placeholder="Contoh: nama@gmail.com atau 081234567890"
             autoComplete="username"
             required
             className="mt-1.5 w-full rounded-xl border border-line bg-ground px-4 py-3 placeholder:text-ink-faint focus:border-ice focus:outline-none"
@@ -222,7 +222,7 @@ export function AuthForm({ next, error, startMode }: { next: string; error: stri
               type={show ? "text" : "password"}
               value={password}
               onChange={(e) => setPassword(e.target.value.slice(0, 72))}
-              placeholder={mode === "register" ? "Minimal 6 karakter" : "Password akun kamu"}
+              placeholder={mode === "register" ? "Minimal 6 karakter, campur huruf dan angka" : "Password akun kamu"}
               autoComplete={mode === "register" ? "new-password" : "current-password"}
               required
               minLength={6}

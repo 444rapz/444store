@@ -211,10 +211,15 @@ export function GigOrderForm({ rate, ready, items }: { rate: number; ready: bool
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value.slice(0, 200))}
-              placeholder="Nama game atau link game"
+              placeholder="Contoh: Evade"
               className="w-full rounded-xl border border-line bg-ground py-3 pl-11 pr-4 placeholder:text-ink-faint focus:border-ice focus:outline-none"
             />
           </label>
+          {!game && (
+            <p className="mt-2 text-xs text-ink-faint">
+              Ketik nama game atau tempel link game-nya dari Roblox, lalu centang gamepass yang mau dikirim.
+            </p>
+          )}
 
           {searching && (
             <p className="mt-4 flex items-center gap-2 text-sm text-ink-muted">
@@ -363,12 +368,12 @@ export function GigOrderForm({ rate, ready, items }: { rate: number; ready: bool
           )}
 
           <label className="mt-4 block">
-            <span className="text-sm text-ink-muted">Username Roblox penerima</span>
+            <span className="text-sm text-ink-muted">Username Roblox penerima <span className="text-ink-faint">(bukan display name)</span></span>
             <input
               autoComplete="off"
               autoCapitalize="off"
               spellCheck={false}
-              placeholder="Username, bukan display name"
+              placeholder="Contoh: builderman"
               value={username}
               onChange={(e) => setUsername(e.target.value.slice(0, 20))}
               className="mt-1.5 w-full rounded-xl border border-line bg-ground px-4 py-3 placeholder:text-ink-faint focus:border-ice focus:outline-none"
@@ -405,7 +410,7 @@ export function GigOrderForm({ rate, ready, items }: { rate: number; ready: bool
                 <input
                   value={serverLink}
                   onChange={(e) => setServerLink(e.target.value.slice(0, 400))}
-                  placeholder="https://www.roblox.com/share?code=...&type=Server"
+                  placeholder="Contoh: https://www.roblox.com/share?code=abc123&type=Server"
                   aria-invalid={!!serverLink && !linkOk}
                   className="w-full rounded-xl border border-line bg-ground px-4 py-3 text-base placeholder:text-ink-faint focus:border-ice focus:outline-none aria-[invalid=true]:border-warn sm:text-sm"
                 />
@@ -493,7 +498,8 @@ export function GigOrderForm({ rate, ready, items }: { rate: number; ready: bool
             value={note}
             onChange={(e) => setNote(e.target.value.slice(0, 300))}
             rows={2}
-            className="mt-1.5 w-full resize-none rounded-xl border border-line bg-ground px-3.5 py-2.5 text-base focus:border-ice focus:outline-none sm:text-sm"
+            placeholder="Contoh: aku online jam 8 malam"
+            className="mt-1.5 w-full resize-none rounded-xl border border-line bg-ground px-3.5 py-2.5 text-base placeholder:text-ink-faint focus:border-ice focus:outline-none sm:text-sm"
           />
         </label>
 

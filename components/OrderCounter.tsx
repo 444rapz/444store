@@ -160,12 +160,12 @@ export function OrderCounter({ initialRate, initialStock }: { initialRate: numbe
       )}
 
       <label className="mt-4 block">
-        <span className="text-sm text-ink-muted">Username Roblox penerima</span>
+        <span className="text-sm text-ink-muted">Username Roblox penerima <span className="text-ink-faint">(bukan display name)</span></span>
         <input
           autoComplete="off"
           autoCapitalize="off"
           spellCheck={false}
-          placeholder="Username, bukan display name"
+          placeholder="Contoh: builderman"
           value={username}
           onChange={(e) => setUsername(e.target.value.slice(0, 20))}
           aria-invalid={(touched && !usernameOk) || status === "notfound"}

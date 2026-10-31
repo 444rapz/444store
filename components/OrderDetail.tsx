@@ -163,7 +163,7 @@ function ChatPanel({
         <input
           value={text}
           onChange={(e) => setText(e.target.value.slice(0, 1000))}
-          placeholder="Tulis pesan ke admin..."
+          placeholder="Contoh: Min, aku udah transfer ya"
           aria-label="Pesan ke admin"
           className="min-w-0 flex-1 rounded-full border border-line bg-ground px-4 py-2.5 placeholder:text-ink-faint focus:border-ice focus:outline-none"
         />
@@ -241,7 +241,7 @@ function ReviewBox({ order, onSent }: { order: Order; onSent: (o: Order, m: Chat
         value={text}
         onChange={(e) => setText(e.target.value.slice(0, 500))}
         rows={3}
-        placeholder="Ceritain pengalamanmu (opsional)"
+        placeholder="Contoh: Prosesnya cepet, adminnya ramah (opsional)"
         className="mt-3 w-full resize-none rounded-xl border border-line bg-ground px-4 py-3 placeholder:text-ink-faint focus:border-ice focus:outline-none"
       />
       {err && <p className="mt-2 text-sm text-warn">{err}</p>}

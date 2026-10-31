@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { OrderForm } from "@/components/OrderForm";
 import { RobuxIcon } from "@/components/RobuxIcon";
 import { getSummary, number, rupiah } from "@/lib/store";
@@ -19,7 +20,10 @@ export default async function RobuxPage({ searchParams }: { searchParams: Promis
     <div className="mx-auto max-w-6xl px-4 pb-12 pt-8 sm:px-6 md:pt-12">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-extrabold tracking-[-0.03em] sm:text-5xl">Robux via Username</h1>
+          <div className="flex items-center gap-3">
+            <h1 className="text-3xl font-extrabold tracking-[-0.03em] sm:text-5xl">Robux via Username</h1>
+            <Image src="/brand/bag.png" alt="" width={227} height={310} priority className="icon-img h-11 w-auto -rotate-6 sm:h-16" />
+          </div>
           <p className="mt-3 max-w-[52ch] text-ink-muted">
             Isi tiga langkah di bawah. Setelah pesanan dibuat, kamu bayar pakai QRIS dan bisa chat langsung sama admin di halaman pesanan.
           </p>

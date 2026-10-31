@@ -44,7 +44,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           Langsung ke isi
         </a>
         <Header />
-        <main id="isi">{children}</main>
+        {/* overflow-x-clip: stiker hiasan yang menjorok keluar tidak membuat halaman bisa digeser ke samping */}
+        <main id="isi" className="overflow-x-clip">
+          {children}
+        </main>
         <Footer />
       </body>
     </html>

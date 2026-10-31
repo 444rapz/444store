@@ -59,7 +59,7 @@ export function Header() {
                 key={n.href}
                 href={n.href}
                 aria-current={active(n.href) ? "page" : undefined}
-                className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
+                className={`rounded-full px-3 py-2 text-sm font-medium transition-colors lg:px-4 ${
                   active(n.href) ? "chrome-chip" : "text-ink-muted hover:bg-ink/[0.06] hover:text-ink"
                 }`}
               >
@@ -68,16 +68,25 @@ export function Header() {
             ))}
           </nav>
           <div className="flex items-center gap-1.5 sm:gap-2">
-            <ThemeToggle />
-            <a
-              href={CONTACT.discord}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Discord"
-              className="hidden h-11 w-11 place-items-center rounded-full border border-line-strong sm:grid text-ink-muted transition-colors hover:border-discord hover:bg-discord/15 hover:text-ink"
+            {/* Tombol tema dan Discord menyingkir saat di-scroll supaya navbar tetap ringkas */}
+            <div
+              inert={scrolled}
+              className={
+                "-m-1 flex items-center gap-1.5 overflow-hidden p-1 transition-[max-width,opacity] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] sm:gap-2 " +
+                (scrolled ? "max-w-0 opacity-0" : "max-w-[128px] opacity-100")
+              }
             >
-              <DiscordIcon size={19} />
-            </a>
+              <ThemeToggle />
+              <a
+                href={CONTACT.discord}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Discord"
+                className="hidden h-11 w-11 shrink-0 place-items-center rounded-full border border-line-strong text-ink-muted sm:grid md:hidden lg:grid transition-colors hover:border-discord hover:bg-discord/15 hover:text-ink"
+              >
+                <DiscordIcon size={19} />
+              </a>
+            </div>
             <Link
               href="/robux"
               aria-label="Beli Robux"

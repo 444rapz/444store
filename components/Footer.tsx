@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { Brand } from "./Brand";
 import { PayLogos } from "./PayLogos";
@@ -7,7 +8,11 @@ import { CONTACT, waLink } from "@/lib/store";
 export function Footer() {
   return (
     <footer className="mt-24 border-t border-line pb-28 md:pb-10">
-      <div className="mx-auto grid max-w-6xl gap-10 px-4 pt-12 sm:px-6 md:grid-cols-[1.4fr_1fr_1fr]">
+      <div className="relative mx-auto grid max-w-6xl gap-10 px-4 pt-12 sm:px-6 md:grid-cols-[1.4fr_1fr_1fr]">
+        <div aria-hidden className="swing pointer-events-none absolute right-6 top-0 flex flex-col items-center sm:right-10">
+          <span className="h-12 w-px bg-line-strong sm:h-16" />
+          <Image src="/brand/spider.png" alt="" width={274} height={360} className="icon-img -mt-1 w-9 sm:w-12" />
+        </div>
         <div className="max-w-sm">
           <Brand />
           <p className="mt-4 text-sm leading-relaxed text-ink-muted">

@@ -298,12 +298,12 @@ export function OrderForm({
 
         <Step n={2} title="Data akun Roblox" sub="Cukup username, Robux dikirim tanpa password.">
           <label className="block">
-            <span className="text-sm text-ink-muted">Username Roblox penerima</span>
+            <span className="text-sm text-ink-muted">Username Roblox penerima <span className="text-ink-faint">(bukan display name)</span></span>
             <input
               autoComplete="off"
               autoCapitalize="off"
               spellCheck={false}
-              placeholder="Username, bukan display name"
+              placeholder="Contoh: builderman"
               value={username}
               onChange={(e) => setUsername(e.target.value.slice(0, 20))}
               aria-invalid={status === "notfound"}
@@ -534,7 +534,7 @@ export function OrderForm({
               <input
                 value={promoInput}
                 onChange={(e) => setPromoInput(e.target.value.toUpperCase().slice(0, 20))}
-                placeholder="Kode promo"
+                placeholder="Kalau punya, contoh: HEMAT10"
                 aria-label="Kode promo"
                 className="min-w-0 flex-1 rounded-xl border border-line bg-ground px-3.5 py-2.5 text-base uppercase sm:text-sm placeholder:normal-case placeholder:text-ink-faint focus:border-ice focus:outline-none"
               />

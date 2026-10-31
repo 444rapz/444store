@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { DiscordIcon, WhatsAppIcon } from "@/components/BrandIcons";
 import { GigCalculator } from "@/components/GigCalculator";
 import { GigOrderForm } from "@/components/GigOrderForm";
@@ -23,6 +24,7 @@ export default async function ItemPage() {
     <div className="mx-auto max-w-6xl px-4 pb-12 pt-8 sm:px-6 md:pt-12">
       <div className="flex flex-wrap items-center gap-3">
         <h1 className="text-3xl font-extrabold tracking-[-0.03em] sm:text-5xl">Gift In Game</h1>
+        <Image src="/brand/gift.png" alt="" width={286} height={360} priority className="icon-img h-11 w-auto rotate-6 sm:h-16" />
         {gig.ready ? (
           <span className="inline-flex items-center gap-2 rounded-full bg-live/15 px-3 py-1 text-sm font-semibold text-live">
             <span className="live-dot h-2 w-2 rounded-full bg-live" aria-hidden /> Ready

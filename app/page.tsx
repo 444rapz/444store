@@ -52,10 +52,23 @@ export default async function Home() {
                     {i + 1}
                   </span>
                   <div className="pt-1.5">
-                    <h3 className="text-xl font-bold tracking-tight">{st.title}</h3>
+                    <h3 className="flex items-center gap-2.5 text-xl font-bold tracking-tight">
+                      {st.title}
+                      {i === STEPS.length - 1 && (
+                        <Image
+                          src="/brand/plane.png"
+                          alt=""
+                          width={285}
+                          height={258}
+                          className="icon-img float-b h-9 w-auto"
+                          style={{ "--r": "-4deg" } as CSSProperties}
+                        />
+                      )}
+                    </h3>
                     <p className="mt-1 max-w-[36ch] text-ink-muted">{st.text}</p>
                     {i === 1 && <PayLogos className="mt-3" />}
                   </div>
+
                 </li>
               ))}
             </ol>
@@ -158,11 +171,11 @@ export default async function Home() {
             </a>
           </div>
           <Image
-            src="/brand/chrome-infinity.png"
+            src="/brand/bubble.png"
             alt=""
-            width={300}
-            height={225}
-            className="icon-img float-a mt-12 hidden w-44 lg:block"
+            width={346}
+            height={326}
+            className="icon-img float-a mt-12 hidden w-36 lg:block"
             style={{ "--r": "-8deg" } as CSSProperties}
           />
         </div>

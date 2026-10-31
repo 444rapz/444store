@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -33,7 +34,10 @@ export function MyOrders() {
     <>
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-extrabold tracking-[-0.03em] sm:text-5xl">Pesanan saya</h1>
+          <div className="flex items-center gap-3">
+            <h1 className="text-3xl font-extrabold tracking-[-0.03em] sm:text-5xl">Pesanan saya</h1>
+            <Image src="/brand/doc.png" alt="" width={261} height={350} priority className="icon-img h-11 w-auto rotate-6 sm:h-16" />
+          </div>
           {user && <p className="mt-2 text-ink-muted">Masuk sebagai {user.name}.</p>}
         </div>
         {user && (
