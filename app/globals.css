@@ -425,14 +425,3 @@
   .review-track { animation: none; }
   .review-feed { overflow-y: auto; }
 }
-
-/* Logo: cincin chrome berputar pelan */
-.logo-orb { box-shadow: 0 10px 22px -10px rgb(188 214 255 / 0.65); }
-.logo-spin {
-  background: conic-gradient(#ffffff, #9aa1ae, #7aa6ee, #c9b8ff, #f3f4f7, #9aa1ae, #ffffff);
-  animation: logo-spin 8s linear infinite;
-}
-@keyframes logo-spin { to { transform: rotate(360deg); } }
-@media (prefers-reduced-motion: reduce) {
-  .logo-spin { animation: none; }
-}

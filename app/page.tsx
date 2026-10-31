@@ -183,7 +183,7 @@ export default async function Home() {
               )}
             </p>
             <h2 id="ajak" className="mt-5 text-4xl font-extrabold leading-[1.02] tracking-[-0.035em] sm:text-6xl">
-              Siap top&nbsp;up <span className="block text-ice">Robux?</span>
+              Gas top&nbsp;up <span className="block text-ice">Robux?</span>
             </h2>
             <p className="mt-4 max-w-[40ch] text-ink-muted sm:text-lg">
               {s.rate > 0 ? (
@@ -232,7 +232,17 @@ export default async function Home() {
                   </div>
                   <div className="mt-3.5 flex items-start justify-between gap-3 px-1">
                     <div>
-                      <p className="text-lg font-extrabold leading-tight">rapz</p>
+                      <p className="flex items-center gap-1.5 text-lg font-extrabold leading-tight">
+                        rapz
+                        <Image
+                          src="/brand/verified.png"
+                          alt="Terverifikasi di Roblox"
+                          title="Terverifikasi di Roblox"
+                          width={36}
+                          height={36}
+                          className="h-[18px] w-[18px]"
+                        />
+                      </p>
                       <p className="text-xs text-ink-muted">Owner 444 Store</p>
                     </div>
                     <span className="chrome-chip rounded-full px-2.5 py-1 text-[11px] font-bold">Admin</span>
