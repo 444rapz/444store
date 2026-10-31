@@ -29,7 +29,7 @@ export function Footer() {
           <ul className="mt-3 space-y-2.5 text-sm text-ink-muted">
             <li>
               <a className="inline-flex items-center gap-2.5 hover:text-ink" href={CONTACT.discord} target="_blank" rel="noopener noreferrer">
-                <DiscordIcon size={18} className="text-[#8c96ff]" /> Discord
+                <DiscordIcon size={18} className="text-discord-ink" /> Discord
               </a>
             </li>
             <li>

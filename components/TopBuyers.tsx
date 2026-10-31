@@ -6,7 +6,7 @@ import { BuyerAvatar } from "./BuyerAvatar";
 // Panggung juara: juara 2 di kiri, juara 1 di tengah (balok paling tinggi), juara 3 di kanan
 const PODIUM = [1, 0, 2];
 const BLOCK = ["metal h-36 sm:h-48", "block-tint tile-ice h-24 sm:h-32", "block-tint tile-violet h-16 sm:h-24"];
-const RING = ["ring-white/90", "ring-ice/80", "ring-violet-soft/80"];
+const RING = ["ring-ink/80", "ring-ice/80", "ring-violet-soft/80"];
 
 function Step({ b, rank }: { b: TopBuyer; rank: number }) {
   return (

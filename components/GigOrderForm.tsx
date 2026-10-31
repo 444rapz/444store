@@ -351,7 +351,7 @@ export function GigOrderForm({ rate, ready, items }: { rate: number; ready: bool
                     type="button"
                     onClick={() => toggle(p)}
                     aria-label={`Batal pilih ${p.name}`}
-                    className="grid h-7 w-7 shrink-0 place-items-center rounded-full text-ink-faint hover:bg-white/5 hover:text-ink"
+                    className="grid h-7 w-7 shrink-0 place-items-center rounded-full text-ink-faint hover:bg-ink/5 hover:text-ink"
                   >
                     <X size={15} aria-hidden />
                   </button>
@@ -459,7 +459,7 @@ export function GigOrderForm({ rate, ready, items }: { rate: number; ready: bool
                     type="button"
                     onClick={() => setCart((c) => c.filter((_, j) => j !== i))}
                     aria-label={`Hapus ${l.name}`}
-                    className="grid h-7 w-7 place-items-center rounded-full text-ink-faint hover:bg-white/5 hover:text-ink"
+                    className="grid h-7 w-7 place-items-center rounded-full text-ink-faint hover:bg-ink/5 hover:text-ink"
                   >
                     <X size={15} aria-hidden />
                   </button>
@@ -504,7 +504,7 @@ export function GigOrderForm({ rate, ready, items }: { rate: number; ready: bool
           {user === null ? (
             <Link
               href="/masuk?next=/item"
-              className="mt-4 flex w-full items-center justify-center gap-2 rounded-full bg-[#0b0b0c] px-5 py-3.5 font-semibold text-ink"
+              className="mt-4 flex w-full items-center justify-center gap-2 rounded-full bg-onyx px-5 py-3.5 font-semibold text-snow"
             >
               <LogIn size={18} aria-hidden /> Masuk untuk membeli
             </Link>
@@ -513,7 +513,7 @@ export function GigOrderForm({ rate, ready, items }: { rate: number; ready: bool
               type="button"
               onClick={submit}
               disabled={!cart.length || busy || !ready || user === undefined}
-              className="mt-4 flex w-full items-center justify-center gap-2 rounded-full bg-[#0b0b0c] px-5 py-3.5 font-semibold text-ink transition-transform active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40"
+              className="mt-4 flex w-full items-center justify-center gap-2 rounded-full bg-onyx px-5 py-3.5 font-semibold text-snow transition-transform active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40"
             >
               {busy && <Loader2 size={18} className="animate-spin" aria-hidden />}
               Buat pesanan <ArrowRight size={18} aria-hidden />
@@ -523,7 +523,7 @@ export function GigOrderForm({ rate, ready, items }: { rate: number; ready: bool
             Pesanan diproses setelah kamu upload bukti bayar atau kabari admin di chat kalau sudah transfer.
           </p>
           {error && (
-            <p className="mt-3 rounded-xl bg-[#0b0b0c] px-3.5 py-2.5 text-sm text-warn" role="alert">
+            <p className="mt-3 rounded-xl bg-onyx px-3.5 py-2.5 text-sm text-[#fbbf24]" role="alert">
               {error}
             </p>
           )}

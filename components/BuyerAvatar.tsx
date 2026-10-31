@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-const TONE = ["bg-ice/15 text-ice", "bg-violet/20 text-violet-soft", "bg-blush/15 text-blush", "bg-silver/15 text-silver"];
+const TONE = ["bg-ice/15 text-ice", "bg-violet/20 text-violet-ink", "bg-blush/15 text-blush-ink", "bg-silver/15 text-silver-ink"];
 
 export function toneOf(name: string) {
   let h = 0;

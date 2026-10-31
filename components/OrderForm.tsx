@@ -27,7 +27,7 @@ const PRESETS: { amount: number; tag?: string }[] = [
   { amount: 5000 },
 ];
 const TAG: Record<string, string> = {
-  Murah: "bg-ice text-[#0d1626]",
+  Murah: "bg-ice-soft text-[#0d1626]",
   Populer: "bg-blush text-[#3a1426]",
   "Best seller": "bg-violet-soft text-[#1d1240]",
 };
@@ -328,7 +328,7 @@ export function OrderForm({
                     type="button"
                     onClick={() => setExtra((x) => x.filter((_, j) => j !== i))}
                     aria-label={`Hapus pesanan untuk @${l.username}`}
-                    className="grid h-8 w-8 place-items-center rounded-full text-ink-faint hover:bg-white/5 hover:text-ink"
+                    className="grid h-8 w-8 place-items-center rounded-full text-ink-faint hover:bg-ink/5 hover:text-ink"
                   >
                     <X size={16} aria-hidden />
                   </button>
@@ -447,7 +447,7 @@ export function OrderForm({
                     <span className="block text-xs text-ink-muted">{m.hint}</span>
                   </span>
                   <span
-                    className={`grid h-6 w-6 shrink-0 place-items-center rounded-full border ${selected ? "border-ice bg-ice text-[#0d1626]" : "border-line-strong"}`}
+                    className={`grid h-6 w-6 shrink-0 place-items-center rounded-full border ${selected ? "border-ice bg-ice-soft text-[#0d1626]" : "border-line-strong"}`}
                     aria-hidden
                   >
                     {selected && <Check size={14} />}
@@ -555,7 +555,7 @@ export function OrderForm({
             <>
               <Link
                 href={loginHref}
-                className="mt-4 flex w-full items-center justify-center gap-2 rounded-full bg-[#0b0b0c] px-5 py-3.5 font-semibold text-ink shadow-[0_14px_24px_-12px_rgb(13_22_38/0.7)]"
+                className="mt-4 flex w-full items-center justify-center gap-2 rounded-full bg-onyx px-5 py-3.5 font-semibold text-snow shadow-[0_14px_24px_-12px_rgb(13_22_38/0.7)]"
               >
                 <LogIn size={18} aria-hidden /> Masuk untuk membeli
               </Link>
@@ -569,7 +569,7 @@ export function OrderForm({
                 type="button"
                 onClick={submit}
                 disabled={!ready || busy || user === undefined}
-                className="mt-4 flex w-full items-center justify-center gap-2 rounded-full bg-[#0b0b0c] px-5 py-3.5 font-semibold text-ink shadow-[0_14px_24px_-12px_rgb(13_22_38/0.7)] transition-transform active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40"
+                className="mt-4 flex w-full items-center justify-center gap-2 rounded-full bg-onyx px-5 py-3.5 font-semibold text-snow shadow-[0_14px_24px_-12px_rgb(13_22_38/0.7)] transition-transform active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40"
               >
                 {busy ? <Loader2 size={18} className="animate-spin" aria-hidden /> : null}
                 Buat pesanan <ArrowRight size={18} aria-hidden />
@@ -579,7 +579,7 @@ export function OrderForm({
             </>
           )}
           {error && (
-            <p className="mt-3 rounded-xl bg-[#0b0b0c] px-3.5 py-2.5 text-sm text-warn" role="alert">
+            <p className="mt-3 rounded-xl bg-onyx px-3.5 py-2.5 text-sm text-[#fbbf24]" role="alert">
               {error}
             </p>
           )}

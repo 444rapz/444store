@@ -89,7 +89,7 @@ export function AuthForm({ next, error, startMode }: { next: string; error: stri
         if (cancelled || !el || !window.turnstile) return;
         widget.current = window.turnstile.render(el, {
           sitekey,
-          theme: "dark",
+          theme: document.documentElement.dataset.theme === "light" ? "light" : "dark",
           language: "id",
           size: el.offsetWidth < 300 ? "compact" : "flexible",
           callback: (token: string) => setCaptcha(token),
@@ -162,7 +162,7 @@ export function AuthForm({ next, error, startMode }: { next: string; error: stri
             onClick={() => {
               window.location.href = oauthUrl("google", next);
             }}
-            className="flex items-center justify-center gap-2.5 rounded-full bg-white px-5 py-3.5 font-semibold text-[#1f1f1f] transition-transform active:scale-[0.98]"
+            className="flex items-center justify-center gap-2.5 rounded-full bg-white px-5 py-3.5 font-semibold text-[#1f1f1f] ring-1 ring-line-strong transition-transform active:scale-[0.98]"
           >
             <GoogleMark /> Lanjut pakai Google
           </button>

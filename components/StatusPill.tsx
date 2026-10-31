@@ -1,10 +1,10 @@
 const STYLE: Record<string, string> = {
-  awaiting_payment: "bg-white/[0.08] text-ink-muted",
+  awaiting_payment: "bg-ink/[0.08] text-ink-muted",
   awaiting_verification: "bg-warn/15 text-warn",
   processing: "bg-ice/15 text-ice",
   done: "bg-live/15 text-live",
-  rejected: "bg-[#ef4444]/15 text-[#fca5a5]",
-  cancelled: "bg-white/[0.06] text-ink-faint",
+  rejected: "bg-danger/15 text-danger-ink",
+  cancelled: "bg-ink/[0.06] text-ink-faint",
 };
 
 export function StatusPill({ status, label }: { status: string; label: string }) {

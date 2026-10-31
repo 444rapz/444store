@@ -13,7 +13,7 @@ import { budgetToRobux, robuxPrice } from "@/lib/pricing";
 type Mode = "robux" | "budget";
 
 const TAG: Record<string, string> = {
-  Murah: "bg-ice text-[#0d1626]",
+  Murah: "bg-ice-soft text-[#0d1626]",
   Populer: "bg-blush text-[#3a1426]",
   "Best seller": "bg-violet-soft text-[#1d1240]",
 };
@@ -202,7 +202,7 @@ export function OrderCounter({ initialRate, initialStock }: { initialRate: numbe
         <button
           type="submit"
           disabled={!priceReady || robux <= 0 || overStock}
-          className="mt-4 flex w-full items-center justify-center gap-2 rounded-full bg-[#0b0b0c] px-5 py-3.5 text-base font-semibold text-ink shadow-[0_14px_24px_-12px_rgb(13_22_38/0.7)] transition-transform active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40"
+          className="mt-4 flex w-full items-center justify-center gap-2 rounded-full bg-onyx px-5 py-3.5 text-base font-semibold text-snow shadow-[0_14px_24px_-12px_rgb(13_22_38/0.7)] transition-transform active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40"
         >
           Lanjut pesan <ArrowRight size={18} aria-hidden />
         </button>

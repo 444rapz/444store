@@ -4,6 +4,7 @@ import type { CSSProperties } from "react";
 import { ArrowRight, QrCode, Search, ShieldCheck, Zap } from "lucide-react";
 import { Tilt } from "./Tilt";
 import { RobuxIcon } from "./RobuxIcon";
+import { LogoOrb } from "./Brand";
 import { number, rupiah } from "@/lib/store";
 
 const SPARK = "M12 0c.6 6.4 5.6 11.4 12 12-6.4.6-11.4 5.6-12 12-.6-6.4-5.6-11.4-12-12C6.4 11.4 11.4 6.4 12 0z";
@@ -40,7 +41,7 @@ export function HeroBanner({ rate, stock }: { rate: number; stock: number }) {
             </svg>
 
             <p className="flex items-center gap-2 text-sm font-semibold">
-              <Image src="/brand/server-icon.jpg" alt="" width={56} height={56} className="h-7 w-7 rounded-lg" />
+              <LogoOrb size="h-7 w-7" tone="text-onyx" />
               444 Store
             </p>
             <h1 id="hero-judul" className="mt-5 max-w-[14ch] text-[2.2rem] font-extrabold leading-[1.02] tracking-[-0.035em] sm:text-6xl">
@@ -52,7 +53,7 @@ export function HeroBanner({ rate, stock }: { rate: number; stock: number }) {
             <div className="mt-7 flex flex-wrap gap-3">
               <a
                 href="#beli"
-                className="inline-flex items-center gap-2 rounded-full bg-ground px-6 py-3.5 font-semibold text-ink shadow-[0_12px_22px_-10px_rgb(0_0_0/0.6)] transition-transform duration-300 hover:-translate-y-0.5 active:translate-y-0"
+                className="inline-flex items-center gap-2 rounded-full bg-onyx px-6 py-3.5 font-semibold text-snow shadow-[0_12px_22px_-10px_rgb(0_0_0/0.6)] transition-transform duration-300 hover:-translate-y-0.5 active:translate-y-0"
               >
                 Beli Robux sekarang <ArrowRight size={18} aria-hidden />
               </a>

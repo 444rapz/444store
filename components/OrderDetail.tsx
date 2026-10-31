@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Fragment, useEffect, useRef, useState } from "react";
 import { ArrowLeft, Check, ImageUp, Loader2, Send, Star, TriangleAlert, X } from "lucide-react";
+import { LogoOrb } from "./Brand";
 import { BuyerAvatar } from "./BuyerAvatar";
 import { CopyButton } from "./CopyButton";
 import { RobuxIcon } from "./RobuxIcon";
@@ -76,12 +77,12 @@ function ChatPanel({
   }
 
   return (
-    <section className="flex flex-col overflow-hidden rounded-[var(--radius-card)] border border-line-strong bg-[#101013] lg:sticky lg:top-24" aria-labelledby="chat">
+    <section className="flex flex-col overflow-hidden rounded-[var(--radius-card)] border border-line-strong bg-panel lg:sticky lg:top-24" aria-labelledby="chat">
       <div className="flex items-center gap-3 border-b border-line bg-surface px-4 py-3">
         {order.admin ? (
           <BuyerAvatar name={order.admin.name} src={order.admin.avatar} />
         ) : (
-          <Image src="/brand/server-icon.jpg" alt="" width={80} height={80} className="h-10 w-10 rounded-full" />
+          <LogoOrb size="h-10 w-10" />
         )}
         <div className="min-w-0">
           <h2 id="chat" className="truncate font-semibold">
@@ -112,7 +113,7 @@ function ChatPanel({
                 </p>
               )}
               {m.sender === "system" ? (
-                <p className="mx-auto my-2.5 w-fit max-w-[90%] rounded-full bg-white/[0.05] px-3 py-1.5 text-center text-xs text-ink-muted">
+                <p className="mx-auto my-2.5 w-fit max-w-[90%] rounded-full bg-ink/[0.05] px-3 py-1.5 text-center text-xs text-ink-muted">
                   {m.body} <span className="text-ink-faint">· {clock(m.created_at)}</span>
                 </p>
               ) : (
@@ -132,7 +133,7 @@ function ChatPanel({
                     )}
                     <div
                       className={`rounded-2xl px-3.5 py-2.5 text-[15px] leading-snug ${
-                        mine ? "bg-ice text-[#0d1626]" : "bg-raised text-ink"
+                        mine ? "bg-ice-soft text-[#0d1626]" : "bg-raised text-ink"
                       } ${firstOfRun ? (mine ? "rounded-tr-md" : "rounded-tl-md") : ""}`}
                       title={formatDate(m.created_at)}
                     >
@@ -388,7 +389,7 @@ export function OrderDetail({ invoice }: { invoice: string }) {
             ))}
           </ol>
         ) : (
-          <p className="flex items-start gap-2 rounded-xl border border-[#ef4444]/30 bg-[#ef4444]/10 px-4 py-3 text-sm text-[#fca5a5]">
+          <p className="flex items-start gap-2 rounded-xl border border-danger/30 bg-danger/10 px-4 py-3 text-sm text-danger-ink">
             <TriangleAlert size={18} className="mt-0.5 shrink-0" aria-hidden />
             {order.status === "rejected"
               ? `Pesanan ditolak admin.${order.reject_reason ? ` Alasan: ${order.reject_reason}` : ""} Tanya admin di chat kalau ada yang belum jelas.`

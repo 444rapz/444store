@@ -1,18 +1,8 @@
-import Image from "next/image";
 import Link from "next/link";
 
-/** Logo toko apa adanya, tanpa bingkai atau hiasan. */
-export function LogoOrb({ size = "h-11 w-11" }: { size?: string }) {
-  return (
-    <Image
-      src="/brand/server-icon.jpg"
-      alt=""
-      width={112}
-      height={112}
-      priority
-      className={"shrink-0 rounded-full object-cover " + size}
-    />
-  );
+/** Logo toko tanpa background; warnanya mengikuti teks (putih di mode gelap, hitam di mode terang). */
+export function LogoOrb({ size = "h-11 w-11", tone = "text-ink" }: { size?: string; tone?: string }) {
+  return <span aria-hidden className={`logo-mark ${tone} ${size}`} />;
 }
 
 /** Logo dengan nama toko (dipakai di footer). */

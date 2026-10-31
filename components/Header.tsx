@@ -7,6 +7,7 @@ import Image from "next/image";
 import { Coins, Gift, House, Receipt, ShoppingBag, UserRound } from "lucide-react";
 import { DiscordIcon } from "./BrandIcons";
 import { LogoOrb } from "./Brand";
+import { ThemeToggle } from "./ThemeToggle";
 import { CONTACT } from "@/lib/store";
 import { useWebUser } from "@/lib/web";
 
@@ -36,7 +37,7 @@ export function Header() {
   return (
     <>
       <header className="sticky top-0 z-40 px-3 pt-3 sm:px-6">
-        <div className="nav-shell mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 rounded-full pl-2.5 pr-2.5 sm:pl-3">
+        <div className="nav-shell mx-auto flex h-16 max-w-6xl items-center justify-between gap-3 rounded-full pl-2.5 pr-2.5 sm:pl-3">
           <Link href="/" aria-label="444 Store, ke beranda" className="grid items-center">
             <span aria-hidden className={swap + (scrolled ? " pointer-events-none scale-75 opacity-0 blur-sm" : "")}>
               <LogoOrb />
@@ -59,14 +60,15 @@ export function Header() {
                 href={n.href}
                 aria-current={active(n.href) ? "page" : undefined}
                 className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
-                  active(n.href) ? "chrome-chip" : "text-ink-muted hover:bg-white/[0.06] hover:text-ink"
+                  active(n.href) ? "chrome-chip" : "text-ink-muted hover:bg-ink/[0.06] hover:text-ink"
                 }`}
               >
                 {n.label}
               </Link>
             ))}
           </nav>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <ThemeToggle />
             <a
               href={CONTACT.discord}
               target="_blank"
@@ -76,8 +78,12 @@ export function Header() {
             >
               <DiscordIcon size={19} />
             </a>
-            <Link href="/robux" className="chrome-btn inline-flex h-11 items-center gap-2 whitespace-nowrap rounded-full px-4 text-sm font-semibold sm:px-5">
-              <ShoppingBag size={16} aria-hidden /> Beli Robux
+            <Link
+              href="/robux"
+              aria-label="Beli Robux"
+              className="chrome-btn inline-flex h-11 w-11 items-center justify-center gap-2 whitespace-nowrap rounded-full text-sm font-semibold min-[375px]:w-auto min-[375px]:px-4 sm:px-5"
+            >
+              <ShoppingBag size={16} aria-hidden /> <span className="hidden min-[375px]:inline">Beli Robux</span>
             </Link>
             <Link
               href={user ? "/pesanan" : "/masuk"}

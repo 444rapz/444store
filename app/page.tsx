@@ -154,7 +154,7 @@ export default async function Home() {
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 rounded-full border border-line-strong px-4 py-2.5 text-sm font-medium hover:bg-raised"
             >
-              <DiscordIcon size={16} className="text-[#8c96ff]" /> Discord
+              <DiscordIcon size={16} className="text-discord-ink" /> Discord
             </a>
           </div>
           <Image
@@ -221,7 +221,7 @@ export default async function Home() {
             {/* Kartu profil admin ala kartu pemain Roblox */}
             <div className="float-b relative w-[260px] sm:w-[280px]" style={{ "--r": "3deg" } as CSSProperties}>
               <div className="logo-ring rounded-[24px] p-[1.5px]">
-                <div className="rounded-[22.5px] bg-[#111114] p-3.5">
+                <div className="rounded-[22.5px] bg-panel p-3.5">
                   <div className="avatar-bg relative h-52 overflow-hidden rounded-2xl">
                     <Image
                       src="/brand/me.png"
@@ -249,11 +249,11 @@ export default async function Home() {
                     <span className="chrome-chip rounded-full px-2.5 py-1 text-[11px] font-bold">Admin</span>
                   </div>
                   <div className="mt-3 grid grid-cols-2 gap-2 text-center">
-                    <div className="rounded-xl bg-white/[0.05] py-2">
+                    <div className="rounded-xl bg-ink/[0.05] py-2">
                       <p className="text-lg font-extrabold tabular">{stats.orders_done ? number(stats.orders_done) : "-"}</p>
                       <p className="text-[11px] text-ink-faint">pesanan selesai</p>
                     </div>
-                    <div className="rounded-xl bg-white/[0.05] py-2">
+                    <div className="rounded-xl bg-ink/[0.05] py-2">
                       <p className="inline-flex items-center gap-1 text-lg font-extrabold tabular">
                         {stats.rating_avg ? stats.rating_avg.toFixed(1) : "-"}
                         <Star size={14} className="text-ice" fill="currentColor" aria-hidden />

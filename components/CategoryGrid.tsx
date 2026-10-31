@@ -91,7 +91,7 @@ export function CategoryGrid({ rate, stock }: { rate: number; stock: number }) {
                 className={"sticker " + c.imgClass}
                 style={{ "--r": c.r, "--z": "0px" } as CSSProperties}
               />
-              <span className="relative z-10 w-fit rounded-full bg-[#0b0b0c] px-2.5 py-1 text-[11px] font-semibold text-ink">{c.badge}</span>
+              <span className="relative z-10 w-fit rounded-full bg-onyx px-2.5 py-1 text-[11px] font-semibold text-snow">{c.badge}</span>
               <span
                 className={
                   "relative z-10 mt-4 block font-extrabold leading-[1.02] tracking-[-0.03em] " +
@@ -114,7 +114,7 @@ export function CategoryGrid({ rate, stock }: { rate: number; stock: number }) {
                 </span>
               )}
               {c.big ? (
-                <span className="relative z-10 mt-auto inline-flex w-fit items-center gap-2 rounded-full bg-[#0b0b0c] px-5 py-3 text-sm font-semibold text-ink">
+                <span className="relative z-10 mt-auto inline-flex w-fit items-center gap-2 rounded-full bg-onyx px-5 py-3 text-sm font-semibold text-snow">
                   {c.foot} <ArrowRight size={16} className="transition-transform duration-300 group-hover:translate-x-1" aria-hidden />
                 </span>
               ) : (

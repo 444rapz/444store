@@ -4,7 +4,7 @@ import { BuyerAvatar } from "./BuyerAvatar";
 import type { Review } from "@/lib/store";
 import { number } from "@/lib/store";
 
-const NAME_COLOR = ["text-ice", "text-violet-soft", "text-blush", "text-silver"];
+const NAME_COLOR = ["text-ice", "text-violet-ink", "text-blush-ink", "text-silver-ink"];
 
 function tone(name: string) {
   let h = 0;
@@ -25,7 +25,7 @@ function ReviewItem({ r }: { r: Review }) {
       <div className="min-w-0">
         <p className="flex flex-wrap items-baseline gap-x-2">
           <span className={"font-semibold tabular " + NAME_COLOR[t]}>{r.name}</span>
-          <span className="rounded bg-white/[0.06] px-1.5 text-[10px] font-semibold uppercase leading-4 text-ink-muted">Pembeli</span>
+          <span className="rounded bg-ink/[0.06] px-1.5 text-[10px] font-semibold uppercase leading-4 text-ink-muted">Pembeli</span>
           <span className="text-xs text-ink-faint">{day(r.date)}</span>
         </p>
         <p className="mt-0.5 text-[15px] leading-snug text-ink/90">{r.text}</p>
@@ -49,7 +49,7 @@ function ReviewItem({ r }: { r: Review }) {
 // Ulasan ditampilkan seperti channel Discord, karena memang ditulis pembeli dari tiket Discord
 export function Reviews({ reviews }: { reviews: Review[] }) {
   return (
-    <div className="overflow-hidden rounded-[var(--radius-card)] border border-line-strong bg-[#101013] shadow-[0_40px_70px_-40px_rgb(0_0_0/0.95)]">
+    <div className="overflow-hidden rounded-[var(--radius-card)] border border-line-strong bg-panel shadow-[0_40px_70px_-40px_rgb(0_0_0/0.95)] light:shadow-[0_30px_60px_-40px_rgb(30_41_59/0.3)]">
       <div className="flex items-center gap-2 border-b border-line bg-surface px-4 py-3">
         <Hash size={18} className="text-ink-faint" aria-hidden />
         <span className="font-semibold">ulasan-pembeli</span>
