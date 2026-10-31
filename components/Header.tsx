@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import { Coins, Gift, House, MessageCircle, Search } from "lucide-react";
 import { Brand } from "./Brand";
-import { CONTACT } from "@/lib/store";
+import { API_URL, CONTACT, number } from "@/lib/store";
 
 const NAV = [
   { href: "/", label: "Beranda", icon: House },
@@ -16,12 +17,32 @@ const NAV = [
 export function Header() {
   const path = usePathname();
   const active = (href: string) => (href === "/" ? path === "/" : path.startsWith(href));
+  const [stock, setStock] = useState<number | null>(null);
+
+  // Stok live di bawah nama toko
+  useEffect(() => {
+    fetch(`${API_URL}/api/rates`, { cache: "no-store" })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (d && d.stock !== undefined) setStock(Number(d.stock));
+      })
+      .catch(() => {});
+  }, []);
 
   return (
     <>
       <header className="sticky top-0 z-40 border-b border-line bg-ground/85 backdrop-blur-md">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-6 px-4 sm:px-6">
-          <Brand />
+          <Brand
+            sub={
+              stock !== null ? (
+                <>
+                  <span className="live-dot h-1.5 w-1.5 rounded-full bg-live" aria-hidden />
+                  Stok {number(stock)} Robux
+                </>
+              ) : undefined
+            }
+          />
           <nav className="hidden items-center gap-1 md:flex" aria-label="Menu utama">
             {NAV.map((n) => (
               <Link

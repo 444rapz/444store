@@ -1,65 +1,74 @@
-import { Star } from "lucide-react";
+import { Hash, Lock, Star } from "lucide-react";
 import { RobuxIcon } from "./RobuxIcon";
 import type { Review } from "@/lib/store";
 import { number } from "@/lib/store";
 
-function Stars({ rating, size }: { rating: number; size: number }) {
-  return (
-    <span className="flex gap-0.5 text-ice" aria-label={`${rating} dari 5 bintang`}>
-      {Array.from({ length: 5 }).map((_, i) => (
-        <Star key={i} size={size} fill={i < rating ? "currentColor" : "none"} strokeWidth={1.5} aria-hidden />
-      ))}
-    </span>
-  );
+const NAME_COLOR = ["text-ice", "text-violet-soft", "text-blush", "text-silver"];
+const AVATAR = ["bg-ice/15 text-ice", "bg-violet/20 text-violet-soft", "bg-blush/15 text-blush", "bg-silver/15 text-silver"];
+
+function tone(name: string) {
+  let h = 0;
+  for (const ch of name) h = (h * 31 + ch.charCodeAt(0)) % 997;
+  return h % NAME_COLOR.length;
 }
 
-function Amount({ robux }: { robux: number }) {
-  if (robux <= 0) return null;
-  return (
-    <span className="inline-flex items-center gap-1 tabular">
-      <RobuxIcon className="h-3.5 w-3.5" /> {number(robux)} Robux
-    </span>
-  );
+function day(date: string) {
+  const d = new Date(date + "T00:00:00Z");
+  return Number.isNaN(d.getTime()) ? "" : d.toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
 }
 
-// Satu ulasan paling lengkap ditampilkan besar, sisanya daftar ringkas di sebelahnya
+// Ulasan ditampilkan seperti channel Discord, karena memang ditulis pembeli dari tiket Discord
 export function Reviews({ reviews }: { reviews: Review[] }) {
-  if (!reviews.length) {
-    return <p className="text-ink-muted">Ulasan pembeli akan muncul di sini.</p>;
-  }
-  const [top, ...rest] = [...reviews].sort((a, b) => b.text.length - a.text.length);
-  const list = rest.slice(0, 4);
-
   return (
-    <div className="grid gap-10 border-t border-line-strong pt-10 lg:grid-cols-[1.15fr_1fr] lg:gap-16">
-      <figure>
-        <Stars rating={top.rating} size={18} />
-        <blockquote className="mt-5 text-2xl font-semibold leading-snug tracking-tight sm:text-[2rem]">
-          &ldquo;{top.text}&rdquo;
-        </blockquote>
-        <figcaption className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-ink-muted">
-          <span className="grid h-8 w-8 place-items-center rounded-full bg-raised font-bold text-ink" aria-hidden>
-            {top.name.charAt(0).toUpperCase()}
-          </span>
-          <span className="font-semibold text-ink tabular">{top.name}</span>
-          <Amount robux={top.robux} />
-        </figcaption>
-      </figure>
+    <div className="overflow-hidden rounded-[var(--radius-card)] border border-line-strong bg-[#101013] shadow-[0_40px_70px_-40px_rgb(0_0_0/0.95)]">
+      <div className="flex items-center gap-2 border-b border-line bg-surface px-4 py-3">
+        <Hash size={18} className="text-ink-faint" aria-hidden />
+        <span className="font-semibold">ulasan-pembeli</span>
+        <span className="ml-auto inline-flex items-center gap-1.5 text-xs text-ink-muted">
+          <span className="live-dot h-2 w-2 rounded-full bg-live" aria-hidden /> Live dari bot
+        </span>
+      </div>
 
-      {list.length > 0 && (
-        <ul className="divide-y divide-line border-y border-line lg:border-t-0">
-          {list.map((r, i) => (
-            <li key={i} className="py-5 first:pt-0 max-lg:first:pt-5">
-              <div className="flex items-center justify-between gap-3 text-xs text-ink-faint">
-                <Stars rating={r.rating} size={13} />
-                <Amount robux={r.robux} />
-              </div>
-              <p className="mt-2 text-[15px] leading-snug">{r.text}</p>
-              <p className="mt-1.5 text-xs text-ink-faint tabular">{r.name}</p>
-            </li>
-          ))}
+      {!reviews.length ? (
+        <p className="px-4 py-10 text-center text-ink-muted">Ulasan pembeli akan muncul di sini.</p>
+      ) : (
+        <ul className="review-feed max-h-[460px] overflow-y-auto py-2 sm:max-h-[520px]">
+          {reviews.map((r, i) => {
+            const t = tone(r.name);
+            return (
+              <li key={i} className="flex gap-3 px-4 py-3 transition-colors hover:bg-white/[0.025]">
+                <span className={"grid h-10 w-10 shrink-0 place-items-center rounded-full font-bold " + AVATAR[t]} aria-hidden>
+                  {r.name.charAt(0).toUpperCase()}
+                </span>
+                <div className="min-w-0">
+                  <p className="flex flex-wrap items-baseline gap-x-2">
+                    <span className={"font-semibold tabular " + NAME_COLOR[t]}>{r.name}</span>
+                    <span className="rounded bg-white/[0.06] px-1.5 text-[10px] font-semibold uppercase leading-4 text-ink-muted">Pembeli</span>
+                    <span className="text-xs text-ink-faint">{day(r.date)}</span>
+                  </p>
+                  <p className="mt-0.5 text-[15px] leading-snug text-ink/90">{r.text}</p>
+                  <p className="mt-1.5 flex items-center gap-3 text-xs text-ink-faint">
+                    <span className="flex gap-0.5 text-ice" aria-label={`${r.rating} dari 5 bintang`}>
+                      {Array.from({ length: 5 }).map((_, k) => (
+                        <Star key={k} size={12} fill={k < r.rating ? "currentColor" : "none"} strokeWidth={1.6} aria-hidden />
+                      ))}
+                    </span>
+                    {r.robux > 0 && (
+                      <span className="inline-flex items-center gap-1 tabular">
+                        <RobuxIcon className="h-3.5 w-3.5" /> {number(r.robux)} Robux
+                      </span>
+                    )}
+                  </p>
+                </div>
+              </li>
+            );
+          })}
         </ul>
       )}
+
+      <p className="flex items-center gap-2 border-t border-line bg-surface px-4 py-3 text-xs text-ink-faint">
+        <Lock size={13} aria-hidden /> Ulasan cuma bisa ditulis pembeli setelah tiketnya selesai.
+      </p>
     </div>
   );
 }

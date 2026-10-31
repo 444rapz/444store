@@ -93,32 +93,38 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Ulasan: satu ulasan besar dan daftar ringkas, rating di judul */}
-      <section className="mx-auto mt-28 max-w-6xl px-4 sm:px-6" aria-labelledby="ulasan">
-        <div className="flex flex-wrap items-end justify-between gap-6">
-          <div>
-            <h2 id="ulasan" className={H2}>
-              Kata yang <span className="text-ice">udah beli</span>
-            </h2>
-            <p className="mt-2 text-ink-muted">Ulasan asli dari tiket yang sudah selesai.</p>
-          </div>
+      {/* Ulasan: ringkasan rating di kiri, feed ala channel Discord di kanan */}
+      <section className="mx-auto mt-28 grid max-w-6xl gap-10 px-4 sm:px-6 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16" aria-labelledby="ulasan">
+        <div className="lg:pt-4">
+          <h2 id="ulasan" className="text-4xl font-extrabold leading-[1.02] tracking-[-0.035em] sm:text-6xl">
+            Kata yang <span className="text-ice">udah beli</span>
+          </h2>
+          <p className="mt-3 max-w-[36ch] text-ink-muted">
+            Tiap ulasan ditulis pembeli sendiri setelah tiketnya selesai, langsung masuk dari bot Discord 444s.
+          </p>
           {stats.review_count > 0 && (
-            <div className="flex items-center gap-4">
-              <p className="text-5xl font-extrabold leading-none tracking-[-0.04em] tabular">{stats.rating_avg.toFixed(1)}</p>
+            <div className="mt-8 flex items-center gap-5">
+              <p className="text-7xl font-extrabold leading-none tracking-[-0.05em] tabular">{stats.rating_avg.toFixed(1)}</p>
               <div>
-                <span className="flex gap-0.5 text-ice" aria-label={"Rata-rata " + stats.rating_avg + " dari 5"}>
+                <span className="flex gap-1 text-ice" aria-label={"Rata-rata " + stats.rating_avg + " dari 5"}>
                   {Array.from({ length: 5 }).map((_, i) => (
-                    <Star key={i} size={16} fill={i < Math.round(stats.rating_avg) ? "currentColor" : "none"} aria-hidden />
+                    <Star key={i} size={20} fill={i < Math.round(stats.rating_avg) ? "currentColor" : "none"} aria-hidden />
                   ))}
                 </span>
-                <p className="mt-1 text-sm text-ink-muted">dari {number(stats.review_count)} ulasan</p>
+                <p className="mt-1.5 text-sm text-ink-muted">dari {number(stats.review_count)} ulasan pembeli</p>
               </div>
             </div>
           )}
+          <a
+            href={CONTACT.discord}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-8 inline-flex items-center gap-2 rounded-full border border-line-strong px-5 py-3 text-sm font-medium transition-colors hover:border-discord hover:bg-discord/15"
+          >
+            <MessageCircle size={17} aria-hidden /> Lihat semua di Discord 444s
+          </a>
         </div>
-        <div className="mt-10">
-          <Reviews reviews={s.reviews} />
-        </div>
+        <Reviews reviews={s.reviews} />
       </section>
 
       {/* FAQ: judul besar menempel di kiri, jawaban di kanan */}
@@ -162,51 +168,76 @@ export default async function Home() {
         <Faq />
       </section>
 
-      {/* Penutup: ajakan singkat di tengah dengan satu ikon chrome */}
+      {/* Penutup: ajakan beli bersama avatar Roblox admin 444s */}
       <section className="mx-auto mt-32 max-w-6xl px-4 sm:px-6" aria-labelledby="ajak">
-        <div className="glow-card relative overflow-hidden rounded-[28px] border border-line-strong px-6 py-14 text-center sm:px-12 sm:py-20">
-          <svg viewBox="0 0 24 24" aria-hidden className="sparkle left-[12%] top-[22%] h-4 w-4">
-            <path d={SPARK} fill="currentColor" />
-          </svg>
-          <svg viewBox="0 0 24 24" aria-hidden className="sparkle bottom-[18%] right-[10%] h-6 w-6" style={{ animationDelay: "1.4s" }}>
-            <path d={SPARK} fill="currentColor" />
-          </svg>
-          <Image
-            src="/brand/chrome-infinity.png"
-            alt=""
-            width={360}
-            height={270}
-            className="icon-img float-a mx-auto w-32 sm:w-40"
-          />
-          <h2 id="ajak" className="mx-auto mt-6 max-w-[14ch] text-4xl font-extrabold leading-[1.02] tracking-[-0.035em] sm:text-6xl">
-            Siap top up Robux?
-          </h2>
-          <p className="mx-auto mt-4 max-w-[44ch] text-ink-muted sm:text-lg">
-            {s.stock > 0 && s.rate > 0 ? (
-              <>
-                Stok sekarang{" "}
-                <span className="inline-flex items-center gap-1 whitespace-nowrap font-semibold text-ink tabular">
-                  <RobuxIcon className="h-4 w-4" /> {number(s.stock)}
-                </span>
-                , harga <span className="font-semibold text-ink tabular">{rupiah(s.rate)}</span> per Robux. Bayar pakai QRIS, admin
-                444s yang kirim ke username kamu.
-              </>
-            ) : (
-              "Stok lagi habis. Tanya admin kapan restock, ya."
-            )}
-          </p>
-          <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <a href="#beli" className="chrome-btn inline-flex items-center gap-2 rounded-full px-6 py-3.5 font-semibold">
-              Beli Robux sekarang <ArrowRight size={18} aria-hidden />
-            </a>
-            <a
-              href={CONTACT.discord}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-full border border-line-strong px-5 py-3.5 font-medium hover:bg-raised"
-            >
-              <MessageCircle size={18} aria-hidden /> Tanya admin
-            </a>
+        <div className="glow-card relative grid overflow-hidden rounded-[28px] border border-line-strong md:grid-cols-[1.15fr_0.85fr]">
+          <div className="relative z-10 order-2 px-6 pb-12 pt-4 sm:px-12 md:order-1 md:py-16">
+            <p className="inline-flex items-center gap-2 rounded-full border border-line-strong bg-ground/50 px-3 py-1.5 text-xs text-ink-muted tabular">
+              <span className="live-dot h-2 w-2 rounded-full bg-live" aria-hidden />
+              {s.stock > 0 ? (
+                <>
+                  Stok <RobuxIcon className="h-3.5 w-3.5" /> {number(s.stock)} siap dikirim
+                </>
+              ) : (
+                "Stok lagi habis"
+              )}
+            </p>
+            <h2 id="ajak" className="mt-5 max-w-[12ch] text-4xl font-extrabold leading-[1.02] tracking-[-0.035em] sm:text-6xl">
+              Siap top up <span className="text-ice">Robux?</span>
+            </h2>
+            <p className="mt-4 max-w-[40ch] text-ink-muted sm:text-lg">
+              {s.rate > 0 ? (
+                <>
+                  Cuma <span className="font-semibold text-ink tabular">{rupiah(s.rate)}</span> per Robux. Bayar pakai QRIS, terus admin 444s
+                  yang kirim langsung ke username kamu.
+                </>
+              ) : (
+                "Bayar pakai QRIS, terus admin 444s yang kirim langsung ke username kamu."
+              )}
+            </p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <a href="#beli" className="chrome-btn inline-flex items-center gap-2 rounded-full px-6 py-3.5 font-semibold">
+                Beli Robux sekarang <ArrowRight size={18} aria-hidden />
+              </a>
+              <a
+                href={CONTACT.discord}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-full border border-line-strong px-5 py-3.5 font-medium hover:bg-raised"
+              >
+                <MessageCircle size={18} aria-hidden /> Tanya admin
+              </a>
+            </div>
+          </div>
+
+          <div className="relative order-1 h-72 md:order-2 md:h-auto md:min-h-[440px]">
+            <span aria-hidden className="avatar-stage absolute inset-x-6 bottom-6 top-10 md:inset-x-4 md:bottom-10" />
+            <svg viewBox="0 0 24 24" aria-hidden className="sparkle right-[14%] top-[16%] h-5 w-5">
+              <path d={SPARK} fill="currentColor" />
+            </svg>
+            <svg viewBox="0 0 24 24" aria-hidden className="sparkle left-[14%] top-[40%] h-3 w-3" style={{ animationDelay: "1.6s" }}>
+              <path d={SPARK} fill="currentColor" />
+            </svg>
+            <Image
+              src="/brand/me.png"
+              alt="Avatar Roblox admin 444s"
+              width={420}
+              height={420}
+              className="absolute bottom-0 left-1/2 h-full w-auto max-w-none -translate-x-1/2 object-contain drop-shadow-[0_24px_30px_rgb(0_0_0/0.6)] md:h-[96%]"
+            />
+            <Image
+              src="/brand/chrome-infinity.png"
+              alt=""
+              width={300}
+              height={225}
+              className="icon-img float-a absolute right-5 top-6 w-20 md:right-8 md:top-10 md:w-24"
+            />
+            <span className="absolute bottom-4 left-1/2 inline-flex -translate-x-1/2 items-center gap-2 whitespace-nowrap rounded-full border border-line-strong bg-ground/80 px-3 py-1.5 text-xs font-semibold backdrop-blur md:bottom-8">
+              <span className="relative h-5 w-5 overflow-hidden rounded-md">
+                <Image src="/brand/server-icon.jpg" alt="" width={40} height={40} className="h-full w-full object-cover" />
+              </span>
+              rapz, admin 444s
+            </span>
           </div>
         </div>
       </section>
