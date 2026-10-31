@@ -12,7 +12,8 @@ async function forward(req: NextRequest, path: string[]) {
   const headers: Record<string, string> = { Accept: "application/json" };
   const token = req.cookies.get(SESSION_COOKIE)?.value;
   if (token) headers["X-Web-Token"] = token;
-  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim();
+  // Fly.io menaruh IP asli pembeli di Fly-Client-IP; di hosting lain pakai X-Forwarded-For
+  const ip = req.headers.get("fly-client-ip") || req.headers.get("x-forwarded-for")?.split(",")[0]?.trim();
   if (ip) headers["X-Client-IP"] = ip;
   const type = req.headers.get("content-type");
   if (type) headers["Content-Type"] = type;
