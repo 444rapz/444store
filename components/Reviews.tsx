@@ -17,6 +17,37 @@ function day(date: string) {
   return Number.isNaN(d.getTime()) ? "" : d.toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
 }
 
+function ReviewItem({ r }: { r: Review }) {
+  const t = tone(r.name);
+  return (
+    <li className="flex gap-3 px-4 py-3">
+      <span className={"grid h-10 w-10 shrink-0 place-items-center rounded-full font-bold " + AVATAR[t]} aria-hidden>
+        {r.name.charAt(0).toUpperCase()}
+      </span>
+      <div className="min-w-0">
+        <p className="flex flex-wrap items-baseline gap-x-2">
+          <span className={"font-semibold tabular " + NAME_COLOR[t]}>{r.name}</span>
+          <span className="rounded bg-white/[0.06] px-1.5 text-[10px] font-semibold uppercase leading-4 text-ink-muted">Pembeli</span>
+          <span className="text-xs text-ink-faint">{day(r.date)}</span>
+        </p>
+        <p className="mt-0.5 text-[15px] leading-snug text-ink/90">{r.text}</p>
+        <p className="mt-1.5 flex items-center gap-3 text-xs text-ink-faint">
+          <span className="flex gap-0.5 text-ice" aria-label={`${r.rating} dari 5 bintang`}>
+            {Array.from({ length: 5 }).map((_, k) => (
+              <Star key={k} size={12} fill={k < r.rating ? "currentColor" : "none"} strokeWidth={1.6} aria-hidden />
+            ))}
+          </span>
+          {r.robux > 0 && (
+            <span className="inline-flex items-center gap-1 tabular">
+              <RobuxIcon className="h-3.5 w-3.5" /> {number(r.robux)} Robux
+            </span>
+          )}
+        </p>
+      </div>
+    </li>
+  );
+}
+
 // Ulasan ditampilkan seperti channel Discord, karena memang ditulis pembeli dari tiket Discord
 export function Reviews({ reviews }: { reviews: Review[] }) {
   return (
@@ -32,38 +63,17 @@ export function Reviews({ reviews }: { reviews: Review[] }) {
       {!reviews.length ? (
         <p className="px-4 py-10 text-center text-ink-muted">Ulasan pembeli akan muncul di sini.</p>
       ) : (
-        <ul className="review-feed max-h-[460px] overflow-y-auto py-2 sm:max-h-[520px]">
-          {reviews.map((r, i) => {
-            const t = tone(r.name);
-            return (
-              <li key={i} className="flex gap-3 px-4 py-3 transition-colors hover:bg-white/[0.025]">
-                <span className={"grid h-10 w-10 shrink-0 place-items-center rounded-full font-bold " + AVATAR[t]} aria-hidden>
-                  {r.name.charAt(0).toUpperCase()}
-                </span>
-                <div className="min-w-0">
-                  <p className="flex flex-wrap items-baseline gap-x-2">
-                    <span className={"font-semibold tabular " + NAME_COLOR[t]}>{r.name}</span>
-                    <span className="rounded bg-white/[0.06] px-1.5 text-[10px] font-semibold uppercase leading-4 text-ink-muted">Pembeli</span>
-                    <span className="text-xs text-ink-faint">{day(r.date)}</span>
-                  </p>
-                  <p className="mt-0.5 text-[15px] leading-snug text-ink/90">{r.text}</p>
-                  <p className="mt-1.5 flex items-center gap-3 text-xs text-ink-faint">
-                    <span className="flex gap-0.5 text-ice" aria-label={`${r.rating} dari 5 bintang`}>
-                      {Array.from({ length: 5 }).map((_, k) => (
-                        <Star key={k} size={12} fill={k < r.rating ? "currentColor" : "none"} strokeWidth={1.6} aria-hidden />
-                      ))}
-                    </span>
-                    {r.robux > 0 && (
-                      <span className="inline-flex items-center gap-1 tabular">
-                        <RobuxIcon className="h-3.5 w-3.5" /> {number(r.robux)} Robux
-                      </span>
-                    )}
-                  </p>
-                </div>
-              </li>
-            );
-          })}
-        </ul>
+        <div className="review-feed h-[440px] sm:h-[500px]">
+          <div className="review-track">
+            {[0, 1].map((copy) => (
+              <ul key={copy} aria-hidden={copy === 1 || undefined} className="py-1">
+                {reviews.map((r, i) => (
+                  <ReviewItem key={i} r={r} />
+                ))}
+              </ul>
+            ))}
+          </div>
+        </div>
       )}
 
       <p className="flex items-center gap-2 border-t border-line bg-surface px-4 py-3 text-xs text-ink-faint">

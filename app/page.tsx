@@ -171,7 +171,7 @@ export default async function Home() {
       {/* Penutup: ajakan beli bersama avatar Roblox admin 444s */}
       <section className="mx-auto mt-32 max-w-6xl px-4 sm:px-6" aria-labelledby="ajak">
         <div className="glow-card relative grid overflow-hidden rounded-[28px] border border-line-strong md:grid-cols-[1.15fr_0.85fr]">
-          <div className="relative z-10 order-2 px-6 pb-12 pt-4 sm:px-12 md:order-1 md:py-16">
+          <div className="relative z-10 order-2 px-6 pb-12 pt-8 sm:px-12 md:order-1 md:py-16">
             <p className="inline-flex items-center gap-2 rounded-full border border-line-strong bg-ground/50 px-3 py-1.5 text-xs text-ink-muted tabular">
               <span className="live-dot h-2 w-2 rounded-full bg-live" aria-hidden />
               {s.stock > 0 ? (
@@ -210,34 +210,56 @@ export default async function Home() {
             </div>
           </div>
 
-          <div className="relative order-1 h-72 md:order-2 md:h-auto md:min-h-[440px]">
-            <span aria-hidden className="avatar-stage absolute inset-x-6 bottom-6 top-10 md:inset-x-4 md:bottom-10" />
-            <svg viewBox="0 0 24 24" aria-hidden className="sparkle right-[14%] top-[16%] h-5 w-5">
+          <div className="relative order-1 grid place-items-center px-6 pb-2 pt-12 md:order-2 md:py-12">
+            <svg viewBox="0 0 24 24" aria-hidden className="sparkle right-[12%] top-[10%] h-5 w-5">
               <path d={SPARK} fill="currentColor" />
             </svg>
-            <svg viewBox="0 0 24 24" aria-hidden className="sparkle left-[14%] top-[40%] h-3 w-3" style={{ animationDelay: "1.6s" }}>
+            <svg viewBox="0 0 24 24" aria-hidden className="sparkle bottom-[14%] left-[10%] h-3 w-3" style={{ animationDelay: "1.6s" }}>
               <path d={SPARK} fill="currentColor" />
             </svg>
-            <Image
-              src="/brand/me.png"
-              alt="Avatar Roblox admin 444s"
-              width={420}
-              height={420}
-              className="absolute bottom-0 left-1/2 h-full w-auto max-w-none -translate-x-1/2 object-contain drop-shadow-[0_24px_30px_rgb(0_0_0/0.6)] md:h-[96%]"
-            />
-            <Image
-              src="/brand/chrome-infinity.png"
-              alt=""
-              width={300}
-              height={225}
-              className="icon-img float-a absolute right-5 top-6 w-20 md:right-8 md:top-10 md:w-24"
-            />
-            <span className="absolute bottom-4 left-1/2 inline-flex -translate-x-1/2 items-center gap-2 whitespace-nowrap rounded-full border border-line-strong bg-ground/80 px-3 py-1.5 text-xs font-semibold backdrop-blur md:bottom-8">
-              <span className="relative h-5 w-5 overflow-hidden rounded-md">
-                <Image src="/brand/server-icon.jpg" alt="" width={40} height={40} className="h-full w-full object-cover" />
-              </span>
-              rapz, admin 444s
-            </span>
+            {/* Kartu profil admin ala kartu pemain Roblox */}
+            <div className="float-b relative w-[260px] sm:w-[280px]" style={{ "--r": "3deg" } as CSSProperties}>
+              <div className="logo-ring rounded-[24px] p-[1.5px]">
+                <div className="rounded-[22.5px] bg-[#111114] p-3.5">
+                  <div className="avatar-bg relative h-52 overflow-hidden rounded-2xl">
+                    <Image
+                      src="/brand/me.png"
+                      alt="Avatar Roblox rapz, owner 444 Store"
+                      width={420}
+                      height={420}
+                      className="absolute left-[-27%] top-1 h-auto w-[160%] max-w-none"
+                    />
+                  </div>
+                  <div className="mt-3.5 flex items-start justify-between gap-3 px-1">
+                    <div>
+                      <p className="text-lg font-extrabold leading-tight">rapz</p>
+                      <p className="text-xs text-ink-muted">Owner 444 Store</p>
+                    </div>
+                    <span className="chrome-chip rounded-full px-2.5 py-1 text-[11px] font-bold">Admin</span>
+                  </div>
+                  <div className="mt-3 grid grid-cols-2 gap-2 text-center">
+                    <div className="rounded-xl bg-white/[0.05] py-2">
+                      <p className="text-lg font-extrabold tabular">{stats.orders_done ? number(stats.orders_done) : "-"}</p>
+                      <p className="text-[11px] text-ink-faint">pesanan selesai</p>
+                    </div>
+                    <div className="rounded-xl bg-white/[0.05] py-2">
+                      <p className="inline-flex items-center gap-1 text-lg font-extrabold tabular">
+                        {stats.rating_avg ? stats.rating_avg.toFixed(1) : "-"}
+                        <Star size={14} className="text-ice" fill="currentColor" aria-hidden />
+                      </p>
+                      <p className="text-[11px] text-ink-faint">rating pembeli</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <Image
+                src="/brand/chrome-infinity.png"
+                alt=""
+                width={300}
+                height={225}
+                className="icon-img absolute -right-4 -top-7 w-16 sm:-right-9 sm:-top-9 sm:w-24"
+              />
+            </div>
           </div>
         </div>
       </section>

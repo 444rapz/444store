@@ -99,7 +99,7 @@ export function HeroBanner({ rate, stock }: { rate: number; stock: number }) {
           width={300}
           height={300}
           priority
-          className="sticker -top-8 right-3 w-[84px] md:-top-12 md:right-[350px] md:w-[150px]"
+          className="sticker -top-12 right-[350px] hidden w-[150px] md:block"
           style={sticker("9deg", "60px")}
         />
         <Image
@@ -108,7 +108,7 @@ export function HeroBanner({ rate, stock }: { rate: number; stock: number }) {
           width={300}
           height={225}
           priority
-          className="sticker -right-2 top-[calc(100%-200px)] w-[96px] md:-bottom-12 md:right-[250px] md:top-auto md:w-[140px]"
+          className="sticker -right-1.5 top-[calc(100%-188px)] w-[80px] md:-bottom-12 md:right-[250px] md:top-auto md:w-[140px]"
           style={sticker("-8deg", "50px")}
         />
         <Image

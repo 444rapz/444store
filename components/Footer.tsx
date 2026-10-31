@@ -26,9 +26,9 @@ export function Footer() {
         <div>
           <h2 className="text-sm font-semibold">Hubungi admin</h2>
           <ul className="mt-3 space-y-2 text-sm text-ink-muted">
-            <li><a className="hover:text-ink" href={CONTACT.discord} target="_blank" rel="noopener noreferrer">Discord 444s</a></li>
+            <li><a className="hover:text-ink" href={CONTACT.discord} target="_blank" rel="noopener noreferrer">Discord</a></li>
             <li><a className="hover:text-ink" href={waLink("Halo min, aku mau tanya soal order.")} target="_blank" rel="noopener noreferrer">WhatsApp</a></li>
-            <li><a className="hover:text-ink" href={CONTACT.tiktok} target="_blank" rel="noopener noreferrer">TikTok @rapz444s</a></li>
+            <li><a className="hover:text-ink" href={CONTACT.tiktok} target="_blank" rel="noopener noreferrer">TikTok</a></li>
           </ul>
         </div>
       </div>
