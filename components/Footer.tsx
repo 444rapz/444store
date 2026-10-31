@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Brand } from "./Brand";
 import { PayLogos } from "./PayLogos";
+import { DiscordIcon, TikTokIcon, WhatsAppIcon } from "./BrandIcons";
 import { CONTACT, waLink } from "@/lib/store";
 
 export function Footer() {
@@ -19,16 +20,28 @@ export function Footer() {
           <ul className="mt-3 space-y-2 text-sm text-ink-muted">
             <li><Link className="hover:text-ink" href="/robux">Robux via Username</Link></li>
             <li><Link className="hover:text-ink" href="/item">Gift In Game</Link></li>
-            <li><Link className="hover:text-ink" href="/pesanan">Cek Pesanan</Link></li>
+            <li><Link className="hover:text-ink" href="/pesanan">Pesanan saya</Link></li>
             <li><Link className="hover:text-ink" href="/#faq">Pertanyaan umum</Link></li>
           </ul>
         </div>
         <div>
           <h2 className="text-sm font-semibold">Hubungi admin</h2>
-          <ul className="mt-3 space-y-2 text-sm text-ink-muted">
-            <li><a className="hover:text-ink" href={CONTACT.discord} target="_blank" rel="noopener noreferrer">Discord</a></li>
-            <li><a className="hover:text-ink" href={waLink("Halo min, aku mau tanya soal order.")} target="_blank" rel="noopener noreferrer">WhatsApp</a></li>
-            <li><a className="hover:text-ink" href={CONTACT.tiktok} target="_blank" rel="noopener noreferrer">TikTok</a></li>
+          <ul className="mt-3 space-y-2.5 text-sm text-ink-muted">
+            <li>
+              <a className="inline-flex items-center gap-2.5 hover:text-ink" href={CONTACT.discord} target="_blank" rel="noopener noreferrer">
+                <DiscordIcon size={18} className="text-[#8c96ff]" /> Discord
+              </a>
+            </li>
+            <li>
+              <a className="inline-flex items-center gap-2.5 hover:text-ink" href={waLink("Halo min, aku mau tanya soal order.")} target="_blank" rel="noopener noreferrer">
+                <WhatsAppIcon size={18} className="text-whatsapp" /> WhatsApp
+              </a>
+            </li>
+            <li>
+              <a className="inline-flex items-center gap-2.5 hover:text-ink" href={CONTACT.tiktok} target="_blank" rel="noopener noreferrer">
+                <TikTokIcon size={18} className="text-ink" /> TikTok
+              </a>
+            </li>
           </ul>
         </div>
       </div>

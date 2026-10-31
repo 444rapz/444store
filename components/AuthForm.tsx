@@ -2,7 +2,8 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Eye, EyeOff, Loader2, MessageCircle } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { DiscordIcon } from "./BrandIcons";
 import { LogoOrb } from "./Brand";
 import { oauthUrl, useWebUser, webApi, type WebUser } from "@/lib/web";
 
@@ -86,7 +87,7 @@ export function AuthForm({ next, error, startMode }: { next: string; error: stri
             }}
             className="flex items-center justify-center gap-2.5 rounded-full bg-discord px-5 py-3.5 font-semibold text-white transition-transform active:scale-[0.98]"
           >
-            <MessageCircle size={18} aria-hidden /> Lanjut pakai Discord
+            <DiscordIcon size={19} /> Lanjut pakai Discord
           </button>
         )}
         {providers.google && (

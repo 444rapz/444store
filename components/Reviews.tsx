@@ -1,10 +1,10 @@
 import { Hash, Lock, Star } from "lucide-react";
 import { RobuxIcon } from "./RobuxIcon";
+import { BuyerAvatar } from "./BuyerAvatar";
 import type { Review } from "@/lib/store";
 import { number } from "@/lib/store";
 
 const NAME_COLOR = ["text-ice", "text-violet-soft", "text-blush", "text-silver"];
-const AVATAR = ["bg-ice/15 text-ice", "bg-violet/20 text-violet-soft", "bg-blush/15 text-blush", "bg-silver/15 text-silver"];
 
 function tone(name: string) {
   let h = 0;
@@ -21,9 +21,7 @@ function ReviewItem({ r }: { r: Review }) {
   const t = tone(r.name);
   return (
     <li className="flex gap-3 px-4 py-3">
-      <span className={"grid h-10 w-10 shrink-0 place-items-center rounded-full font-bold " + AVATAR[t]} aria-hidden>
-        {r.name.charAt(0).toUpperCase()}
-      </span>
+      <BuyerAvatar name={r.name} src={r.avatar} />
       <div className="min-w-0">
         <p className="flex flex-wrap items-baseline gap-x-2">
           <span className={"font-semibold tabular " + NAME_COLOR[t]}>{r.name}</span>

@@ -1,8 +1,7 @@
 import { Crown } from "lucide-react";
 import type { TopBuyer } from "@/lib/store";
 import { rupiah } from "@/lib/store";
-
-const AVATAR = ["bg-ice/15 text-ice", "bg-violet/20 text-violet-soft", "bg-blush/15 text-blush", "bg-silver/15 text-silver"];
+import { BuyerAvatar } from "./BuyerAvatar";
 
 // Panggung juara: juara 2 di kiri, juara 1 di tengah (balok paling tinggi), juara 3 di kanan
 const PODIUM = [1, 0, 2];
@@ -13,11 +12,8 @@ function Step({ b, rank }: { b: TopBuyer; rank: number }) {
   return (
     <li className="flex min-w-0 flex-col items-center text-center">
       {rank === 0 && <Crown size={26} className="mb-1.5 text-ice" aria-hidden />}
-      <span
-        className={"grid h-14 w-14 place-items-center rounded-full bg-raised text-xl font-extrabold ring-2 sm:h-16 sm:w-16 " + RING[rank]}
-        aria-hidden
-      >
-        {b.name.charAt(0).toUpperCase()}
+      <span className={"rounded-full ring-2 ring-offset-2 ring-offset-ground " + RING[rank]}>
+        <BuyerAvatar name={b.name} src={b.avatar} size="h-14 w-14 sm:h-16 sm:w-16" text="text-xl" />
       </span>
       <p className="mt-2 w-full truncate text-sm font-semibold tabular">{b.name}</p>
       <p className="text-[13px] font-extrabold tabular sm:text-base">{rupiah(b.total_rp)}</p>
@@ -46,9 +42,7 @@ export function TopBuyers({ buyers }: { buyers: TopBuyer[] }) {
         {list.map((b, i) => (
           <li key={offset + i} className="flex items-center gap-3 border-b border-line py-3">
             <span className="w-6 shrink-0 text-sm font-bold text-ink-faint tabular">{offset + i + 1}</span>
-            <span className={"grid h-8 w-8 shrink-0 place-items-center rounded-full text-sm font-bold " + AVATAR[(offset + i) % AVATAR.length]} aria-hidden>
-              {b.name.charAt(0).toUpperCase()}
-            </span>
+            <BuyerAvatar name={b.name} src={b.avatar} size="h-8 w-8" text="text-sm" />
             <span className="min-w-0 flex-1 truncate text-sm font-medium tabular">{b.name}</span>
             <span className="text-sm font-bold tabular">{rupiah(b.total_rp)}</span>
           </li>

@@ -62,23 +62,29 @@ export function MyOrders() {
               <li key={o.invoice}>
                 <Link
                   href={`/pesanan/${o.invoice}`}
-                  className="flex items-center gap-4 rounded-[var(--radius-card)] border border-line-strong bg-surface p-4 transition-colors hover:border-ice/50"
+                  className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-4 rounded-[var(--radius-card)] border border-line-strong bg-surface p-4 transition-colors hover:border-ice/50"
                 >
                   <RobloxAvatar src={o.roblox.avatar} size="h-12 w-12" />
-                  <div className="min-w-0 flex-1">
-                    <p className="flex flex-wrap items-center gap-2">
-                      <span className="font-bold tabular">{o.invoice}</span>
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[15px] font-bold leading-none tabular">{o.invoice}</span>
                       <StatusPill status={o.status} label={o.status_label} />
-                    </p>
-                    <p className="mt-1 truncate text-sm text-ink-muted">
-                      <span className="inline-flex items-center gap-1 tabular">
-                        <RobuxIcon className="h-3.5 w-3.5" /> {number(o.robux)}
-                      </span>{" "}
-                      ke @{o.roblox.username} · {formatDate(o.created_at)}
-                    </p>
+                    </div>
+                    <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm leading-none text-ink-muted">
+                      <span className="inline-flex items-center gap-1 font-semibold text-ink tabular">
+                        <RobuxIcon className="h-3.5 w-3.5 text-ice" />
+                        {number(o.robux)}
+                      </span>
+                      <span aria-hidden className="text-ink-faint">·</span>
+                      <span className="truncate">@{o.roblox.username}</span>
+                      <span aria-hidden className="text-ink-faint">·</span>
+                      <span className="text-ink-faint tabular">{formatDate(o.created_at)}</span>
+                    </div>
                   </div>
-                  <span className="hidden font-semibold tabular sm:block">{rupiah(o.total)}</span>
-                  <ChevronRight size={18} className="shrink-0 text-ink-faint" aria-hidden />
+                  <div className="flex items-center gap-2">
+                    <span className="text-[15px] font-bold tabular">{rupiah(o.total)}</span>
+                    <ChevronRight size={18} className="shrink-0 text-ink-faint" aria-hidden />
+                  </div>
                 </Link>
               </li>
             ))}

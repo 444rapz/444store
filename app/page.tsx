@@ -1,6 +1,7 @@
 import Image from "next/image";
 import type { CSSProperties } from "react";
-import { ArrowRight, MessageCircle, Phone, Star } from "lucide-react";
+import { ArrowRight, Star } from "lucide-react";
+import { DiscordIcon, WhatsAppIcon } from "@/components/BrandIcons";
 import { HeroBanner } from "@/components/HeroBanner";
 import { CategoryGrid } from "@/components/CategoryGrid";
 import { StatsRow } from "@/components/StatsRow";
@@ -85,7 +86,7 @@ export default async function Home() {
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 rounded-full bg-discord px-5 py-3 text-sm font-semibold text-white"
           >
-            <MessageCircle size={17} aria-hidden /> Gabung Discord 444s
+            <DiscordIcon size={17} /> Gabung Discord 444s
           </a>
         </div>
         <div className="mt-12">
@@ -121,7 +122,7 @@ export default async function Home() {
             rel="noopener noreferrer"
             className="mt-8 inline-flex items-center gap-2 rounded-full border border-line-strong px-5 py-3 text-sm font-medium transition-colors hover:border-discord hover:bg-discord/15"
           >
-            <MessageCircle size={17} aria-hidden /> Lihat semua di Discord 444s
+            <DiscordIcon size={17} /> Lihat semua di Discord 444s
           </a>
         </div>
         <Reviews reviews={s.reviews} />
@@ -145,7 +146,7 @@ export default async function Home() {
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 rounded-full border border-line-strong px-4 py-2.5 text-sm font-medium hover:border-whatsapp hover:bg-whatsapp/10"
             >
-              <Phone size={16} aria-hidden /> WhatsApp
+              <WhatsAppIcon size={16} className="text-whatsapp" /> WhatsApp
             </a>
             <a
               href={CONTACT.discord}
@@ -153,7 +154,7 @@ export default async function Home() {
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 rounded-full border border-line-strong px-4 py-2.5 text-sm font-medium hover:bg-raised"
             >
-              <MessageCircle size={16} aria-hidden /> Discord
+              <DiscordIcon size={16} className="text-[#8c96ff]" /> Discord
             </a>
           </div>
           <Image
@@ -205,7 +206,7 @@ export default async function Home() {
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 rounded-full border border-line-strong px-5 py-3.5 font-medium hover:bg-raised"
               >
-                <MessageCircle size={18} aria-hidden /> Tanya admin
+                <DiscordIcon size={18} /> Tanya admin
               </a>
             </div>
           </div>

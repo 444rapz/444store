@@ -13,8 +13,8 @@ export const PAYMENT = {
   holder: "M.R.T",
 };
 
-export type Review = { name: string; rating: number; text: string; robux: number; date: string };
-export type TopBuyer = { name: string; total_rp: number; orders: number };
+export type Review = { name: string; rating: number; text: string; robux: number; date: string; avatar?: string };
+export type TopBuyer = { name: string; total_rp: number; orders: number; avatar?: string };
 export type Summary = {
   rate: number;
   stock: number;

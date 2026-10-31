@@ -19,10 +19,20 @@ export type Order = {
   note: string;
   has_proof: boolean;
   reject_reason: string;
+  admin: { name: string; avatar: string } | null;
+  review: { rating: number; text: string } | null;
   created_at: string;
   updated_at: string;
 };
-export type ChatMessage = { id: number; sender: "buyer" | "admin" | "system"; author: string; body: string; image: boolean; created_at: string };
+export type ChatMessage = {
+  id: number;
+  sender: "buyer" | "admin" | "system";
+  author: string;
+  body: string;
+  image: boolean;
+  avatar: string;
+  created_at: string;
+};
 
 type Result<T> = { ok: boolean; status: number; data: T & { error?: string } };
 

@@ -4,7 +4,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { Coins, Gift, House, MessageCircle, Receipt, ShoppingBag, UserRound } from "lucide-react";
+import { Coins, Gift, House, Receipt, ShoppingBag, UserRound } from "lucide-react";
+import { DiscordIcon } from "./BrandIcons";
 import { LogoOrb } from "./Brand";
 import { CONTACT } from "@/lib/store";
 import { useWebUser } from "@/lib/web";
@@ -73,7 +74,7 @@ export function Header() {
               aria-label="Discord"
               className="hidden h-11 w-11 place-items-center rounded-full border border-line-strong sm:grid text-ink-muted transition-colors hover:border-discord hover:bg-discord/15 hover:text-ink"
             >
-              <MessageCircle size={18} aria-hidden />
+              <DiscordIcon size={19} />
             </a>
             <Link href="/robux" className="chrome-btn inline-flex h-11 items-center gap-2 whitespace-nowrap rounded-full px-4 text-sm font-semibold sm:px-5">
               <ShoppingBag size={16} aria-hidden /> Beli Robux
