@@ -432,7 +432,7 @@ export function OrderDetail({ invoice }: { invoice: string }) {
                     }`}
                   >
                     <span className="grid h-9 w-full place-items-center rounded-lg bg-white px-2">
-                      <Image src={m.logo} alt="" width={m.w} height={m.h} className="h-5 w-auto" />
+                      <Image src={m.logo} alt="" width={m.w} height={m.h} className="h-auto max-h-6 w-auto max-w-full object-contain" />
                     </span>
                     {m.name}
                   </button>
@@ -463,7 +463,12 @@ export function OrderDetail({ invoice }: { invoice: string }) {
               </div>
             )}
 
-            <div className="mt-6 border-t border-line pt-5">
+            <p className="mt-5 rounded-xl border border-line bg-raised/50 px-3.5 py-3 text-sm text-ink-muted">
+              Pesanan baru diproses setelah kamu upload bukti bayar atau kabari admin di chat kalau sudah transfer.
+              {order.status === "awaiting_payment" && " Bayar dalam 6 jam, kalau lewat pesanan batal otomatis."}
+            </p>
+
+            <div className="mt-5 border-t border-line pt-5">
               {order.has_proof ? (
                 <p className="flex items-start gap-2 text-sm text-live">
                   <Check size={18} className="mt-0.5 shrink-0" aria-hidden />
@@ -510,21 +515,46 @@ export function OrderDetail({ invoice }: { invoice: string }) {
         )}
 
         <section className="rounded-[var(--radius-card)] border border-line-strong bg-surface p-5 sm:p-6" aria-labelledby="detail">
-          <h2 id="detail" className="text-lg font-bold">Detail pesanan</h2>
-          <div className="mt-4 flex items-center gap-3">
-            <RobloxAvatar src={order.roblox.avatar} size="h-12 w-12" />
-            <div className="min-w-0">
-              <p className="truncate font-semibold">{order.roblox.display}</p>
-              <p className="truncate text-sm text-ink-muted">@{order.roblox.username}</p>
-            </div>
-          </div>
+          <h2 id="detail" className="text-lg font-bold">
+            Detail pesanan <span className="text-sm font-medium text-ink-faint">· {order.product === "gig" ? "Gift In Game" : "Robux via Username"}</span>
+          </h2>
+          <ul className="mt-4 grid gap-2">
+            {order.items.map((l, i) => (
+              <li key={i} className="flex gap-3 rounded-xl border border-line bg-raised/40 p-3">
+                <RobloxAvatar src={l.avatar} size="h-11 w-11" />
+                <div className="min-w-0 flex-1 text-sm">
+                  {l.type === "gig" ? (
+                    <>
+                      <p className="truncate font-semibold">{l.name}</p>
+                      <p className="truncate text-xs text-ink-faint">{l.game}</p>
+                      <p className="mt-0.5 truncate text-xs text-ink-muted">
+                        ke {l.display} (@{l.username}) ·{" "}
+                        {l.server === "link" && l.server_link ? (
+                          <a href={l.server_link} target="_blank" rel="noopener noreferrer" className="text-ice hover:underline">
+                            link private server
+                          </a>
+                        ) : (
+                          "server disiapkan admin"
+                        )}
+                      </p>
+                    </>
+                  ) : (
+                    <>
+                      <p className="truncate font-semibold">{l.display}</p>
+                      <p className="truncate text-xs text-ink-muted">@{l.username}</p>
+                    </>
+                  )}
+                </div>
+                <div className="text-right text-sm tabular">
+                  <p className="inline-flex items-center gap-1 font-bold">
+                    <RobuxIcon className="h-3.5 w-3.5 text-ice" /> {number(l.robux)}
+                  </p>
+                  <p className="text-xs text-ink-muted">{rupiah(l.price)}</p>
+                </div>
+              </li>
+            ))}
+          </ul>
           <dl className="mt-4 grid grid-cols-2 gap-x-6 gap-y-3 text-sm">
-            <div>
-              <dt className="text-ink-faint">Jumlah</dt>
-              <dd className="mt-0.5 inline-flex items-center gap-1 font-semibold tabular">
-                <RobuxIcon className="h-3.5 w-3.5 text-ice" /> {number(order.robux)} Robux
-              </dd>
-            </div>
             <div>
               <dt className="text-ink-faint">Total</dt>
               <dd className="mt-0.5 font-semibold tabular">
@@ -533,13 +563,15 @@ export function OrderDetail({ invoice }: { invoice: string }) {
               </dd>
             </div>
             <div>
-              <dt className="text-ink-faint">Umur akun</dt>
-              <dd className="mt-0.5 font-semibold">{order.age_group === "adult" ? "18+ tahun" : "Di bawah 18"}</dd>
-            </div>
-            <div>
               <dt className="text-ink-faint">Metode bayar</dt>
               <dd className="mt-0.5 font-semibold">{order.payment_label}</dd>
             </div>
+            {order.product !== "gig" && (
+              <div>
+                <dt className="text-ink-faint">Umur akun</dt>
+                <dd className="mt-0.5 font-semibold">{order.age_group === "adult" ? "18+ tahun" : "Di bawah 18"}</dd>
+              </div>
+            )}
             {order.note && (
               <div className="col-span-2">
                 <dt className="text-ink-faint">Catatan</dt>

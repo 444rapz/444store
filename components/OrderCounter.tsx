@@ -8,6 +8,7 @@ import { RobuxIcon } from "./RobuxIcon";
 import { ProfilePreview } from "./RobloxProfile";
 import { useRobloxLookup } from "@/lib/roblox";
 import { API_URL, PACKAGES, number, rupiah } from "@/lib/store";
+import { budgetToRobux, robuxPrice } from "@/lib/pricing";
 
 type Mode = "robux" | "budget";
 
@@ -47,13 +48,13 @@ export function OrderCounter({ initialRate, initialStock }: { initialRate: numbe
   const robux = useMemo(() => {
     if (mode === "budget") {
       const b = Number(budget.replace(/\D/g, ""));
-      return rate > 0 ? Math.floor(b / rate) : 0;
+      return budgetToRobux(b, rate);
     }
     const c = Number(custom.replace(/\D/g, ""));
     return custom ? c : amount;
   }, [mode, budget, custom, amount, rate]);
 
-  const total = robux * rate;
+  const total = robux > 0 ? robuxPrice(robux, rate) : 0;
   const overStock = robux > stock;
   const priceReady = rate > 0;
   const canContinue = priceReady && robux > 0 && !overStock && usernameOk && status !== "notfound" && status !== "loading";

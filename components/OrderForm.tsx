@@ -3,13 +3,16 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { ArrowRight, Check, ExternalLink, Loader2, LogIn, Minus, Plus, ShieldCheck, TriangleAlert, X } from "lucide-react";
+import { ArrowRight, Check, ExternalLink, Loader2, LogIn, Minus, Plus, ShieldCheck, TriangleAlert, UserPlus, X } from "lucide-react";
 import { RobuxIcon } from "./RobuxIcon";
 import { ProfilePreview, RobloxAvatar } from "./RobloxProfile";
 import { useRobloxLookup } from "@/lib/roblox";
 import { useWebUser, webApi, type Order } from "@/lib/web";
+import { robuxPrice } from "@/lib/pricing";
 import Image from "next/image";
 import { API_URL, PAY_METHODS, number, rupiah, type PayMethod } from "@/lib/store";
+
+type Line = { robux: number; username: string; display: string; avatar: string };
 
 const MIN = 10;
 const MAX = 10000;
@@ -73,6 +76,7 @@ export function OrderForm({
   const [twoStep, setTwoStep] = useState(false);
   const [age, setAge] = useState<"adult" | "minor">("adult");
   const [pay, setPay] = useState<PayMethod>("qris");
+  const [extra, setExtra] = useState<Line[]>([]);
   const [note, setNote] = useState("");
   const [promoInput, setPromoInput] = useState("");
   const [promo, setPromo] = useState<{ code: string; discount: number } | null>(null);
@@ -95,11 +99,23 @@ export function OrderForm({
     return () => clearInterval(t);
   }, []);
 
+  // Penerima tambahan (misalnya teman) + penerima yang sedang diisi
+  const current: Line | null =
+    robux < MIN || !valid
+      ? null
+      : profile
+        ? { robux, username: profile.name, display: profile.displayName, avatar: profile.avatar }
+        : status === "error"
+          ? { robux, username: uname, display: uname, avatar: "" }
+          : null;
+  const lines = current ? [...extra, current] : extra;
+  const totalRobux = lines.reduce((n, l) => n + l.robux, 0);
   const max = Math.max(MIN, Math.min(stock, MAX));
-  const subtotal = robux * rate;
+  const subtotal = lines.reduce((n, l) => n + robuxPrice(l.robux, rate), 0);
+  const currentPrice = robux >= MIN ? robuxPrice(robux, rate) : 0;
   const discount = promo ? Math.min(promo.discount, subtotal) : 0;
   const total = subtotal - discount;
-  const overStock = robux > stock;
+  const overStock = totalRobux + (current ? 0 : robux) > stock;
 
   // Potongan promo dihitung ulang kalau jumlah Robux berubah
   const appliedCode = promo?.code;
@@ -108,7 +124,7 @@ export function OrderForm({
     const t = setTimeout(async () => {
       const r = await webApi<{ code: string; discount: number }>("promo", {
         method: "POST",
-        body: JSON.stringify({ code: appliedCode, robux }),
+        body: JSON.stringify({ code: appliedCode, robux: totalRobux }),
       });
       if (r.ok) setPromo({ code: r.data.code, discount: r.data.discount });
       else {
@@ -117,13 +133,13 @@ export function OrderForm({
       }
     }, 400);
     return () => clearTimeout(t);
-  }, [robux, appliedCode]);
+  }, [totalRobux, appliedCode]);
 
   async function applyPromo() {
     setPromoMsg("");
     const code = promoInput.trim();
     if (!code) return;
-    const r = await webApi<{ code: string; discount: number }>("promo", { method: "POST", body: JSON.stringify({ code, robux }) });
+    const r = await webApi<{ code: string; discount: number }>("promo", { method: "POST", body: JSON.stringify({ code, robux: totalRobux }) });
     if (!r.ok) return setPromoMsg(r.data.error || "Kode promo tidak bisa dipakai.");
     setPromo({ code: r.data.code, discount: r.data.discount });
   }
@@ -132,10 +148,16 @@ export function OrderForm({
   if (rate <= 0) problems.push("Harga belum bisa dimuat.");
   if (robux < MIN) problems.push(`Minimal ${MIN} Robux.`);
   if (overStock) problems.push(`Stok sekarang cuma ${number(stock)} Robux.`);
-  if (!valid) problems.push("Isi username Roblox penerima.");
-  else if (status === "notfound") problems.push("Username Roblox belum ketemu.");
+  if (status === "notfound") problems.push("Username Roblox belum ketemu.");
+  else if (!lines.length) problems.push("Isi username Roblox penerima.");
   if (!twoStep) problems.push("Centang konfirmasi 2-Step Verification.");
   const ready = problems.length === 0 && status !== "loading";
+
+  function addRecipient() {
+    if (!current || extra.length >= 9) return;
+    setExtra((x) => [...x, current]);
+    setUsername("");
+  }
 
   async function submit() {
     if (!ready || busy) return;
@@ -144,8 +166,7 @@ export function OrderForm({
     const r = await webApi<{ order: Order }>("orders", {
       method: "POST",
       body: JSON.stringify({
-        robux,
-        roblox_username: profile?.name ?? uname,
+        lines: lines.map((l) => ({ robux: l.robux, username: l.username })),
         age_group: age,
         two_step: twoStep,
         note,
@@ -217,7 +238,7 @@ export function OrderForm({
             </div>
             <div className="mt-3 flex items-baseline justify-center gap-2">
               <span className="text-sm text-ink-muted">Total</span>
-              <span className="text-2xl font-extrabold text-ice tabular">{rupiah(subtotal)}</span>
+              <span className="text-2xl font-extrabold text-ice tabular">{rupiah(currentPrice)}</span>
             </div>
             <input
               type="range"
@@ -291,6 +312,42 @@ export function OrderForm({
           </label>
           <ProfilePreview status={status} profile={profile} username={uname} />
 
+          {extra.length > 0 && (
+            <ul className="mt-4 grid gap-2" aria-label="Penerima lain">
+              {extra.map((l, i) => (
+                <li key={i} className="flex items-center gap-3 rounded-xl border border-line bg-raised/50 p-2.5 pr-3">
+                  <RobloxAvatar src={l.avatar} size="h-10 w-10" />
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-semibold">{l.display}</p>
+                    <p className="truncate text-xs text-ink-muted">@{l.username}</p>
+                  </div>
+                  <span className="inline-flex items-center gap-1 text-sm font-bold tabular">
+                    <RobuxIcon className="h-3.5 w-3.5 text-ice" /> {number(l.robux)}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setExtra((x) => x.filter((_, j) => j !== i))}
+                    aria-label={`Hapus pesanan untuk @${l.username}`}
+                    className="grid h-8 w-8 place-items-center rounded-full text-ink-faint hover:bg-white/5 hover:text-ink"
+                  >
+                    <X size={16} aria-hidden />
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+          <button
+            type="button"
+            onClick={addRecipient}
+            disabled={!current || extra.length >= 9}
+            className="mt-3 inline-flex items-center gap-2 rounded-full border border-dashed border-line-strong px-4 py-2.5 text-sm font-semibold text-ink-muted transition-colors hover:border-ice hover:text-ink disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            <UserPlus size={16} aria-hidden /> Tambah penerima lain (misalnya teman)
+          </button>
+          <p className="mt-1.5 text-xs text-ink-faint">
+            Isi jumlah dan username, lalu tekan tombol ini. Penerima berikutnya bisa beda jumlah Robux.
+          </p>
+
           <div className="mt-5 rounded-2xl border border-warn/30 bg-warn/[0.07] p-4">
             <p className="flex items-center justify-between gap-3 font-semibold">
               <span className="flex items-center gap-2">
@@ -320,7 +377,10 @@ export function OrderForm({
             </a>
             <label className="mt-4 flex cursor-pointer items-start gap-3 rounded-xl border border-line-strong bg-ground/60 p-3">
               <input type="checkbox" checked={twoStep} onChange={(e) => setTwoStep(e.target.checked)} className="mt-0.5 h-5 w-5 accent-[#22c55e]" />
-              <span className="text-sm">Aku sudah memastikan 2-Step Verification (Email) aktif di akun penerima.</span>
+              <span className="text-sm">
+                Aku sudah memastikan 2-Step Verification (Email) aktif di akun penerima. Aku setuju, kalau Robux nggak bisa
+                dikirim karena akun belum siap, pesanan <b>tidak bisa di-refund</b>.
+              </span>
             </label>
           </div>
 
@@ -377,7 +437,7 @@ export function OrderForm({
                   } ${m.id === "qris" ? "sm:col-span-2" : ""}`}
                 >
                   <span className="grid h-11 w-20 shrink-0 place-items-center rounded-lg bg-white px-2">
-                    <Image src={m.logo} alt="" width={m.w} height={m.h} className="h-6 w-auto" />
+                    <Image src={m.logo} alt="" width={m.w} height={m.h} className="h-auto max-h-7 w-auto max-w-full object-contain" />
                   </span>
                   <span className="min-w-0 flex-1">
                     <span className="flex items-center gap-2 font-semibold">
@@ -396,28 +456,47 @@ export function OrderForm({
               );
             })}
           </div>
-          <p className="mt-3 text-xs text-ink-faint">Pembayaran dicek manual oleh admin setelah kamu upload bukti bayar.</p>
+          <p className="mt-3 rounded-xl border border-line bg-raised/50 px-3.5 py-3 text-sm text-ink-muted">
+            Pesanan baru diproses setelah kamu upload bukti bayar atau kabari admin di chat kalau sudah transfer. Pembayaran dicek
+            manual oleh admin.
+          </p>
         </Step>
       </div>
 
       <aside className="glow-card rounded-[var(--radius-card)] border border-line-strong px-5 pt-5 sm:px-6 sm:pt-6 lg:sticky lg:top-24" aria-label="Ringkasan pesanan">
         <h2 className="text-lg font-bold tracking-tight">Ringkasan pesanan</h2>
-        <div className="mt-4 flex items-center gap-3 rounded-xl border border-line bg-ground/50 p-3">
-          {profile ? (
-            <RobloxAvatar src={profile.avatar} size="h-11 w-11" />
+        <ul className="mt-4 grid gap-2">
+          {lines.length === 0 ? (
+            <li className="flex items-center gap-3 rounded-xl border border-line bg-ground/50 p-3">
+              <span className="grid h-11 w-11 place-items-center rounded-xl bg-raised text-xs font-bold text-ink-faint">RBX</span>
+              <div className="min-w-0">
+                <p className="truncate font-semibold">{valid ? uname : "Username belum diisi"}</p>
+                <p className="truncate text-xs text-ink-muted">Akun Roblox penerima</p>
+              </div>
+            </li>
           ) : (
-            <span className="grid h-11 w-11 place-items-center rounded-xl bg-raised text-xs font-bold text-ink-faint">RBX</span>
+            lines.map((l, i) => (
+              <li key={i} className="flex items-center gap-3 rounded-xl border border-line bg-ground/50 p-2.5">
+                <RobloxAvatar src={l.avatar} size="h-10 w-10" />
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-semibold">{l.display}</p>
+                  <p className="truncate text-xs text-ink-muted">@{l.username}</p>
+                </div>
+                <div className="text-right text-sm tabular">
+                  <p className="inline-flex items-center gap-1 font-bold">
+                    <RobuxIcon className="h-3.5 w-3.5 text-ice" /> {number(l.robux)}
+                  </p>
+                  <p className="text-xs text-ink-muted">{rupiah(robuxPrice(l.robux, rate))}</p>
+                </div>
+              </li>
+            ))
           )}
-          <div className="min-w-0">
-            <p className="truncate font-semibold">{profile ? profile.displayName : valid ? uname : "Username belum diisi"}</p>
-            <p className="truncate text-xs text-ink-muted">{profile ? `@${profile.name}` : "Akun Roblox penerima"}</p>
-          </div>
-        </div>
+        </ul>
         <div className="mt-3 divide-y divide-line">
           <Row label="Layanan">Robux via Username</Row>
-          <Row label="Jumlah">
+          <Row label={lines.length > 1 ? `Jumlah (${lines.length} penerima)` : "Jumlah"}>
             <span className="inline-flex items-center gap-1 tabular">
-              <RobuxIcon className="h-3.5 w-3.5 text-ice" /> {number(robux)}
+              <RobuxIcon className="h-3.5 w-3.5 text-ice" /> {number(lines.length ? totalRobux : robux)}
             </span>
           </Row>
           <Row label="Umur akun">{age === "adult" ? "18+ tahun" : "Di bawah 18"}</Row>

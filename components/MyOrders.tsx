@@ -76,7 +76,9 @@ export function MyOrders() {
                         {number(o.robux)}
                       </span>
                       <span aria-hidden className="text-ink-faint">·</span>
-                      <span className="truncate">@{o.roblox.username}</span>
+                      <span className="truncate">
+                        {o.product === "gig" ? `Gift In Game, ${o.items.length} item` : o.items.length > 1 ? `${o.items.length} penerima` : `@${o.roblox.username}`}
+                      </span>
                       <span aria-hidden className="text-ink-faint">·</span>
                       <span className="text-ink-faint tabular">{formatDate(o.created_at)}</span>
                     </div>

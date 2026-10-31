@@ -4,8 +4,23 @@ import { useEffect, useState } from "react";
 import { API_URL, type PayMethod } from "./store";
 
 export type WebUser = { id: number; name: string; provider: string; email: string; phone: string; avatar: string };
+export type OrderLine = {
+  type: "robux" | "gig";
+  robux: number;
+  price: number;
+  username: string;
+  user_id: string;
+  display: string;
+  avatar: string;
+  game?: string;
+  name?: string;
+  server?: "link" | "admin";
+  server_link?: string;
+};
 export type Order = {
   invoice: string;
+  product: "robux" | "gig";
+  items: OrderLine[];
   status: "awaiting_payment" | "awaiting_verification" | "processing" | "done" | "rejected" | "cancelled";
   status_label: string;
   robux: number;
