@@ -193,8 +193,8 @@ export function OrderForm({
   const payName = PAY_METHODS.find((m) => m.id === pay)?.name ?? "QRIS";
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_380px] lg:items-start">
-      <div className="grid gap-5">
+    <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_380px] lg:items-start">
+      <div className="grid grid-cols-1 gap-5">
         <Step n={1} title="Pilih nominal Robux" sub={rate > 0 ? `Harga ${rupiah(rate)} per Robux` : undefined}>
           {soldOut && (
             <p className="mb-4 flex items-start gap-2 rounded-xl border border-warn/30 bg-warn/10 px-3.5 py-3 text-sm text-warn">
@@ -313,7 +313,7 @@ export function OrderForm({
           <ProfilePreview status={status} profile={profile} username={uname} />
 
           {extra.length > 0 && (
-            <ul className="mt-4 grid gap-2" aria-label="Penerima lain">
+            <ul className="mt-4 grid grid-cols-1 gap-2" aria-label="Penerima lain">
               {extra.map((l, i) => (
                 <li key={i} className="flex items-center gap-3 rounded-xl border border-line bg-raised/50 p-2.5 pr-3">
                   <RobloxAvatar src={l.avatar} size="h-10 w-10" />
@@ -386,7 +386,7 @@ export function OrderForm({
 
           <fieldset className="mt-5">
             <legend className="text-sm text-ink-muted">Umur akun Roblox penerima</legend>
-            <div className="mt-2 grid gap-2 sm:grid-cols-2">
+            <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
               {(
                 [
                   ["adult", "18 tahun ke atas", "Robux bisa langsung masuk."],
@@ -422,7 +422,7 @@ export function OrderForm({
         </Step>
 
         <Step n={3} title="Cara bayar" sub="Pilih yang paling gampang buat kamu. Nanti masih bisa diganti di halaman pesanan.">
-          <div className="grid gap-2 sm:grid-cols-2" role="radiogroup" aria-label="Metode pembayaran">
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2" role="radiogroup" aria-label="Metode pembayaran">
             {PAY_METHODS.map((m) => {
               const selected = pay === m.id;
               return (
@@ -465,7 +465,7 @@ export function OrderForm({
 
       <aside className="glow-card rounded-[var(--radius-card)] border border-line-strong px-5 pt-5 sm:px-6 sm:pt-6 lg:sticky lg:top-24" aria-label="Ringkasan pesanan">
         <h2 className="text-lg font-bold tracking-tight">Ringkasan pesanan</h2>
-        <ul className="mt-4 grid gap-2">
+        <ul className="mt-4 grid grid-cols-1 gap-2">
           {lines.length === 0 ? (
             <li className="flex items-center gap-3 rounded-xl border border-line bg-ground/50 p-3">
               <span className="grid h-11 w-11 place-items-center rounded-xl bg-raised text-xs font-bold text-ink-faint">RBX</span>
@@ -536,7 +536,7 @@ export function OrderForm({
                 onChange={(e) => setPromoInput(e.target.value.toUpperCase().slice(0, 20))}
                 placeholder="Kode promo"
                 aria-label="Kode promo"
-                className="min-w-0 flex-1 rounded-xl border border-line bg-ground px-3.5 py-2.5 text-sm uppercase placeholder:normal-case placeholder:text-ink-faint focus:border-ice focus:outline-none"
+                className="min-w-0 flex-1 rounded-xl border border-line bg-ground px-3.5 py-2.5 text-base uppercase sm:text-sm placeholder:normal-case placeholder:text-ink-faint focus:border-ice focus:outline-none"
               />
               <button type="button" onClick={applyPromo} className="rounded-xl border border-line-strong px-4 text-sm font-semibold hover:bg-raised">
                 Pakai

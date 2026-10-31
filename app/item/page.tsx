@@ -7,7 +7,7 @@ import { CONTACT, getGig, waLink } from "@/lib/store";
 export const revalidate = 30;
 export const metadata: Metadata = {
   title: "Gift In Game",
-  description: "Item dan gamepass di dalam game Roblox. Admin masuk ke server kamu, lalu mengirim itemnya langsung ke akunmu.",
+  description: "Item dan gamepass di dalam game Roblox, khusus game yang punya fitur gift. Admin masuk ke server kamu, lalu mengirim itemnya langsung ke akunmu.",
 };
 
 const STEPS = [
@@ -32,7 +32,7 @@ export default async function ItemPage() {
         )}
       </div>
       <p className="mt-3 max-w-[56ch] text-ink-muted sm:text-lg">
-        Item dan gamepass di dalam game Roblox. Admin masuk ke server kamu, lalu mengirim itemnya langsung ke akunmu.
+        Item dan gamepass di dalam game Roblox, khusus game yang punya fitur gift. Admin masuk ke server kamu, lalu mengirim itemnya langsung ke akunmu.
       </p>
 
       {gig.rate > 0 && (

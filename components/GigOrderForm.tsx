@@ -18,14 +18,50 @@ type Product =
 type Line = Product & { username: string; display: string; avatar: string; server: "link" | "admin"; serverLink: string };
 
 const SERVER_LINK = /^https:\/\/(www\.)?roblox\.com\/\S*(share\?code=|privateServerLinkCode=)\S+$/i;
-const EXAMPLE = "https://www.roblox.com/games/9872472334/Evade";
+const FIRST = 12;
 
 function Icon({ src, size }: { src: string; size: string }) {
   return (
-    <span className={"relative block shrink-0 overflow-hidden rounded-xl bg-raised " + size}>
+    <span className={"relative block shrink-0 overflow-hidden bg-raised " + size}>
       {/* eslint-disable-next-line @next/next/no-img-element */}
       {src && <img src={src} alt="" loading="lazy" className="h-full w-full object-cover" />}
     </span>
+  );
+}
+
+/** Satu pilihan gamepass/item yang ringkas: ikon kecil, nama, harga Robux dan Rupiah. */
+function Choice({ icon, name, sub, robux, price, selected, onPick }: {
+  icon: string;
+  name: string;
+  sub?: string;
+  robux: number;
+  price: number;
+  selected: boolean;
+  onPick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      aria-pressed={selected}
+      onClick={onPick}
+      title={name}
+      className={`flex h-full w-full items-center gap-2.5 rounded-lg border p-2 text-left transition-colors ${
+        selected ? "border-ice bg-ice/10" : "border-line bg-raised/50 hover:border-line-strong"
+      }`}
+    >
+      {icon && <Icon src={icon} size="h-10 w-10 rounded-lg" />}
+      <span className="min-w-0 flex-1">
+        <span className="line-clamp-2 text-[13px] font-semibold leading-tight">{name}</span>
+        {sub && <span className="block truncate text-[11px] text-ink-faint">{sub}</span>}
+        <span className="mt-0.5 flex flex-wrap items-center gap-x-1.5 text-xs tabular">
+          <span className="inline-flex items-center gap-0.5 text-ink-faint">
+            <RobuxIcon className="h-3 w-3 text-ice" /> {number(robux)}
+          </span>
+          <span className="font-bold text-ink">{rupiah(price)}</span>
+        </span>
+      </span>
+      {selected && <Check size={16} className="shrink-0 text-ice" aria-hidden />}
+    </button>
   );
 }
 
@@ -53,6 +89,8 @@ export function GigOrderForm({ rate, ready, items }: { rate: number; ready: bool
   const [searchErr, setSearchErr] = useState("");
   const [game, setGame] = useState<Game | null>(null);
   const [passes, setPasses] = useState<Pass[] | null>(null);
+  const [passQuery, setPassQuery] = useState("");
+  const [showAll, setShowAll] = useState(false);
   const [product, setProduct] = useState<Product | null>(null);
   const [username, setUsername] = useState("");
   const [server, setServer] = useState<"link" | "admin">("admin");
@@ -92,6 +130,8 @@ export function GigOrderForm({ rate, ready, items }: { rate: number; ready: bool
     setGame(g);
     setPasses(null);
     setProduct(null);
+    setPassQuery("");
+    setShowAll(false);
     try {
       const r = await fetch(`/api/roblox/passes?universe=${g.universeId}`);
       const d = await r.json();
@@ -103,6 +143,9 @@ export function GigOrderForm({ rate, ready, items }: { rate: number; ready: bool
     }
   }
 
+  const pq = passQuery.trim().toLowerCase();
+  const matched = (passes ?? []).filter((p) => !pq || p.name.toLowerCase().includes(pq));
+  const shown = showAll || pq ? matched : matched.slice(0, FIRST);
   const linkOk = server === "admin" || SERVER_LINK.test(serverLink.trim());
   const recipientOk = valid && (status === "found" || status === "error");
   const canAdd = !!product && recipientOk && linkOk && cart.length < 10;
@@ -154,25 +197,19 @@ export function GigOrderForm({ rate, ready, items }: { rate: number; ready: bool
   }
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_380px] lg:items-start">
-      <div className="grid gap-5">
-        <Box n={1} title="Pilih gamepass" sub="Cari nama game atau tempel link game Roblox.">
+    <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_380px] lg:items-start">
+      <div className="grid grid-cols-1 gap-5">
+        <Box n={1} title="Pilih gamepass" sub="Khusus game yang punya fitur gift. Ketik nama game atau tempel link-nya.">
           <label className="relative block">
             <span className="sr-only">Cari game</span>
             <Search size={18} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-ink-faint" aria-hidden />
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value.slice(0, 200))}
-              placeholder="Contoh: Evade, Blox Fruits, atau link game"
+              placeholder="Nama game atau link game"
               className="w-full rounded-xl border border-line bg-ground py-3 pl-11 pr-4 placeholder:text-ink-faint focus:border-ice focus:outline-none"
             />
           </label>
-          <p className="mt-2 text-xs text-ink-faint">
-            Contoh link:{" "}
-            <button type="button" onClick={() => setQuery(EXAMPLE)} className="break-all text-ice hover:underline">
-              {EXAMPLE}
-            </button>
-          </p>
 
           {searching && (
             <p className="mt-4 flex items-center gap-2 text-sm text-ink-muted">
@@ -182,7 +219,7 @@ export function GigOrderForm({ rate, ready, items }: { rate: number; ready: bool
           {searchErr && <p className="mt-3 text-sm text-warn">{searchErr}</p>}
 
           {!game && games && !searching && (
-            <ul className="mt-4 grid gap-2 sm:grid-cols-2">
+            <ul className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
               {games.length === 0 && <li className="text-sm text-ink-muted">Game tidak ketemu. Coba nama lain atau tempel link game.</li>}
               {games.map((g) => (
                 <li key={g.universeId}>
@@ -191,7 +228,7 @@ export function GigOrderForm({ rate, ready, items }: { rate: number; ready: bool
                     onClick={() => pickGame(g)}
                     className="flex w-full items-center gap-3 rounded-xl border border-line bg-raised/50 p-2.5 text-left transition-colors hover:border-ice"
                   >
-                    <Icon src={g.icon} size="h-12 w-12" />
+                    <Icon src={g.icon} size="h-11 w-11 rounded-lg" />
                     <span className="min-w-0">
                       <span className="line-clamp-2 text-sm font-semibold leading-tight">{g.name}</span>
                       {g.players > 0 && <span className="text-xs text-ink-faint tabular">{number(g.players)} pemain</span>}
@@ -205,7 +242,7 @@ export function GigOrderForm({ rate, ready, items }: { rate: number; ready: bool
           {game && (
             <div className="mt-4">
               <div className="flex items-center gap-3 rounded-xl border border-ice bg-ice/10 p-2.5">
-                <Icon src={game.icon} size="h-12 w-12" />
+                <Icon src={game.icon} size="h-11 w-11 rounded-lg" />
                 <p className="min-w-0 flex-1 truncate font-semibold">{game.name}</p>
                 <button
                   type="button"
@@ -226,32 +263,46 @@ export function GigOrderForm({ rate, ready, items }: { rate: number; ready: bool
               ) : passes.length === 0 ? (
                 <p className="mt-4 text-sm text-ink-muted">Game ini belum punya gamepass yang dijual.</p>
               ) : (
-                <ul className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-3">
-                  {passes.map((p) => {
-                    const selected = product?.source === "pass" && product.passId === p.id;
-                    return (
+                <>
+                  {passes.length > FIRST && (
+                    <label className="relative mt-3 block">
+                      <span className="sr-only">Cari gamepass</span>
+                      <Search size={16} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-faint" aria-hidden />
+                      <input
+                        value={passQuery}
+                        onChange={(e) => setPassQuery(e.target.value.slice(0, 60))}
+                        placeholder={`Cari di ${passes.length} gamepass`}
+                        className="w-full rounded-xl border border-line bg-ground py-2.5 pl-10 pr-4 text-base placeholder:text-ink-faint focus:border-ice focus:outline-none sm:text-sm"
+                      />
+                    </label>
+                  )}
+                  <ul className="mt-3 grid grid-cols-1 gap-1.5 sm:grid-cols-2">
+                    {shown.map((p) => (
                       <li key={p.id}>
-                        <button
-                          type="button"
-                          aria-pressed={selected}
-                          onClick={() =>
+                        <Choice
+                          icon={p.icon}
+                          name={p.name}
+                          robux={p.robux}
+                          price={p.robux * rate}
+                          selected={product?.source === "pass" && product.passId === p.id}
+                          onPick={() =>
                             setProduct({ source: "pass", universeId: game.universeId, game: game.name, passId: p.id, name: p.name, robux: p.robux, icon: p.icon })
                           }
-                          className={`flex h-full w-full flex-col items-start gap-2 rounded-xl border p-2.5 text-left transition-colors ${
-                            selected ? "border-ice bg-ice/10" : "border-line bg-raised/50 hover:border-line-strong"
-                          }`}
-                        >
-                          <Icon src={p.icon} size="aspect-square w-full" />
-                          <span className="line-clamp-2 text-sm font-semibold leading-tight">{p.name}</span>
-                          <span className="mt-auto inline-flex items-center gap-1 text-xs text-ink-muted tabular">
-                            <RobuxIcon className="h-3.5 w-3.5 text-ice" /> {number(p.robux)}
-                          </span>
-                          <span className="font-extrabold tabular">{rupiah(p.robux * rate)}</span>
-                        </button>
+                        />
                       </li>
-                    );
-                  })}
-                </ul>
+                    ))}
+                    {shown.length === 0 && <li className="text-sm text-ink-muted">Gamepass tidak ketemu.</li>}
+                  </ul>
+                  {!showAll && !pq && matched.length > FIRST && (
+                    <button
+                      type="button"
+                      onClick={() => setShowAll(true)}
+                      className="mt-2 w-full rounded-lg border border-line-strong py-2 text-sm font-semibold text-ink-muted hover:bg-raised hover:text-ink"
+                    >
+                      Tampilkan semua {matched.length} gamepass
+                    </button>
+                  )}
+                </>
               )}
             </div>
           )}
@@ -259,27 +310,20 @@ export function GigOrderForm({ rate, ready, items }: { rate: number; ready: bool
           {items.length > 0 && (
             <div className="mt-6 border-t border-line pt-5">
               <p className="text-sm font-semibold">Atau pilih item dari admin</p>
-              <ul className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3">
+              <ul className="mt-3 grid grid-cols-1 gap-1.5 sm:grid-cols-2">
                 {items.map((it) => {
-                  const selected = product?.source === "item" && product.itemId === it.id;
                   const icon = it.image ? `${API_URL}${it.image}` : "";
                   return (
                     <li key={it.id}>
-                      <button
-                        type="button"
-                        aria-pressed={selected}
-                        onClick={() => setProduct({ source: "item", itemId: it.id, game: it.game, name: it.name, robux: it.robux, icon })}
-                        className={`flex h-full w-full flex-col items-start gap-1 rounded-xl border p-2.5 text-left transition-colors ${
-                          selected ? "border-ice bg-ice/10" : "border-line bg-raised/50 hover:border-line-strong"
-                        }`}
-                      >
-                        <span className="line-clamp-2 text-sm font-semibold leading-tight">{it.name}</span>
-                        {it.game && <span className="text-xs text-ink-faint">{it.game}</span>}
-                        <span className="mt-auto inline-flex items-center gap-1 text-xs text-ink-muted tabular">
-                          <RobuxIcon className="h-3.5 w-3.5 text-ice" /> {number(it.robux)}
-                        </span>
-                        <span className="font-extrabold tabular">{rupiah(it.price)}</span>
-                      </button>
+                      <Choice
+                        icon={icon}
+                        name={it.name}
+                        sub={it.game}
+                        robux={it.robux}
+                        price={it.price}
+                        selected={product?.source === "item" && product.itemId === it.id}
+                        onPick={() => setProduct({ source: "item", itemId: it.id, game: it.game, name: it.name, robux: it.robux, icon })}
+                      />
                     </li>
                   );
                 })}
@@ -291,7 +335,7 @@ export function GigOrderForm({ rate, ready, items }: { rate: number; ready: bool
         <Box n={2} title="Penerima dan server" sub="Akun yang mau dikirimi item dan server tempat admin mengirim.">
           {product ? (
             <p className="flex items-center gap-3 rounded-xl border border-line bg-raised/50 p-2.5 text-sm">
-              <Icon src={product.icon} size="h-10 w-10" />
+              <Icon src={product.icon} size="h-10 w-10 rounded-lg" />
               <span className="min-w-0 flex-1">
                 <span className="block truncate font-semibold">{product.name}</span>
                 <span className="block truncate text-xs text-ink-faint">{product.game}</span>
@@ -318,7 +362,7 @@ export function GigOrderForm({ rate, ready, items }: { rate: number; ready: bool
 
           <fieldset className="mt-5">
             <legend className="text-sm text-ink-muted">Server untuk pengiriman</legend>
-            <div className="mt-2 grid gap-2 sm:grid-cols-2">
+            <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
               {(
                 [
                   ["admin", "Minta admin siapkan server", "Admin yang buat server, nanti kamu diajak join."],
@@ -347,7 +391,7 @@ export function GigOrderForm({ rate, ready, items }: { rate: number; ready: bool
                   onChange={(e) => setServerLink(e.target.value.slice(0, 400))}
                   placeholder="https://www.roblox.com/share?code=...&type=Server"
                   aria-invalid={!!serverLink && !linkOk}
-                  className="w-full rounded-xl border border-line bg-ground px-4 py-3 text-sm placeholder:text-ink-faint focus:border-ice focus:outline-none aria-[invalid=true]:border-warn"
+                  className="w-full rounded-xl border border-line bg-ground px-4 py-3 text-base placeholder:text-ink-faint focus:border-ice focus:outline-none aria-[invalid=true]:border-warn sm:text-sm"
                 />
                 {!!serverLink && !linkOk && <span className="mt-1.5 block text-xs text-warn">Link belum benar. Pakai link dari tombol Share di private server.</span>}
               </label>
@@ -378,7 +422,7 @@ export function GigOrderForm({ rate, ready, items }: { rate: number; ready: bool
             Belum ada item. Pilih gamepass, isi penerima, lalu tekan Tambah ke pesanan.
           </p>
         ) : (
-          <ul className="mt-4 grid gap-2">
+          <ul className="mt-4 grid grid-cols-1 gap-2">
             {cart.map((l, i) => (
               <li key={i} className="flex gap-3 rounded-xl border border-line bg-ground/50 p-2.5">
                 <RobloxAvatar src={l.avatar} size="h-10 w-10" />
@@ -429,7 +473,7 @@ export function GigOrderForm({ rate, ready, items }: { rate: number; ready: bool
             value={note}
             onChange={(e) => setNote(e.target.value.slice(0, 300))}
             rows={2}
-            className="mt-1.5 w-full resize-none rounded-xl border border-line bg-ground px-3.5 py-2.5 text-sm focus:border-ice focus:outline-none"
+            className="mt-1.5 w-full resize-none rounded-xl border border-line bg-ground px-3.5 py-2.5 text-base focus:border-ice focus:outline-none sm:text-sm"
           />
         </label>
 

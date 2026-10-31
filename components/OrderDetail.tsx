@@ -362,8 +362,8 @@ export function OrderDetail({ invoice }: { invoice: string }) {
   const payable = order.status === "awaiting_payment" || order.status === "awaiting_verification";
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_400px] lg:items-start">
-      <div className="grid gap-5">
+    <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_400px] lg:items-start">
+      <div className="grid grid-cols-1 gap-5">
         <div>
           <Link href="/pesanan" className="inline-flex items-center gap-1.5 text-sm text-ink-muted hover:text-ink">
             <ArrowLeft size={16} aria-hidden /> Pesanan saya
@@ -441,7 +441,7 @@ export function OrderDetail({ invoice }: { invoice: string }) {
             </div>
 
             {order.payment_method === "qris" ? (
-              <div className="mt-5 grid gap-5 sm:grid-cols-[220px_1fr] sm:items-center">
+              <div className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-[220px_minmax(0,1fr)] sm:items-center">
                 <div className="overflow-hidden rounded-xl bg-white p-3">
                   <Image src="/qris.png" alt="Kode QRIS 444 Store" width={520} height={520} className="h-auto w-full" />
                 </div>
@@ -518,7 +518,7 @@ export function OrderDetail({ invoice }: { invoice: string }) {
           <h2 id="detail" className="text-lg font-bold">
             Detail pesanan <span className="text-sm font-medium text-ink-faint">· {order.product === "gig" ? "Gift In Game" : "Robux via Username"}</span>
           </h2>
-          <ul className="mt-4 grid gap-2">
+          <ul className="mt-4 grid grid-cols-1 gap-2">
             {order.items.map((l, i) => (
               <li key={i} className="flex gap-3 rounded-xl border border-line bg-raised/40 p-3">
                 <RobloxAvatar src={l.avatar} size="h-11 w-11" />
