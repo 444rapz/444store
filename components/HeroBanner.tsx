@@ -41,7 +41,10 @@ export function HeroBanner({ rate, stock }: { rate: number; stock: number }) {
             </svg>
 
             <p className="flex items-center gap-2 text-sm font-semibold">
-              <LogoOrb size="h-7 w-7" tone="text-onyx" />
+              {/* Di HP logonya tidak ditampilkan: sudah ada di navbar */}
+              <span className="hidden sm:block">
+                <LogoOrb size="h-7 w-7" tone="text-onyx" />
+              </span>
               444 Store
             </p>
             <h1 id="hero-judul" className="mt-5 max-w-[14ch] text-[2.2rem] font-extrabold leading-[1.02] tracking-[-0.035em] sm:text-6xl">

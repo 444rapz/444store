@@ -112,18 +112,31 @@ export function Header() {
       </header>
 
       <nav className="fixed inset-x-3 bottom-3 z-40 pb-[env(safe-area-inset-bottom)] md:hidden" aria-label="Menu bawah">
-        <ul className="nav-shell mx-auto grid max-w-md grid-cols-4 gap-1 rounded-full p-1.5">
+        {/* Menu bawah mengecil (ikon saja) saat halaman di-scroll */}
+        <ul
+          className={
+            "nav-shell mx-auto grid grid-cols-4 gap-1 rounded-full transition-[max-width,padding] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] " +
+            (scrolled ? "max-w-[236px] p-1" : "max-w-md p-1.5")
+          }
+        >
           {NAV.map(({ href, label, icon: Icon }) => (
             <li key={href}>
               <Link
                 href={href}
                 aria-current={active(href) ? "page" : undefined}
-                className={`flex flex-col items-center gap-0.5 rounded-full py-2 text-[11px] font-medium transition-colors ${
+                className={`flex flex-col items-center rounded-full py-2 text-[11px] font-medium transition-colors ${
                   active(href) ? "chrome-chip" : "text-ink-faint hover:text-ink"
                 }`}
               >
                 <Icon size={19} strokeWidth={active(href) ? 2.2 : 1.8} aria-hidden />
-                {label}
+                <span
+                  className={
+                    "overflow-hidden leading-tight transition-[max-height,opacity,margin] duration-300 " +
+                    (scrolled ? "mt-0 max-h-0 opacity-0" : "mt-0.5 max-h-4 opacity-100")
+                  }
+                >
+                  {label}
+                </span>
               </Link>
             </li>
           ))}
