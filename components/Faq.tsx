@@ -23,7 +23,7 @@ const ITEMS = [
   },
   {
     q: "Gift In Game itu apa?",
-    a: "Item atau gamepass di dalam game Roblox. Admin masuk ke server kamu lalu mengirim itemnya ke karaktermu.",
+    a: "Item atau gamepass di dalam game Roblox. Admin masuk ke server kamu, lalu mengirim itemnya langsung ke akunmu.",
   },
 ];
 

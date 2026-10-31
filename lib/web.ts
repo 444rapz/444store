@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { API_URL } from "./store";
+import { API_URL, type PayMethod } from "./store";
 
 export type WebUser = { id: number; name: string; provider: string; email: string; phone: string; avatar: string };
 export type Order = {
@@ -17,6 +17,8 @@ export type Order = {
   roblox: { username: string; id: string; display: string; avatar: string };
   age_group: "adult" | "minor";
   note: string;
+  payment_method: PayMethod;
+  payment_label: string;
   has_proof: boolean;
   reject_reason: string;
   admin: { name: string; avatar: string } | null;

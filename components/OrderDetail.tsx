@@ -7,12 +7,11 @@ import { Fragment, useEffect, useRef, useState } from "react";
 import { ArrowLeft, Check, ImageUp, Loader2, Send, Star, TriangleAlert, X } from "lucide-react";
 import { BuyerAvatar } from "./BuyerAvatar";
 import { CopyButton } from "./CopyButton";
-import { PayLogos } from "./PayLogos";
 import { RobuxIcon } from "./RobuxIcon";
 import { RobloxAvatar } from "./RobloxProfile";
 import { StatusPill } from "./StatusPill";
 import { compressImage, webApi, type ChatMessage, type Order } from "@/lib/web";
-import { PAYMENT, number, rupiah } from "@/lib/store";
+import { PAY_METHODS, PAYMENT, number, rupiah, type PayMethod } from "@/lib/store";
 
 const STEPS = ["Menunggu pembayaran", "Menunggu verifikasi", "Diproses", "Selesai"];
 const STEP_INDEX: Record<string, number> = { awaiting_payment: 0, awaiting_verification: 1, processing: 2, done: 3 };
@@ -48,15 +47,6 @@ function merge(a: ChatMessage[], b: ChatMessage[]) {
   return [...a, ...b.filter((m) => m.id > max)];
 }
 
-/** Ekor gelembung chat ala WhatsApp. */
-function Tail({ mine }: { mine: boolean }) {
-  return (
-    <svg viewBox="0 0 8 13" aria-hidden className={`absolute top-0 h-[13px] w-2 ${mine ? "-right-2 text-[#005c4b]" : "-left-2 text-[#202c33]"}`}>
-      <path fill="currentColor" d={mine ? "M0 0h8L0 13z" : "M8 0H0l8 13z"} />
-    </svg>
-  );
-}
-
 function ChatPanel({
   order,
   invoice,
@@ -86,75 +76,80 @@ function ChatPanel({
   }
 
   return (
-    <section className="flex flex-col overflow-hidden rounded-[var(--radius-card)] border border-line-strong bg-[#0b141a] lg:sticky lg:top-24" aria-labelledby="chat">
-      <div className="flex items-center gap-3 bg-[#202c33] px-4 py-2.5">
+    <section className="flex flex-col overflow-hidden rounded-[var(--radius-card)] border border-line-strong bg-[#101013] lg:sticky lg:top-24" aria-labelledby="chat">
+      <div className="flex items-center gap-3 border-b border-line bg-surface px-4 py-3">
         {order.admin ? (
           <BuyerAvatar name={order.admin.name} src={order.admin.avatar} />
         ) : (
           <Image src="/brand/server-icon.jpg" alt="" width={80} height={80} className="h-10 w-10 rounded-full" />
         )}
         <div className="min-w-0">
-          <h2 id="chat" className="truncate font-semibold text-[#e9edef]">
-            {order.admin ? order.admin.name : "Admin 444 Store"}
+          <h2 id="chat" className="truncate font-semibold">
+            Chat dengan {order.admin ? order.admin.name : "admin"}
           </h2>
-          <p className="truncate text-xs text-[#8696a0]">
-            {order.admin ? "Admin 444 Store, lagi menangani pesananmu" : "Menunggu admin mengambil pesanan"}
+          <p className="truncate text-xs text-ink-faint">
+            {order.admin ? "Admin 444 Store yang menangani pesananmu" : "Admin bakal segera mengambil pesananmu"}
           </p>
         </div>
       </div>
 
-      <div ref={listRef} className="h-[440px] overflow-y-auto px-3 py-3 sm:h-[500px]" aria-live="polite">
+      <div ref={listRef} className="h-[440px] overflow-y-auto px-4 py-4 sm:h-[500px]" aria-live="polite">
         {messages.map((m, i) => {
           const prev = messages[i - 1];
           const newDay = !prev || dayLabel(prev.created_at) !== dayLabel(m.created_at);
           const mine = m.sender === "buyer";
           const firstOfRun =
-            newDay || !prev || prev.sender !== m.sender || prev.author !== m.author || toDate(m.created_at).getTime() - toDate(prev.created_at).getTime() > 5 * 60000;
+            newDay ||
+            !prev ||
+            prev.sender !== m.sender ||
+            prev.author !== m.author ||
+            toDate(m.created_at).getTime() - toDate(prev.created_at).getTime() > 5 * 60000;
           return (
             <Fragment key={m.id}>
               {newDay && (
-                <p className="my-3 flex justify-center">
-                  <span className="rounded-lg bg-[#182229] px-3 py-1 text-xs text-[#8696a0]">{dayLabel(m.created_at)}</span>
+                <p className="my-3 flex items-center gap-3 text-[11px] text-ink-faint">
+                  <span className="h-px flex-1 bg-line" /> {dayLabel(m.created_at)} <span className="h-px flex-1 bg-line" />
                 </p>
               )}
               {m.sender === "system" ? (
-                <p className="my-2 flex justify-center">
-                  <span className="max-w-[88%] rounded-lg bg-[#182229] px-3 py-1.5 text-center text-xs leading-snug text-[#ffd279]">{m.body}</span>
+                <p className="mx-auto my-2.5 w-fit max-w-[90%] rounded-full bg-white/[0.05] px-3 py-1.5 text-center text-xs text-ink-muted">
+                  {m.body} <span className="text-ink-faint">· {clock(m.created_at)}</span>
                 </p>
               ) : (
-                <div className={`flex gap-2 ${mine ? "justify-end" : "justify-start"} ${firstOfRun ? "mt-2.5" : "mt-0.5"}`}>
-                  {!mine && (firstOfRun ? <BuyerAvatar name={m.author} src={m.avatar} size="h-8 w-8" text="text-sm" /> : <span className="w-8 shrink-0" />)}
-                  <div
-                    className={`relative max-w-[78%] rounded-lg px-2.5 pb-1.5 pt-1.5 text-[14.5px] leading-snug text-[#e9edef] shadow-[0_1px_0.5px_rgb(11_20_26/0.13)] ${
-                      mine ? "bg-[#005c4b]" : "bg-[#202c33]"
-                    } ${firstOfRun ? (mine ? "rounded-tr-none" : "rounded-tl-none") : ""}`}
-                  >
-                    {firstOfRun && <Tail mine={mine} />}
-                    {!mine && firstOfRun && (
-                      <p className="mb-0.5 text-[12.5px] font-semibold text-[#53bdeb]">
-                        {m.author} <span className="font-normal text-[#8696a0]">· Admin</span>
+                <div className={`flex gap-2.5 ${mine ? "flex-row-reverse" : ""} ${firstOfRun ? "mt-4" : "mt-1"}`}>
+                  {firstOfRun ? (
+                    <BuyerAvatar name={m.author} src={m.avatar} size="h-9 w-9" text="text-sm" />
+                  ) : (
+                    <span className="w-9 shrink-0" aria-hidden />
+                  )}
+                  <div className={`flex min-w-0 max-w-[80%] flex-col ${mine ? "items-end" : "items-start"}`}>
+                    {firstOfRun && (
+                      <p className={`mb-1 flex items-center gap-1.5 px-1 text-xs ${mine ? "flex-row-reverse" : ""}`}>
+                        <span className="font-semibold text-ink">{mine ? "Kamu" : m.author}</span>
+                        {!mine && <span className="rounded bg-ice/15 px-1.5 text-[10px] font-bold uppercase leading-4 text-ice">Admin</span>}
+                        <span className="text-ink-faint tabular">{clock(m.created_at)}</span>
                       </p>
                     )}
-                    {m.image && (
-                      <a href={`/api/web/orders/${invoice}/media/${m.id}`} target="_blank" rel="noopener noreferrer" className="block">
-                        <Image
-                          src={`/api/web/orders/${invoice}/media/${m.id}`}
-                          alt="Gambar di chat"
-                          width={260}
-                          height={260}
-                          unoptimized
-                          className="max-h-64 w-auto rounded-md"
-                        />
-                      </a>
-                    )}
-                    <p className="whitespace-pre-wrap break-words">
-                      {m.body}
-                      <span aria-hidden className="inline-block w-14" />
-                    </p>
-                    <span className="absolute bottom-1 right-2 flex items-center gap-0.5 text-[11px] text-[#8696a0]">
-                      {clock(m.created_at)}
-                      {mine && <Check size={14} aria-label="Terkirim" />}
-                    </span>
+                    <div
+                      className={`rounded-2xl px-3.5 py-2.5 text-[15px] leading-snug ${
+                        mine ? "bg-ice text-[#0d1626]" : "bg-raised text-ink"
+                      } ${firstOfRun ? (mine ? "rounded-tr-md" : "rounded-tl-md") : ""}`}
+                      title={formatDate(m.created_at)}
+                    >
+                      {m.image && (
+                        <a href={`/api/web/orders/${invoice}/media/${m.id}`} target="_blank" rel="noopener noreferrer" className="block">
+                          <Image
+                            src={`/api/web/orders/${invoice}/media/${m.id}`}
+                            alt="Gambar di chat"
+                            width={260}
+                            height={260}
+                            unoptimized
+                            className="max-h-64 w-auto rounded-lg"
+                          />
+                        </a>
+                      )}
+                      {m.body && <p className={`whitespace-pre-wrap break-words ${m.image ? "mt-1.5" : ""}`}>{m.body}</p>}
+                    </div>
                   </div>
                 </div>
               )}
@@ -163,19 +158,19 @@ function ChatPanel({
         })}
       </div>
 
-      <form onSubmit={submit} className="flex items-center gap-2 bg-[#202c33] px-3 py-2.5">
+      <form onSubmit={submit} className="flex gap-2 border-t border-line bg-surface p-3">
         <input
           value={text}
           onChange={(e) => setText(e.target.value.slice(0, 1000))}
-          placeholder="Ketik pesan"
+          placeholder="Tulis pesan ke admin..."
           aria-label="Pesan ke admin"
-          className="min-w-0 flex-1 rounded-full bg-[#2a3942] px-4 py-2.5 text-[#e9edef] placeholder:text-[#8696a0] focus:outline-none focus:ring-1 focus:ring-[#00a884]"
+          className="min-w-0 flex-1 rounded-full border border-line bg-ground px-4 py-2.5 placeholder:text-ink-faint focus:border-ice focus:outline-none"
         />
         <button
           type="submit"
           disabled={!text.trim() || sending}
           aria-label="Kirim pesan"
-          className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[#00a884] text-[#0b141a] transition-opacity disabled:opacity-50"
+          className="chrome-btn grid h-11 w-11 shrink-0 place-items-center rounded-full disabled:opacity-40"
         >
           {sending ? <Loader2 size={18} className="animate-spin" aria-hidden /> : <Send size={18} aria-hidden />}
         </button>
@@ -323,6 +318,18 @@ export function OrderDetail({ invoice }: { invoice: string }) {
     setMessages((m) => merge(m, r.data.messages));
   }
 
+  async function changePay(method: PayMethod) {
+    if (!order || method === order.payment_method) return;
+    setNotice("");
+    const r = await webApi<{ order: Order; messages: ChatMessage[] }>(`orders/${invoice}/payment`, {
+      method: "POST",
+      body: JSON.stringify({ method }),
+    });
+    if (!r.ok) return setNotice(r.data.error || "Metode bayar gagal diganti.");
+    setOrder(r.data.order);
+    setMessages((m) => merge(m, r.data.messages));
+  }
+
   async function cancel() {
     if (!window.confirm("Batalkan pesanan ini?")) return;
     const r = await webApi<{ order: Order }>(`orders/${invoice}/cancel`, { method: "POST" });
@@ -408,19 +415,53 @@ export function OrderDetail({ invoice }: { invoice: string }) {
               </div>
               <CopyButton text={String(order.total)} label="Salin nominal" />
             </div>
-            <div className="mt-5 grid gap-5 sm:grid-cols-[220px_1fr]">
-              <div className="overflow-hidden rounded-xl bg-white p-3">
-                <Image src="/qris.png" alt="Kode QRIS 444 Store" width={520} height={520} className="h-auto w-full" />
-              </div>
-              <div>
-                <p className="font-semibold">Scan QRIS pakai aplikasi apa aja</p>
-                <PayLogos className="mt-2.5" />
-                <p className="mt-3 text-sm text-ink-muted">
-                  Atau transfer {PAYMENT.ewalletNames}: <span className="tabular text-ink">{PAYMENT.ewallet}</span> a.n. {PAYMENT.holder}
-                </p>
-                <CopyButton text={PAYMENT.ewalletRaw} label="Salin nomor" />
-              </div>
+
+            <p className="mt-5 text-sm text-ink-muted">Cara bayar</p>
+            <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4" role="radiogroup" aria-label="Ganti metode pembayaran">
+              {PAY_METHODS.map((m) => {
+                const selected = order.payment_method === m.id;
+                return (
+                  <button
+                    key={m.id}
+                    type="button"
+                    role="radio"
+                    aria-checked={selected}
+                    onClick={() => changePay(m.id)}
+                    className={`flex flex-col items-center gap-1.5 rounded-xl border p-2.5 text-xs font-semibold transition-colors ${
+                      selected ? "border-ice bg-ice/10 text-ink" : "border-line bg-raised/50 text-ink-muted hover:border-line-strong"
+                    }`}
+                  >
+                    <span className="grid h-9 w-full place-items-center rounded-lg bg-white px-2">
+                      <Image src={m.logo} alt="" width={m.w} height={m.h} className="h-5 w-auto" />
+                    </span>
+                    {m.name}
+                  </button>
+                );
+              })}
             </div>
+
+            {order.payment_method === "qris" ? (
+              <div className="mt-5 grid gap-5 sm:grid-cols-[220px_1fr] sm:items-center">
+                <div className="overflow-hidden rounded-xl bg-white p-3">
+                  <Image src="/qris.png" alt="Kode QRIS 444 Store" width={520} height={520} className="h-auto w-full" />
+                </div>
+                <div>
+                  <p className="font-semibold">Scan QRIS ini pakai aplikasi apa aja</p>
+                  <p className="mt-1 text-sm text-ink-muted">
+                    Bisa dari aplikasi bank, DANA, GoPay, ShopeePay, OVO, dan lainnya. Bayar sesuai total, lalu upload bukti bayarnya di bawah.
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <div className="mt-5 rounded-xl border border-line-strong bg-ground/60 p-4">
+                <p className="text-sm text-ink-muted">Transfer {order.payment_label} ke nomor</p>
+                <p className="mt-1 text-2xl font-extrabold tracking-tight tabular">{PAYMENT.ewallet}</p>
+                <p className="text-sm text-ink-muted">a.n. {PAYMENT.holder}</p>
+                <div className="mt-3">
+                  <CopyButton text={PAYMENT.ewalletRaw} label="Salin nomor" />
+                </div>
+              </div>
+            )}
 
             <div className="mt-6 border-t border-line pt-5">
               {order.has_proof ? (
@@ -497,7 +538,7 @@ export function OrderDetail({ invoice }: { invoice: string }) {
             </div>
             <div>
               <dt className="text-ink-faint">Metode bayar</dt>
-              <dd className="mt-0.5 font-semibold">QRIS</dd>
+              <dd className="mt-0.5 font-semibold">{order.payment_label}</dd>
             </div>
             {order.note && (
               <div className="col-span-2">

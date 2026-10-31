@@ -5,15 +5,29 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ArrowRight, Check, ExternalLink, Loader2, LogIn, Minus, Plus, ShieldCheck, TriangleAlert, X } from "lucide-react";
 import { RobuxIcon } from "./RobuxIcon";
-import { PayLogos } from "./PayLogos";
 import { ProfilePreview, RobloxAvatar } from "./RobloxProfile";
 import { useRobloxLookup } from "@/lib/roblox";
 import { useWebUser, webApi, type Order } from "@/lib/web";
-import { API_URL, number, rupiah } from "@/lib/store";
+import Image from "next/image";
+import { API_URL, PAY_METHODS, number, rupiah, type PayMethod } from "@/lib/store";
 
 const MIN = 10;
 const MAX = 10000;
-const PRESETS = [100, 200, 400, 500, 1000, 2000, 5000];
+const STEP = 5;
+const PRESETS: { amount: number; tag?: string }[] = [
+  { amount: 100, tag: "Murah" },
+  { amount: 200 },
+  { amount: 400, tag: "Populer" },
+  { amount: 500 },
+  { amount: 1000, tag: "Best seller" },
+  { amount: 2000 },
+  { amount: 5000 },
+];
+const TAG: Record<string, string> = {
+  Murah: "bg-ice text-[#0d1626]",
+  Populer: "bg-blush text-[#3a1426]",
+  "Best seller": "bg-violet-soft text-[#1d1240]",
+};
 
 function Step({ n, title, sub, children }: { n: number; title: string; sub?: string; children: React.ReactNode }) {
   return (
@@ -58,6 +72,7 @@ export function OrderForm({
   const [username, setUsername] = useState(initialUsername);
   const [twoStep, setTwoStep] = useState(false);
   const [age, setAge] = useState<"adult" | "minor">("adult");
+  const [pay, setPay] = useState<PayMethod>("qris");
   const [note, setNote] = useState("");
   const [promoInput, setPromoInput] = useState("");
   const [promo, setPromo] = useState<{ code: string; discount: number } | null>(null);
@@ -134,6 +149,7 @@ export function OrderForm({
         age_group: age,
         two_step: twoStep,
         note,
+        payment_method: pay,
         promo_code: promo?.code ?? "",
       }),
     });
@@ -151,83 +167,107 @@ export function OrderForm({
   const back = `/robux?${new URLSearchParams({ jumlah: String(robux), username: uname })}`;
   const loginHref = `/masuk?${new URLSearchParams({ next: back })}`;
   const setAmount = (n: number) => setRobux(Math.max(MIN, Math.min(MAX, Math.round(n) || MIN)));
+  const soldOut = stock < MIN;
+  const fill = max > MIN ? ((Math.min(robux, max) - MIN) / (max - MIN)) * 100 : 0;
+  const payName = PAY_METHODS.find((m) => m.id === pay)?.name ?? "QRIS";
 
   return (
     <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_380px] lg:items-start">
       <div className="grid gap-5">
         <Step n={1} title="Pilih nominal Robux" sub={rate > 0 ? `Harga ${rupiah(rate)} per Robux` : undefined}>
-          <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={() => setAmount(robux - (robux > 100 ? 100 : 10))}
-              aria-label="Kurangi"
-              className="grid h-12 w-12 shrink-0 place-items-center rounded-full border border-line-strong hover:bg-raised"
-            >
-              <Minus size={18} aria-hidden />
-            </button>
-            <label className="relative flex-1">
-              <span className="sr-only">Jumlah Robux</span>
-              <RobuxIcon className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-ice" />
-              <input
-                inputMode="numeric"
-                value={robux ? String(robux) : ""}
-                onChange={(e) => setRobux(Math.min(MAX, Number(e.target.value.replace(/\D/g, "").slice(0, 5)) || 0))}
-                onBlur={() => setAmount(robux)}
-                className="w-full rounded-2xl border border-line bg-ground py-3.5 pl-12 pr-4 text-center text-2xl font-extrabold tabular focus:border-ice focus:outline-none"
-              />
-            </label>
-            <button
-              type="button"
-              onClick={() => setAmount(robux + (robux >= 100 ? 100 : 10))}
-              aria-label="Tambah"
-              className="grid h-12 w-12 shrink-0 place-items-center rounded-full border border-line-strong hover:bg-raised"
-            >
-              <Plus size={18} aria-hidden />
-            </button>
+          {soldOut && (
+            <p className="mb-4 flex items-start gap-2 rounded-xl border border-warn/30 bg-warn/10 px-3.5 py-3 text-sm text-warn">
+              <TriangleAlert size={18} className="mt-0.5 shrink-0" aria-hidden />
+              Stok Robux lagi habis. Tanya admin kapan restock, ya.
+            </p>
+          )}
+          <div className="rounded-2xl border border-line-strong bg-ground/70 p-4 sm:p-5">
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => setAmount(robux - STEP)}
+                disabled={robux <= MIN}
+                aria-label={`Kurangi ${STEP} Robux`}
+                className="chrome-chip grid h-12 w-12 shrink-0 place-items-center rounded-full transition-transform active:scale-90 disabled:opacity-40"
+              >
+                <Minus size={20} aria-hidden />
+              </button>
+              <label className="flex min-w-0 flex-1 items-center justify-center gap-2.5">
+                <span className="sr-only">Jumlah Robux</span>
+                <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-ice/15 text-ice">
+                  <RobuxIcon className="h-6 w-6" />
+                </span>
+                <input
+                  inputMode="numeric"
+                  value={robux ? String(robux) : ""}
+                  onChange={(e) => setRobux(Math.min(MAX, Number(e.target.value.replace(/\D/g, "").slice(0, 5)) || 0))}
+                  onBlur={() => setAmount(robux)}
+                  className="w-full min-w-0 max-w-[7ch] bg-transparent text-center text-4xl font-extrabold tracking-[-0.03em] tabular focus:outline-none sm:text-5xl"
+                />
+              </label>
+              <button
+                type="button"
+                onClick={() => setAmount(robux + STEP)}
+                disabled={robux + STEP > max}
+                aria-label={`Tambah ${STEP} Robux`}
+                className="chrome-chip grid h-12 w-12 shrink-0 place-items-center rounded-full transition-transform active:scale-90 disabled:opacity-40"
+              >
+                <Plus size={20} aria-hidden />
+              </button>
+            </div>
+            <div className="mt-3 flex items-baseline justify-center gap-2">
+              <span className="text-sm text-ink-muted">Total</span>
+              <span className="text-2xl font-extrabold text-ice tabular">{rupiah(subtotal)}</span>
+            </div>
+            <input
+              type="range"
+              min={MIN}
+              max={max}
+              step={STEP}
+              value={Math.min(robux, max)}
+              disabled={soldOut}
+              onChange={(e) => setRobux(Number(e.target.value))}
+              aria-label="Geser jumlah Robux"
+              className="rbx-range mt-5"
+              style={{ "--p": `${fill}%` } as React.CSSProperties}
+            />
+            <div className="mt-2 flex justify-between text-xs text-ink-faint tabular">
+              <span>Min {MIN}</span>
+              <span>Tombol plus minus per {STEP} Robux</span>
+              <span>Maks {number(max)}</span>
+            </div>
           </div>
-          <p className="mt-2 text-center text-sm text-ink-muted tabular">
-            = <span className="font-semibold text-ink">{rupiah(subtotal)}</span>
-          </p>
-          <input
-            type="range"
-            min={MIN}
-            max={max}
-            step={10}
-            value={Math.min(robux, max)}
-            onChange={(e) => setRobux(Number(e.target.value))}
-            aria-label="Geser jumlah Robux"
-            className="mt-4 w-full accent-[#bcd6ff]"
-          />
-          <div className="mt-1 flex justify-between text-xs text-ink-faint tabular">
-            <span>Min {MIN}</span>
-            <span>Maks {number(max)}</span>
-          </div>
-          <div className="mt-4 grid grid-cols-3 gap-2 sm:grid-cols-4">
+
+          <p className="mt-5 text-sm text-ink-muted">Pilihan cepat</p>
+          <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4">
             {PRESETS.map((p) => {
-              const selected = robux === p;
-              const disabled = p > stock;
+              const selected = robux === p.amount;
+              const disabled = p.amount > stock;
               return (
                 <button
-                  key={p}
+                  key={p.amount}
                   type="button"
                   disabled={disabled}
                   aria-pressed={selected}
-                  onClick={() => setRobux(p)}
-                  className={`rounded-xl border px-3 py-2.5 text-left transition-colors disabled:cursor-not-allowed disabled:opacity-35 ${
-                    selected ? "metal border-transparent" : "border-line bg-raised/60 hover:border-line-strong"
+                  onClick={() => setRobux(p.amount)}
+                  className={`rounded-xl border px-3 pb-3 pt-2 text-left transition-[border-color,background-color,transform] duration-200 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-35 ${
+                    selected ? "metal border-transparent shadow-[0_12px_24px_-14px_rgb(188_214_255/0.7)]" : "border-line bg-raised/60 hover:border-line-strong"
                   }`}
                 >
-                  <span className="flex items-center gap-1.5 font-extrabold tabular">
-                    <RobuxIcon className={`h-3.5 w-3.5 ${selected ? "" : "text-ice"}`} /> {number(p)}
+                  <span className="block h-4">
+                    {p.tag && <span className={"inline-block rounded-full px-1.5 text-[10px] font-bold leading-4 " + TAG[p.tag]}>{p.tag}</span>}
+                  </span>
+                  <span className="mt-1 flex items-center gap-1.5 text-base font-extrabold tabular">
+                    <RobuxIcon className={`h-3.5 w-3.5 ${selected ? "" : "text-ice"}`} /> {number(p.amount)}
                   </span>
                   <span className={`block text-xs tabular ${selected ? "text-[#3b3f47]" : "text-ink-muted"}`}>
-                    {rate > 0 ? rupiah(p * rate) : "-"}
+                    {rate > 0 ? rupiah(p.amount * rate) : "-"}
                   </span>
                 </button>
               );
             })}
           </div>
-          {overStock && (
+          {overStock && !soldOut && (
             <p className="mt-4 flex items-start gap-2 rounded-xl border border-warn/30 bg-warn/10 px-3.5 py-3 text-sm text-warn">
               <TriangleAlert size={18} className="mt-0.5 shrink-0" aria-hidden />
               Stok sekarang cuma {number(stock)} Robux. Kurangi jumlahnya atau tanya admin kapan restock.
@@ -321,20 +361,42 @@ export function OrderForm({
           </label>
         </Step>
 
-        <Step n={3} title="Cara bayar" sub="Pembayaran dicek manual oleh admin.">
-          <div className="rounded-xl border border-ice bg-ice/10 p-4">
-            <p className="flex items-center justify-between gap-3 font-semibold">
-              QRIS (semua bank dan e-wallet)
-              <span className="grid h-6 w-6 place-items-center rounded-full bg-ice text-[#0d1626]">
-                <Check size={14} aria-hidden />
-              </span>
-            </p>
-            <p className="mt-1.5 text-sm text-ink-muted">
-              Bisa dibayar pakai DANA, GoPay, ShopeePay, OVO, atau aplikasi bank. Kode QRIS muncul setelah pesanan dibuat, lalu kamu upload
-              bukti bayarnya.
-            </p>
-            <PayLogos className="mt-3" />
+        <Step n={3} title="Cara bayar" sub="Pilih yang paling gampang buat kamu. Nanti masih bisa diganti di halaman pesanan.">
+          <div className="grid gap-2 sm:grid-cols-2" role="radiogroup" aria-label="Metode pembayaran">
+            {PAY_METHODS.map((m) => {
+              const selected = pay === m.id;
+              return (
+                <button
+                  key={m.id}
+                  type="button"
+                  role="radio"
+                  aria-checked={selected}
+                  onClick={() => setPay(m.id)}
+                  className={`flex items-center gap-3 rounded-xl border p-3 text-left transition-colors ${
+                    selected ? "border-ice bg-ice/10" : "border-line bg-raised/50 hover:border-line-strong"
+                  } ${m.id === "qris" ? "sm:col-span-2" : ""}`}
+                >
+                  <span className="grid h-11 w-20 shrink-0 place-items-center rounded-lg bg-white px-2">
+                    <Image src={m.logo} alt="" width={m.w} height={m.h} className="h-6 w-auto" />
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="flex items-center gap-2 font-semibold">
+                      {m.id === "qris" ? "QRIS" : `E-wallet ${m.name}`}
+                      {m.id === "qris" && <span className="rounded-full bg-live/15 px-2 py-0.5 text-[10px] font-bold text-live">Paling gampang</span>}
+                    </span>
+                    <span className="block text-xs text-ink-muted">{m.hint}</span>
+                  </span>
+                  <span
+                    className={`grid h-6 w-6 shrink-0 place-items-center rounded-full border ${selected ? "border-ice bg-ice text-[#0d1626]" : "border-line-strong"}`}
+                    aria-hidden
+                  >
+                    {selected && <Check size={14} />}
+                  </span>
+                </button>
+              );
+            })}
           </div>
+          <p className="mt-3 text-xs text-ink-faint">Pembayaran dicek manual oleh admin setelah kamu upload bukti bayar.</p>
         </Step>
       </div>
 
@@ -359,7 +421,7 @@ export function OrderForm({
             </span>
           </Row>
           <Row label="Umur akun">{age === "adult" ? "18+ tahun" : "Di bawah 18"}</Row>
-          <Row label="Metode bayar">QRIS</Row>
+          <Row label="Metode bayar">{payName}</Row>
           <Row label="Harga">
             <span className="tabular">{rupiah(subtotal)}</span>
           </Row>

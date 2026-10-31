@@ -59,6 +59,30 @@ export const PACKAGES: { amount: number; tag?: string }[] = [
   { amount: 5000 },
 ];
 
+export type PayMethod = "qris" | "dana" | "gopay" | "shopeepay";
+
+/** Cara bayar yang bisa dipilih pembeli (QRIS atau transfer e-wallet ke nomor toko). */
+export const PAY_METHODS: { id: PayMethod; name: string; hint: string; logo: string; w: number; h: number }[] = [
+  { id: "qris", name: "QRIS", hint: "Scan pakai aplikasi bank atau e-wallet apa aja", logo: "/brand/pay/qris.png", w: 160, h: 63 },
+  { id: "dana", name: "DANA", hint: "Transfer ke nomor DANA toko", logo: "/brand/pay/dana.png", w: 160, h: 47 },
+  { id: "gopay", name: "GoPay", hint: "Transfer ke nomor GoPay toko", logo: "/brand/pay/gopay.png", w: 160, h: 35 },
+  { id: "shopeepay", name: "ShopeePay", hint: "Transfer ke nomor ShopeePay toko", logo: "/brand/pay/shopeepay.png", w: 146, h: 64 },
+];
+
+export type GigItem = { id: number; name: string; game: string; robux: number; price: number; image: string };
+export type Gig = { ready: boolean; rate: number; items: GigItem[] };
+
+/** Data Gift In Game dari bot (rate, status ready, daftar item). */
+export async function getGig(): Promise<Gig> {
+  try {
+    const res = await fetch(`${API_URL}/api/store/gig`, { next: { revalidate: 30 } });
+    if (!res.ok) throw new Error(String(res.status));
+    return (await res.json()) as Gig;
+  } catch {
+    return { ready: false, rate: 0, items: [] };
+  }
+}
+
 export function waLink(text: string) {
   return `https://wa.me/${CONTACT.whatsapp}?text=${encodeURIComponent(text)}`;
 }
