@@ -57,7 +57,7 @@ export function HeroBanner({ rate, stock }: { rate: number; stock: number }) {
                 Beli Robux sekarang <ArrowRight size={18} aria-hidden />
               </a>
               <Link
-                href="/cek-pesanan"
+                href="/pesanan"
                 className="inline-flex items-center gap-2 rounded-full border border-black/25 px-5 py-3.5 font-medium transition-colors hover:bg-black/5"
               >
                 <Search size={17} aria-hidden /> Cek Pesanan

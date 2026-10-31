@@ -1,41 +1,40 @@
 import type { Metadata } from "next";
-import { OrderCounter } from "@/components/OrderCounter";
+import { OrderForm } from "@/components/OrderForm";
 import { RobuxIcon } from "@/components/RobuxIcon";
 import { getSummary, number, rupiah } from "@/lib/store";
 
 export const revalidate = 30;
 export const metadata: Metadata = {
   title: "Robux via Username",
-  description: "Beli Robux via username tanpa password. Harga dan stok live, bayar pakai QRIS.",
+  description: "Beli Robux via username tanpa password. Harga dan stok live, bayar pakai QRIS, chat langsung sama admin.",
 };
 
-export default async function RobuxPage() {
-  const s = await getSummary();
+export default async function RobuxPage({ searchParams }: { searchParams: Promise<Record<string, string | undefined>> }) {
+  const [s, q] = await Promise.all([getSummary(), searchParams]);
+  const jumlah = Number(q.jumlah);
+  const initialRobux = Number.isFinite(jumlah) && jumlah >= 10 ? Math.min(Math.round(jumlah), 10000) : 100;
+  const initialUsername = /^[A-Za-z0-9_]{3,20}$/.test(q.username || "") ? (q.username as string) : "";
+
   return (
-    <div className="mx-auto grid max-w-6xl gap-10 px-4 pb-10 pt-8 sm:px-6 md:pt-14 lg:grid-cols-[1fr_minmax(0,460px)] lg:gap-14">
-      <div>
-        <h1 className="text-3xl font-extrabold tracking-[-0.03em] sm:text-5xl">Robux via Username</h1>
-        <p className="mt-4 max-w-[48ch] text-ink-muted sm:text-lg">
-          Kamu cukup kasih username Roblox. Admin mengirim Robux ke akunmu tanpa minta password.
-        </p>
-        <dl className="mt-8 grid max-w-md grid-cols-2 gap-px overflow-hidden rounded-[var(--radius-card)] border border-line bg-line">
-          <div className="bg-surface p-4">
-            <dt className="text-sm text-ink-muted">Harga</dt>
-            <dd className="mt-1 text-xl font-semibold tabular">{s.rate ? rupiah(s.rate) : "-"}<span className="text-sm font-normal text-ink-muted"> / 1 Robux</span></dd>
-          </div>
-          <div className="bg-surface p-4">
-            <dt className="text-sm text-ink-muted">Stok sekarang</dt>
-            <dd className="mt-1 flex items-center gap-1.5 text-xl font-semibold tabular"><RobuxIcon className="h-5 w-5 text-ice" /> {number(s.stock)}</dd>
-          </div>
-        </dl>
-        <h2 className="mt-10 text-lg font-semibold">Sebelum order</h2>
-        <ul className="mt-3 max-w-[60ch] list-disc space-y-2 pl-5 text-ink-muted marker:text-ink-faint">
-          <li>Pakai username (yang ada tanda @), bukan display name.</li>
-          <li>Pastikan username sudah benar, Robux dikirim ke akun itu.</li>
-          <li>Simpan bukti bayar sampai pesananmu selesai.</li>
-        </ul>
+    <div className="mx-auto max-w-6xl px-4 pb-12 pt-8 sm:px-6 md:pt-12">
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-extrabold tracking-[-0.03em] sm:text-5xl">Robux via Username</h1>
+          <p className="mt-3 max-w-[52ch] text-ink-muted">
+            Isi tiga langkah di bawah. Setelah pesanan dibuat, kamu bayar pakai QRIS dan bisa chat langsung sama admin di halaman pesanan.
+          </p>
+        </div>
+        <div className="flex gap-2 text-sm">
+          <span className="inline-flex items-center gap-2 rounded-full border border-line-strong px-3 py-1.5 tabular">
+            <span className="live-dot h-2 w-2 rounded-full bg-live" aria-hidden />
+            Stok <RobuxIcon className="h-3.5 w-3.5" /> {number(s.stock)}
+          </span>
+          {s.rate > 0 && <span className="rounded-full border border-line-strong px-3 py-1.5 tabular">{rupiah(s.rate)} / Robux</span>}
+        </div>
       </div>
-      <OrderCounter initialRate={s.rate} initialStock={s.stock} />
+      <div className="mt-8">
+        <OrderForm initialRate={s.rate} initialStock={s.stock} initialRobux={initialRobux} initialUsername={initialUsername} />
+      </div>
     </div>
   );
 }

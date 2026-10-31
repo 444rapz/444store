@@ -48,7 +48,7 @@ export function CategoryGrid({ rate, stock }: { rate: number; stock: number }) {
       tint: "tile-blush",
     },
     {
-      href: "/cek-pesanan",
+      href: "/pesanan",
       badge: "Lacak",
       title: "Cek Pesanan",
       sub: "Pantau status pesananmu.",

@@ -19,7 +19,7 @@ export function Footer() {
           <ul className="mt-3 space-y-2 text-sm text-ink-muted">
             <li><Link className="hover:text-ink" href="/robux">Robux via Username</Link></li>
             <li><Link className="hover:text-ink" href="/item">Gift In Game</Link></li>
-            <li><Link className="hover:text-ink" href="/cek-pesanan">Cek Pesanan</Link></li>
+            <li><Link className="hover:text-ink" href="/pesanan">Cek Pesanan</Link></li>
             <li><Link className="hover:text-ink" href="/#faq">Pertanyaan umum</Link></li>
           </ul>
         </div>

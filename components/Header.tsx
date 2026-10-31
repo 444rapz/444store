@@ -3,15 +3,17 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Coins, Gift, House, MessageCircle, Search, ShoppingBag } from "lucide-react";
+import Image from "next/image";
+import { Coins, Gift, House, MessageCircle, Receipt, ShoppingBag, UserRound } from "lucide-react";
 import { LogoOrb } from "./Brand";
 import { CONTACT } from "@/lib/store";
+import { useWebUser } from "@/lib/web";
 
 const NAV = [
   { href: "/", label: "Beranda", icon: House },
   { href: "/robux", label: "Robux", icon: Coins },
   { href: "/item", label: "Item", icon: Gift },
-  { href: "/cek-pesanan", label: "Cek Pesanan", icon: Search },
+  { href: "/pesanan", label: "Pesanan", icon: Receipt },
 ];
 
 // Navigasi berupa pulau melayang: atas untuk semua layar, bawah khusus HP
@@ -19,6 +21,7 @@ export function Header() {
   const path = usePathname();
   const active = (href: string) => (href === "/" ? path === "/" : path.startsWith(href));
   const [scrolled, setScrolled] = useState(false);
+  const user = useWebUser(path);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 48);
@@ -72,8 +75,21 @@ export function Header() {
             >
               <MessageCircle size={18} aria-hidden />
             </a>
-            <Link href="/#beli" className="chrome-btn inline-flex h-11 items-center gap-2 whitespace-nowrap rounded-full px-4 text-sm font-semibold sm:px-5">
+            <Link href="/robux" className="chrome-btn inline-flex h-11 items-center gap-2 whitespace-nowrap rounded-full px-4 text-sm font-semibold sm:px-5">
               <ShoppingBag size={16} aria-hidden /> Beli Robux
+            </Link>
+            <Link
+              href={user ? "/pesanan" : "/masuk"}
+              aria-label={user ? `Akun ${user.name}, lihat pesanan` : "Masuk atau daftar"}
+              className="grid h-11 w-11 shrink-0 place-items-center overflow-hidden rounded-full border border-line-strong text-ink-muted transition-colors hover:text-ink"
+            >
+              {user?.avatar ? (
+                <Image src={user.avatar} alt="" width={88} height={88} unoptimized className="h-full w-full object-cover" />
+              ) : user ? (
+                <span className="text-sm font-bold text-ink">{user.name.charAt(0).toUpperCase()}</span>
+              ) : (
+                <UserRound size={18} aria-hidden />
+              )}
             </Link>
           </div>
         </div>
