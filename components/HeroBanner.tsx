@@ -44,7 +44,7 @@ export function HeroBanner({ rate, stock }: { rate: number; stock: number }) {
               444 Store
             </p>
             <h1 id="hero-judul" className="mt-5 max-w-[14ch] text-[2.2rem] font-extrabold leading-[1.02] tracking-[-0.035em] sm:text-6xl">
-              Top up Robux murah, proses kilat.
+              Top&nbsp;up Robux murah, proses kilat.
             </h1>
             <p className="mt-4 max-w-[40ch] text-[#33373f] sm:text-lg">
               Robux dikirim ke username kamu tanpa password, diproses langsung sama admin 444s.

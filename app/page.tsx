@@ -182,8 +182,8 @@ export default async function Home() {
                 "Stok lagi habis"
               )}
             </p>
-            <h2 id="ajak" className="mt-5 max-w-[12ch] text-4xl font-extrabold leading-[1.02] tracking-[-0.035em] sm:text-6xl">
-              Siap top up <span className="text-ice">Robux?</span>
+            <h2 id="ajak" className="mt-5 text-4xl font-extrabold leading-[1.02] tracking-[-0.035em] sm:text-6xl">
+              Siap top&nbsp;up <span className="block text-ice">Robux?</span>
             </h2>
             <p className="mt-4 max-w-[40ch] text-ink-muted sm:text-lg">
               {s.rate > 0 ? (

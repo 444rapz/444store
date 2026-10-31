@@ -1,20 +1,28 @@
 import Image from "next/image";
 import Link from "next/link";
 
-/** Logo toko dengan bingkai chrome. `bare` menyembunyikan baris kecil di bawah nama (dipakai di navigasi). */
-export function Brand({ bare = false }: { bare?: boolean }) {
+/** Logo bulat dengan cincin chrome yang berputar pelan. */
+export function LogoOrb({ size = "h-11 w-11" }: { size?: string }) {
+  return (
+    <span className={"logo-orb relative grid shrink-0 place-items-center rounded-full " + size}>
+      <span className="logo-spin absolute inset-0 rounded-full" aria-hidden />
+      <span className="relative h-[calc(100%-3px)] w-[calc(100%-3px)] overflow-hidden rounded-full bg-ground">
+        <Image src="/brand/server-icon.jpg" alt="" width={112} height={112} className="h-full w-full scale-[1.3] object-cover" priority />
+      </span>
+    </span>
+  );
+}
+
+/** Logo lengkap dengan nama toko (dipakai di footer). */
+export function Brand() {
   return (
     <Link href="/" className="group inline-flex items-center gap-3" aria-label="444 Store, ke beranda">
-      <span className="logo-ring block h-11 w-11 shrink-0 rounded-full p-[1.5px] transition-transform duration-500 group-hover:-rotate-12">
-        <span className="block h-full w-full overflow-hidden rounded-full bg-ground">
-          <Image src="/brand/server-icon.jpg" alt="" width={96} height={96} className="h-full w-full scale-[1.25] object-cover" priority />
-        </span>
-      </span>
+      <LogoOrb />
       <span className="leading-tight">
         <span className="block whitespace-nowrap text-[17px] font-extrabold tracking-[-0.02em]">
           444 <span className="font-medium text-ink-muted">Store</span>
         </span>
-        {!bare && <span className="mt-0.5 block text-[11px] text-ink-faint">Robux & item Roblox</span>}
+        <span className="mt-0.5 block text-[11px] text-ink-faint">Robux & item Roblox</span>
       </span>
     </Link>
   );

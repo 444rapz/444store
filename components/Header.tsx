@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import { Coins, Gift, House, MessageCircle, Search, ShoppingBag } from "lucide-react";
-import { Brand } from "./Brand";
+import { LogoOrb } from "./Brand";
 import { CONTACT } from "@/lib/store";
 
 const NAV = [
@@ -17,12 +18,36 @@ const NAV = [
 export function Header() {
   const path = usePathname();
   const active = (href: string) => (href === "/" ? path === "/" : path.startsWith(href));
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 48);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  const swap = "[grid-area:1/1] transition-[opacity,transform,filter] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]";
 
   return (
     <>
       <header className="sticky top-0 z-40 px-3 pt-3 sm:px-6">
         <div className="nav-shell mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 rounded-full pl-2.5 pr-2.5 sm:pl-3">
-          <Brand bare />
+          <Link href="/" aria-label="444 Store, ke beranda" className="grid items-center">
+            <span aria-hidden className={swap + (scrolled ? " pointer-events-none scale-75 opacity-0 blur-sm" : "")}>
+              <LogoOrb />
+            </span>
+            <span
+              aria-hidden
+              className={
+                swap +
+                " whitespace-nowrap pl-2 text-lg font-extrabold tracking-[-0.02em]" +
+                (scrolled ? "" : " pointer-events-none -translate-x-2 opacity-0 blur-sm")
+              }
+            >
+              444 <span className="font-medium text-ink-muted">Store</span>
+            </span>
+          </Link>
           <nav className="hidden items-center gap-1 md:flex" aria-label="Menu utama">
             {NAV.map((n) => (
               <Link
