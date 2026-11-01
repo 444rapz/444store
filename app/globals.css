@@ -445,6 +445,16 @@
   .tile { transition: none; }
 }
 
+/* Panah "geser ke bawah" di HP bergerak naik turun pelan */
+.nudge { animation: nudge 1.6s ease-in-out infinite; }
+@keyframes nudge {
+  0%, 100% { transform: translateY(-1px); }
+  50% { transform: translateY(2px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .nudge { animation: none; }
+}
+
 /* Laba-laba di footer berayun pelan dari benangnya */
 .swing { transform-origin: 50% 0; animation: swing 7s ease-in-out infinite; }
 @keyframes swing {
